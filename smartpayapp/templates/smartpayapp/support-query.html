@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}smartpay_advance | Support Query{% endblock  %}
+{% block content %}
+
+  <!--Support Query starts here-->
+  <div class="sq-container">
+    <!-- Header -->
+    <div class="sq-header">
+      <div class="sq-header-icon">
+        <img src="{% static 'img/icons/l1.png' %}" alt="Support">
+      </div>
+      <h2>Support Queries</h2>
+      <p>Submit and view your support queries securely.</p>
+    </div>
+
+    <!-- Chat Window -->
+    <div class="sq-chat-window">
+      <!-- Example Previous Messages -->
+      <div class="sq-message sq-staff">
+        <p>Hi Support, I need help with my account setup.</p>
+        <span class="sq-status">Sent • 10:15 AM</span>
+      </div>
+
+      <div class="sq-message sq-support">
+        <p>Hello, your account setup is now complete. Please refresh and try again.</p>
+        <span class="sq-status">Viewed • 10:20 AM</span>
+      </div>
+
+      <div class="sq-message sq-staff">
+        <p>It worked! Thank you so much.</p>
+        <span class="sq-status">Sent • 10:25 AM</span>
+      </div>
+    </div>
+
+    <!-- Input Box -->
+    <div class="sq-input-area">
+      <textarea placeholder="Type your support query..." rows="2"></textarea>
+      <button type="button">Send</button>
+    </div>
+  </div>
+  <!--Support Query starts here-->
+
+{% endblock %}

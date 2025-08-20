@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}SmartPay Advance  | Chat {% endblock  %}
+{% block content %}
+
+<!--Chats starts Here-->
+<div class="fin-chat-container">
+    <!-- Header -->
+    <div class="fin-chat-header">
+      <img src="{% static 'img/icons/l3.png' %}" alt="Finance Office" class="fin-chat-logo">
+      <h2>Finance Office Chat</h2>
+    </div>
+
+    <!-- Chat Messages -->
+    <div class="fin-chat-messages">
+      <!-- Example message from staff -->
+      <div class="fin-chat-message fin-chat-sent">
+        <p>Hello Finance, I need clarification on my loan repayment plan.</p>
+        <span class="fin-chat-status">✓✓ Viewed</span>
+      </div>
+
+      <!-- Example message from finance -->
+      <div class="fin-chat-message fin-chat-received">
+        <p>Hello Hannah, sure! Could you please specify which repayment period you’re asking about?</p>
+        <span class="fin-chat-status">✓ Sent</span>
+      </div>
+    </div>
+
+    <!-- Chat Input -->
+    <div class="fin-chat-input-area">
+      <textarea class="fin-chat-input" placeholder="Type your message..."></textarea>
+      <button class="fin-chat-send-btn">Send</button>
+    </div>
+</div>
+<!--Chat Ends Here-->
+
+{% endblock  %}

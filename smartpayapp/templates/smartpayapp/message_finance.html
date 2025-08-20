@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}smartpay_advance | Message Finance{% endblock  %}
+{% block content %}
+  
+  <!--Message Finance starts here-->
+  <div class="finmsg-container">
+    <h1 class="finmsg-title">Finance Communication Center</h1>
+    <p class="finmsg-subtitle">Send private messages directly to the finance office</p>
+
+    <div class="finmsg-cards">
+
+      <!-- Card 1 -->
+      <a href="{% url 'chat_finance' %}" class="finmsg-card">
+        <div class="finmsg-icon">
+          <img src="{% static 'img/icons/l3.png' %}" alt="Message Finance">
+        </div>
+        <h3 class="finmsg-card-title">Message Finance Office</h3>
+        <p class="finmsg-card-desc">Send private messages, track replies, and view status updates.</p>
+        <span class="finmsg-status new">3 New Messages</span>
+      </a>
+
+      <!-- Card 2 -->
+      <a href="{% url 'chat_finance' %}" class="finmsg-card">
+        <div class="finmsg-icon">
+          <img src="{% static 'img/icons/help.png' %}" alt="Finance Help">
+        </div>
+        <h3 class="finmsg-card-title">Finance FAQ</h3>
+        <p class="finmsg-card-desc">Browse answers to frequently asked finance-related questions.</p>
+        <span class="finmsg-status info">Updated</span>
+      </a>
+
+      <!-- Card 3 -->
+      <a href="{% url 'chat_finance' %}" class="finmsg-card">
+        <div class="finmsg-icon">
+          <img src="{% static 'img/icons/salary.png' %}" alt="Salary Request">
+        </div>
+        <h3 class="finmsg-card-title">Salary Requests</h3>
+        <p class="finmsg-card-desc">Submit and track your salary advance and adjustment requests.</p>
+        <span class="finmsg-status pending">2 Pending</span>
+      </a>
+
+      <!-- Card 4 -->
+      <a href="{% url 'chat_finance' %}" class="finmsg-card">
+        <div class="finmsg-icon">
+          <img src="{% static 'img/icons/reports.png' %}" alt="Finance Reports">
+        </div>
+        <h3 class="finmsg-card-title">Finance Reports</h3>
+        <p class="finmsg-card-desc">Access your personal finance and payroll reports securely.</p>
+        <span class="finmsg-status viewed">Viewed</span>
+      </a>
+
+    </div>
+  </div>
+
+
+  <!--Message Finance Ends here-->
+
+{% endblock  %}

@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Message Success{% endblock  %}
+{% block content %}
+
+    <div class="success-wrapper">
+        <div class="success-card">
+            <img src="{% static 'img/logo2.png' %}" alt="SmartPayApp Logo" class="success-logo">
+            <h2> Signup Successful!</h2>
+            <p>Welcome to <strong>SmartPayApp</strong>. Your account has been created successfully.</p>
+            <a href="{% url 'login' %}" class="btn">Go to Login</a>
+        </div>
+    </div>
+
+{% endblock content %}

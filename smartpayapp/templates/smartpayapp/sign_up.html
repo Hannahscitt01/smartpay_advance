@@ -4,46 +4,65 @@
 
   <!--Sign Up Form-->
   <br><br>
-  <div class="signup-container">
-    <div class="signup-card">
-      <div class="signup-logo">
+  <!--Signup Form-->
+  <div class="login-container">
+    <div class="login-card">
+
+      <!-- Logo -->
+      <div class="login-logo">
         <img src="{% static 'img/logo2.png' %}" alt="SmartPay Logo">
       </div>
-      <h2 class="signup-title">Create Your Account</h2>
-      <p class="signup-subtitle">Join SmartPay and request salary advances securely and quickly.</p>
 
-      <form action="#" method="post">
+      <!-- Title -->
+      <h1 class="login-title">SmartPay Advance Salary System</h1>
+      <p class="login-subtitle">Create your account to access salary advances</p>
+
+      <!-- Success Card -->
+      {% if success %}
+        <div class="success-card">
+          <h2>🎉 Account Created Successfully!</h2>
+          <p>Your account has been created. You can now <a href="{% url 'login' %}">login</a>.</p>
+        </div>
+      {% endif %}
+
+      <!-- Signup Form -->
+      <form method="POST">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+
         <div class="form-group">
-          <label for="staff-id">Staff ID</label>
-          <input type="text" id="staff-id" name="staff-id" placeholder="Enter your Staff ID" required>
+          <label for="id_staffid">Staff ID</label>
+          {{ form.staffid }}
+          {{ form.staffid.errors }}
         </div>
 
         <div class="form-group">
-          <label for="fullname">Full Name</label>
-          <input type="text" id="fullname" name="fullname" placeholder="Enter your full name" required>
+          <label for="id_email">Staff Email</label>
+          {{ form.email }}
+          {{ form.email.errors }}
         </div>
 
         <div class="form-group">
-          <label for="email">Work Email</label>
-          <input type="email" id="email" name="email" placeholder="Enter your work email" required>
+          <label for="id_password1">Password</label>
+          {{ form.password1 }}
+          {{ form.password1.errors }}
         </div>
 
         <div class="form-group">
-          <label for="password">Create Password</label>
-          <input type="password" id="password" name="password" placeholder="Create a password" required>
+          <label for="id_password2">Confirm Password</label>
+          {{ form.password2 }}
+          {{ form.password2.errors }}
         </div>
 
-        <div class="form-group">
-          <label for="confirm-password">Confirm Password</label>
-          <input type="password" id="confirm-password" name="confirm-password" placeholder="Confirm your password" required>
-        </div>
-
-        <button type="submit" class="signup-btn">Sign Up</button>
+        <button type="submit" class="login-btn">Sign Up</button>
       </form>
 
-      <p class="login-text">Already have an account? <a href="{% url 'login' %}">Login here</a></p>
+      <!-- Login Link -->
+      <p class="signup-text">Already have an account? <a href="{% url 'login' %}">Login</a></p>
+
     </div>
   </div>
+
   <br><br>
 
 {% endblock %}

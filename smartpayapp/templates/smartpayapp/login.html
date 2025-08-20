@@ -6,40 +6,42 @@
     <br><br>
     <!--Login Form-->
     <div class="login-container">
-    <div class="login-card">
-      
-      <!-- Logo -->
-      <div class="login-logo">
-        <img src="{% static 'img/logo2.png' %}" alt="SmartPay Logo">
+      <div class="login-card">
+        
+        <!-- Logo -->
+        <div class="login-logo">
+          <img src="{% static 'img/logo2.png' %}" alt="SmartPay Logo">
+        </div>
+        
+        <!-- Title -->
+        <h1 class="login-title">SmartPay Advance Salary System</h1>
+        <p class="login-subtitle">Securely log in to request your salary advance</p>
+        
+        <!-- Login Form -->
+        <form action="{% url 'login' %}" method="POST">
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="email">Staff Email</label>
+            <input type="email" id="email" name="email" placeholder="you@company.com" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="••••••••" required>
+          </div>
+          
+          <div class="form-options">
+            <a href="forget_password.html" class="forgot-link">Forgot Password?</a>
+          </div>
+          
+          <button type="submit" class="login-btn">Login</button>
+        </form>
+
+        
+        <!-- Sign Up Link -->
+        <p class="signup-text">Don't have an account? <a href="{% url 'signup' %}">Sign up</a></p>
+        
       </div>
-      
-      <!-- Title -->
-      <h1 class="login-title">SmartPay Advance Salary System</h1>
-      <p class="login-subtitle">Securely log in to request your salary advance</p>
-      
-      <!-- Login Form -->
-      <form action="#" method="POST">
-        <div class="form-group">
-          <label for="email">Staff Email</label>
-          <input type="email" id="email" name="email" placeholder="you@company.com" required>
-        </div>
-        
-        <div class="form-group">
-          <label for="password">Password</label>
-          <input type="password" id="password" name="password" placeholder="••••••••" required>
-        </div>
-        
-        <div class="form-options">
-          <a href="forget_password.html" class="forgot-link">Forgot Password?</a>
-        </div>
-        
-        <button type="submit" class="login-btn">Login</button>
-      </form>
-      
-      <!-- Sign Up Link -->
-      <p class="signup-text">Don't have an account? <a href="{% url 'signup' %}">Sign up</a></p>
-      
-    </div>
     </div>
     <br><br>
 
