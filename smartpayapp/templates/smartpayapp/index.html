@@ -1,6 +1,130 @@
 {% extends "base.html" %}
 {% load static %}
-{% block title  %}smartpay_advance{% endblock  %}
+{% block title  %}smartpay_advance | Home {% endblock  %}
 {% block content %}
+
+    <!--HERO SECTION-->
+    <section class="hero">
+        <div class="hero-text">
+            <h1>Your Salary Advance Requests,<br> Simplified & Secure.</h1>
+            <p>Submit requests privately and get faster approvals from the Finance Department — anytime, anywhere.</p>
+            <div class="hero-buttons">
+                <a href="{% url 'login' %}" class="btn-primary">Login</a>
+                <a href="{% url 'signup' %}" class="btn-secondary">Create Account</a>
+            </div>
+        </div>
+
+        <div class="hero-carousel">
+            <div class="slides">
+                <img src="{% static 'img/hero1.jpg' %}" alt="Office 1">
+                <img src="{% static 'img/hero2.webp' %}" alt="Office 2">
+                <img src="{% static 'img/hero3.webp' %}" alt="Office 3">
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section  -->
+    <section class="how-it-works">
+    <h2>How It Works</h2>
+
+    <div class="steps-container">
+        <!-- Step 1 -->
+        <div class="step-card">
+        <div class="icon" aria-label="Create account">
+            <i class="fas fa-user-plus"></i>
+        </div>
+        <h3>Step 1</h3>
+        <p>Create your account using your Staff ID.</p>
+        </div>
+
+        <div class="line" aria-hidden="true"></div>
+
+        <!-- Step 2 -->
+        <div class="step-card">
+        <div class="icon" aria-label="Fill form">
+            <i class="fas fa-file-alt"></i>
+        </div>
+        <h3>Step 2</h3>
+        <p>Fill in the advance request form.</p>
+        </div>
+
+        <div class="line" aria-hidden="true"></div>
+
+        <!-- Step 3 -->
+        <div class="step-card">
+        <div class="icon" aria-label="Approval">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <h3>Step 3</h3>
+        <p>Finance team reviews and updates you.</p>
+        </div>
+
+        <div class="line" aria-hidden="true"></div>
+
+        <!-- Step 4 (New) -->
+        <div class="step-card">
+        <div class="icon" aria-label="Payout">
+            <i class="fas fa-hand-holding-usd"></i>
+        </div>
+        <h3>Step 4</h3>
+        <p>Get your salary advance after approval.</p>
+        </div>
+    </div>
+    </section>
+
+   
+    <!-- Banner Section -->
+    <section class="banner">
+    <div class="banner-overlay">
+        <div class="banner-content">
+        <h2 class="banner-title">Fast. Private. Hassle-Free.</h2>
+        <h3 class="banner-subtitle">Salary Advance Requests Made Simple</h3>
+        <p class="banner-text">
+            Skip the paperwork and long waits  request your salary advance online 
+            and receive updates in real-time from the Finance Department.
+        </p>
+        <a href="#" class="banner-btn">Request Now</a>
+        </div>
+    </div>
+    </section>
+
+
+    <!--Benefits of this system-->
+    <section class="benefits">
+        <div class="benefits-inner">
+            <h2 class="benefits-title">Why Use This System</h2>
+            <p class="benefits-subtitle">Fast, private, and trackable salary advance requests.</p>
+
+            <div class="benefits-grid">
+            <!-- Card 1: Privacy -->
+            <article class="benefit-card">
+                <div class="benefit-icon" aria-hidden="true">
+                <i class="fas fa-user-shield"></i>
+                </div>
+                <h3>Privacy</h3>
+                <p>No one else sees your request.</p>
+            </article>
+
+            <!-- Card 2: Speed -->
+            <article class="benefit-card">
+                <div class="benefit-icon" aria-hidden="true">
+                <i class="fas fa-bolt"></i>
+                </div>
+                <h3>Speed</h3>
+                <p>No paperwork or walking to the office.</p>
+            </article>
+
+            <!-- Card 3: Tracking -->
+            <article class="benefit-card">
+                <div class="benefit-icon" aria-hidden="true">
+                <i class="fas fa-receipt"></i>
+                </div>
+                <h3>Tracking</h3>
+                <p>Get a reference number for every request.</p>
+            </article>
+            </div>
+        </div>
+    </section>
+
 
 {% endblock  %}

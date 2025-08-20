@@ -5,223 +5,87 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}smartpay_advance{% endblock %} </title>
-    <link rel="stylesheet"href="{% static 'css/style.css' %}">
     <link rel="stylesheet"href="{% static 'css/style2.css' %}">
 </head>
 <body>
-   <nav class="navbar">
-     <div class="nav-left">
-        <img src="img/logo2.png" alt="company logo" class="nav-logo">
-        <span class="nav-app-name">smartpay_advance</span>
-
-     </div>
-     <div class="nav-center">
-        <ul>
-            <li><a href="#">home</a></li>
-            <li><a href="#">about</a></li>
-            <li><a href="#">how it works</a></li>
-            <li><a href="#">contact</a></li>
-        </ul>
-
-     </div>
-     <div class="nav-right">
-        <a href="login.html" class="login-link">login</a>
-     </div>
-   </nav>
-
-
-   <section class="hero">
-    <div class="hero-text">
-        <h1>Your Salary Advance Request,<br> Simplified and Secure.</h1>
-        <p>Submit requests privately and get faster approvals from the finance Department - anytime, anywhere.</p>
-        <div class="hero-buttons">
-            <a href="#" class="btn-primary">login</a>
-            <a href="#"  class="btn-secondary">create Acount</a>
-
+    <!--NAV SECTION-->
+    <nav class="navbar">
+        <div class="nav-left">
+            <img src="{% static 'img/logo2.png' %}" alt="Company Logo" class="nav-logo">
+            <span class="nav-app-name">Advance Salary System</span>
+        </div>
+ 
+        <div class="nav-center">
+            <a href="{% url 'home' %}">Home</a>
+            <a href="#">About</a> 
+            <a href="#">How It Works</a>
+            <a href="#">Contact</a>
         </div>
 
-    </div>
-    <div class="hero-carousel">
-        <div class="slides">
-            <img src="img/img1.jpg" alt="office 1">
-            <img src="img/img2.jpg" alt="office 2">
-            <img src="img/img3.jpg" alt="office 3">
-
+        <div class="nav-right">
+            <a href="{% url 'login' %}" class="login-link">Login</a>
         </div>
+    </nav>  
 
-    </div>
+    {% block content %}
+    {% endblock  %}
 
-   </section>
-   <section>
-
-   </section class="how it works">
-     <h2>how it works</h2>
-
-   <div class="steps-container">
-
-    <div class="step-card">
-        <div class="icon"  aria-label="create account">
-            <i class="fas fa-user-plus"></i>
-            <div>
-                <h3>step 1</h3>
-                <p>Create your account using your staff ID.</p>
-            </div>
-
-            <div class="line"  aria-hidden="true"></div>
-
-            <div class="step-card">
-                <div class="icon" aria-label="fill form">
-                    <i class="fas-file-alt"></i>
-                    <div>
-                        <h3>step 2</h3>
-                        <p>fill in the advance request form.</p>
-                        </div>
-                        <div class="line" aria-hidden="true"></div>
-
-
-                    <div class="step-card">
-                        <div class="icon" aria-label="Approval">
-                            <i class="fas-fa-check-circle"></i>
-
-                        </div>
-                        <h3>step 3</h3>
-                        <p>finance team reviews and updates you.</p>
-
-                    </div>
-
-                    <div class="line" aria-hidden="true"></div>
-
-                    <div class="step-card">
-                        <div class="icon" aria-label="payout">
-                            <i class="fas-fa-hand-holding-usd"></i>
-                        </div>
-                        <h3>step 4</h3>
-                        <p>Get your salary advance after approval.</p>
-                    </div>
-</div>
+    <!--Footer starts here-->
+    <footer class="footer">
+        <div class="footer-container">
             
-<section class="banner">
-    <div class="banner-overlay">
-        <div class="banner-content">
-            <h2 class="banner-title">Fast.Private. Hassle-Free.</h2>
-            <h3 class="banner-subtitle">Salary Advance Requests Made Simple</h3>
-            <p class="banner-text">
-                Skip the paperwork and long waits request your salary advance online
-                and receive updates in real-time from the Finance Department.
-            </p>
-            <a href="#" class="banner-btn">Request Now</a>
-
-        </div>
-        
-
-    </div>
-
-</section>
-
-
-<section class="benefits">
-    <div class="benefits-inner">
-        <h2 class="benefits-title">why use this system</h2>
-        <p class="benefits-subtitle">Fast,Private, and trackable salary advance request.</p>
-
-        <div class="benefits-grid">
-            <article class="benefit-card">
-                <div class="benefit-icon" aria-hidden="true">
-                    <i class="fas fa-user-shield"></i>
-
-                </div>
-                <h3>privacy</h3>
-                <p>No one else sees your request.</p>
-
-            </article>
-
-
-            <article class="benefit-card">
-                <div class="benefit-icon" aria-hidden="true">
-                    <i class="fas fa-bolt"></i>
-
-                </div>
-                <h3>speed</h3>
-                <p>No paperwork or walking to the office.</p>
-
-            </article>
-
-            <article class="benefit-card">
-                <div class="benefit-icon" aria-hidden="true">
-                    <i class="fas fa-receipt"></i>
-</div>
-<h3>tracking</h3>
-<p>Get a reference number for every request.</p>
-            </article>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<footer class="footer">
-    <div class="footer-container">
-
-        <div class="footer-col">
+            <!-- Company Info -->
+            <div class="footer-col">
             <div class="footer-brand">
-                <img src="img/logo2.png" alt="company Logo" class="footer-logo-img">
-                <h3 class="footer-logo">Smartpay App</h3>
-
+                <img src="{% static 'img/logo2.png' %}" alt="Company Logo" class="footer-logo-img">
+                <h3 class="footer-logo">Smart Pay App</h3>
             </div>
-            <p class="footer-moto">Empowering staff with speed,privacy,and trust.</p>
+            <p class="footer-motto">"Empowering staff with speed, privacy, and trust."</p>
+            </div>
 
-        </div>
-
-
-        <div class="footer-col">
+            <!-- Quick Links -->
+            <div class="footer-col">
             <h4>Quick Links</h4>
-            <ul class=footer-links>
+            <ul class="footer-links">
                 <li><a href="#">Home</a></li>
                 <li><a href="#">About</a></li>
                 <li><a href="#">Contact</a></li>
             </ul>
+            </div>
 
-        </div>
-
-
-        <div class="footer-col">
+            <!-- Contact Info -->
+            <div class="footer-col">
             <h4>Finance Department</h4>
-            <p>Email: finace@smartpay.com</p>
-            <p>Phone: +254 70 626 084</p>
-            <p>Office Hours: Mon-Fri, 7am-5pm</p>
+            <p>Email: finance@smartpay.com</p>
+            <p>Phone: +254 (721) 123-4567</p>
+            <p>Office Hours: Mon–Fri, 9am–5pm</p>
+            </div>
 
-        </div class="footer col">
-        <h4>Resource</h4>
-        <ul class="footer-links">
-            <li><a href="#">Help center</a></li>
-            <li><a href="#">FAQs</a></li>
-            <li><a href="#">Terms and privacy</a></li>
-
-        </ul>
-        <div>
-
-
-            <div class="footer-button">
-                <p>&copy: 2025 Smartpay _Advance. Designed and Developed by <b>ENG CHANDI</b>   All rights reserved</p>
-
+            <!-- Extra Column (Example: Resources) -->
+            <div class="footer-col">
+            <h4>Resources</h4>
+            <ul class="footer-links">
+                <li><a href="#">Help Center</a></li>
+                <li><a href="#">FAQs</a></li>
+                <li><a href="#">Terms & Privacy</a></li>
+            </ul>
             </div>
 
         </div>
 
-    </div>
-</footer>
-
-
-
-
-
+        <!-- Footer Bottom -->
+        <div class="footer-bottom">
+            <p>&copy; 2025 SmartPay. Designed and Developed by <b>Hannah Wambui</b> | All rights reserved.</p>
         </div>
+    </footer>
 
-    </div>
 
-   </div>
+
+
+
+
+
+
 
 <Script src="js/main.js"></script>
 </body>
