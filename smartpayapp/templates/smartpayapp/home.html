@@ -20,7 +20,8 @@
     <!--QUICK GLANCE SECTION-->   
     <section class="quick-actions">
         <div class="container">
-            
+
+            <!--request salary card--> 
             <a href="{% url 'request_form' %}" class="action-card">
             <div class="action-icon">
                 <img src="{% static 'img/icons/l1.png' %}" alt="Salary Advance">
@@ -29,6 +30,7 @@
             <p>Submit your salary advance request securely.</p>
             </a>
 
+            <!--internal loan card-->
             <a href="{% url 'internal_loan' %}" class="action-card">
             <div class="action-icon">
                 <img src="{% static 'img/icons/l2.png' %}" alt="Internal Loan">
@@ -37,6 +39,7 @@
             <p>Apply for organizational loans easily.</p>
             </a>
 
+            <!--message finance card-->
             <a href="{% url 'message_finance' %}" class="action-card">
             <div class="action-icon">
                 <img src="{% static 'img/icons/l3.png' %}" alt="Message Finance">
@@ -45,6 +48,7 @@
             <p>Send private messages directly to finance.</p>
             </a>
 
+            <!--support query card-->
             <a href="{% url 'support_query' %}" class="action-card">
             <div class="action-icon">
                 <img src="{% static 'img/icons/l1.png' %}" alt="Support Query">
@@ -59,7 +63,7 @@
         <!--FINACIAL OVERVIEW-->
     <section class="financial-overview">
         <div class="overview-container">
-
+            <!--current salar card-->
             <div class="overview-card">
             <div class="icon">
                 <img src="{% static 'img/icons/l2.png' %}" alt="Salary Icon">
@@ -68,6 +72,7 @@
             <p>Current Salary</p>
             </div>
 
+            <!--overview card-->
             <div class="overview-card">
 
             <div class="icon">
@@ -77,6 +82,7 @@
             <p>Outstanding Loans</p>
             </div>
 
+            <!--advance salary eligibility card-->
             <div class="overview-card">
             <div class="icon">
                 <img src="{% static 'img/icons/l2.png' %}" alt="Eligibility Icon">
@@ -179,7 +185,14 @@
                         <div class="chat-content">Reminder: Pending loan repayment due this month.</div>
                         <div class="chat-time">09:30 AM | 2025-08-05</div>
                     </div>
-                    <!-- Add more chat messages -->
+
+                    <div class="chat-message read">
+                        <div class="chat-sender">Finance Office</div>
+                        <div class="chat-content">Reminder: Pending loan repayment due this month.</div>
+                        <div class="chat-time">09:30 AM | 2025-08-05</div>
+                    </div> 
+                    
+                    <!-- Add more chat messages -->                   
                 </div>
             </div>
 
