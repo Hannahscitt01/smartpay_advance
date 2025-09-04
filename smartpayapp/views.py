@@ -11,19 +11,19 @@ def index(request):
 def application(request):
     return render(request, 'smartpayapp/application.html')
 
-def login(request):
+def login_view(request):
     if request.method == "POST":
-        email = request.POST.get("email")
+        staffid = request.POST.get("username")
         password = request.POST.get("password")
         
         # Authenticate using Django's built-in system
-        user = authenticate(request, username=email, password=password)
+        user = authenticate(request, username=staffid, password=password)
         
-        if user is not None:
+        if user:
             login(request, user)
             return redirect("home")  # successful login
         else:
-            messages.error(request, "Invalid email or password")
+            messages.error(request, "Invalid staffid or password")
     
     return render(request, "smartpayapp/login.html")  
 
