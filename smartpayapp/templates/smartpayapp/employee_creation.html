@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Salary Advance System | Employee Creation{% endblock  %}
+{% block content %}
+
+    <!--Header starts here-->
+    <header class="page-header">
+    <h1>Employee Creation Form</h1>
+    <p class="breadcrumb">Home &gt; Admin Dashboard &gt; Create a New Employee</p>
+    </header>
+    <!--Header ends here-->
+
+
+    <!--Employee creation form starts here-->
+    <main class="request-container">
+        <!-- FORM SECTION -->
+        <section class="form-section">
+            <form method="POST" class="salary-form">
+                {% csrf_token %}
+                
+                <h2 class='employee-title'>Personal Information</h2>
+                {{ form.full_name.label_tag }}
+                {{ form.full_name }}
+                {{ form.national_id.label_tag }}
+                {{ form.national_id }}
+                {{ form.dob.label_tag }}
+                {{ form.dob }}
+                <label for="age">Age</label>
+                <input type="number" id="age" readonly placeholder="Auto-calculated">
+
+                <h2 class='employee-title'>Employment Information</h2>
+                <label for="staffId">Staff ID</label>
+                <input type="text" id="staffId" readonly placeholder="Auto-generated">
+
+                {{ form.date_joined.label_tag }}
+                {{ form.date_joined }}
+                {{ form.department.label_tag }}
+                {{ form.department }}
+                {{ form.job_title.label_tag }}
+                {{ form.job_title }}
+                {{ form.employment_type.label_tag }}
+                {{ form.employment_type }}
+                {{ form.salary.label_tag }}
+                {{ form.salary }}
+
+                <h2 class='employee-title'>Contact Information</h2>
+                {{ form.email.label_tag }}
+                {{ form.email }}
+                {{ form.phone.label_tag }}
+                {{ form.phone }}
+                {{ form.address.label_tag }}
+                {{ form.address }}
+
+                <button type="submit" class="btn-primary">Add Employee</button>
+                <button type="reset" class="btn-secondary">Clear Form</button>
+            </form>
+        </section>
+
+        <!-- INFO / TIPS -->
+        <aside class="info-section">
+            <h2>HR Tips</h2>
+            <p>💡 Ensure all employee details are correct before submission.</p>
+            <p>💡 Staff ID will be auto-generated for each new employee.</p>
+            <p>💡 Salary details should match the agreed contract.</p>
+        </aside>
+    </main>
+    <!--Employee form ends here-->
+
+{% endblock  %}

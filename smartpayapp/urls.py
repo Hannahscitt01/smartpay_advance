@@ -2,7 +2,7 @@ from django.urls import path
 from .views import(
     index,
     application,
-    login,
+    login_view,
     signup,
     home,
     request_form,
@@ -10,13 +10,17 @@ from .views import(
     message_finance,
     chat_finance,
     support_query,
-    signup_sucess
+    signup_sucess,
+    admin_dashboard,
+    employee_creation,
+    employee_creation_success
+   
 )
 
 urlpatterns = [
     path('', index, name='index'),
     path('application/', application, name='application'),
-    path('login/', login, name='login'),
+    path('login/', login_view, name='login'),
     path('signup/', signup,name='signup'),
     path('home/', home, name='home'),
     path('request_form/', request_form, name= 'request_form'),
@@ -24,6 +28,8 @@ urlpatterns = [
     path('message_finance/', message_finance, name= 'message_finance'),
     path('chat_finance/', chat_finance,name='chat_finance'),
     path('support_query/', support_query,name='support_query'),
-    path('signup_sucess/', signup_sucess,name='signup_sucess')
-     
+    path('signup_sucess/', signup_sucess,name='signup_sucess'),
+    path('admin_dashboard/', admin_dashboard, name='admin_dashboard'),
+    path('employee_creation/', employee_creation, name='employee_creation'),
+    path('employee_creation_success/', employee_creation_success, name='employee_creation_success')
 ]

@@ -21,6 +21,7 @@
     <section class="quick-actions">
         <div class="container">
             
+            <!--Request Salary Card-->
             <a href="{% url 'request_form' %}" class="action-card">
             <div class="action-icon">
                 <img src="{% static 'img/icons/l1.png' %}" alt="Salary Advance">
@@ -28,7 +29,8 @@
             <h3>Request Salary Advance</h3>
             <p>Submit your salary advance request securely.</p>
             </a>
-
+             
+            <!--Internal Loan Card-->
             <a href="{% url 'internal_loan' %}" class="action-card">
             <div class="action-icon">
                 <img src="{% static 'img/icons/l2.png' %}" alt="Internal Loan">
@@ -37,6 +39,7 @@
             <p>Apply for organizational loans easily.</p>
             </a>
 
+            <!--Message Finance Card-->
             <a href="{% url 'message_finance' %}" class="action-card">
             <div class="action-icon">
                 <img src="{% static 'img/icons/l3.png' %}" alt="Message Finance">
@@ -45,6 +48,7 @@
             <p>Send private messages directly to finance.</p>
             </a>
 
+            <!--Support Query Card-->
             <a href="{% url 'support_query' %}" class="action-card">
             <div class="action-icon">
                 <img src="{% static 'img/icons/l1.png' %}" alt="Support Query">
@@ -56,10 +60,11 @@
         </div>
     </section>
     
-        <!--FINACIAL OVERVIEW-->
+    <!--FINACIAL OVERVIEW-->
     <section class="financial-overview">
         <div class="overview-container">
-
+            
+            <!--Current Salary Card-->
             <div class="overview-card">
             <div class="icon">
                 <img src="{% static 'img/icons/l2.png' %}" alt="Salary Icon">
@@ -68,8 +73,8 @@
             <p>Current Salary</p>
             </div>
 
+            <!--Overview Card-->
             <div class="overview-card">
-
             <div class="icon">
                 <img src="{% static 'img/icons/l2.png' %}" alt="Outstanding Loans Icon">
             </div>
@@ -77,6 +82,7 @@
             <p>Outstanding Loans</p>
             </div>
 
+            <!--Advance salary Eligibility Card-->
             <div class="overview-card">
             <div class="icon">
                 <img src="{% static 'img/icons/l2.png' %}" alt="Eligibility Icon">
