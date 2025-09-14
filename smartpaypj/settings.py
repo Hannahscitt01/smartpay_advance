@@ -38,9 +38,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'smartpayapp',
-    
+    'smartpayapp.apps.SmartpayappConfig',  
 ]
+
+    
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

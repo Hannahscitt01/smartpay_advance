@@ -8,14 +8,21 @@
     <section class="welcome-header">
         <div class="welcome-content">
             <div class="welcome-text">
-                <h1>Welcome back, Hannah</h1>
+                <h2>Welcome, {{ user.first_name }} {{ user.last_name }}!</h2>
                 <p>Here’s your salary advance and loan overview at a glance.</p>
+                <br>
+                <p>Your Staff ID: <strong>{{ user.username }}</strong></p>
             </div>
             <div class="profile-pic">
-                <img src="{% static 'img/profile/p1.png' %}" alt="Profile Picture">
+                <img src="{{ profile.profile_picture.url }}" alt="Profile Picture">
+                <br>
+                <a href="{% url 'update_profile' %}" class="btn-edit">Change Picture</a>
             </div>
         </div>
     </section>
+
+
+
 
     <!--QUICK GLANCE SECTION-->   
     <section class="quick-actions">
