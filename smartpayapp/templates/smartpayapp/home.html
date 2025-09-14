@@ -73,11 +73,11 @@
             
             <!--Current Salary Card-->
             <div class="overview-card">
-            <div class="icon">
-                <img src="{% static 'img/icons/l2.png' %}" alt="Salary Icon">
-            </div>
-            <h2>KSh 150,000</h2>
-            <p>Current Salary</p>
+                <div class="icon">
+                    <img src="{% static 'img/icons/l2.png' %}" alt="Salary Icon">
+                </div>
+                <h2>{{ current_salary }}</h2>
+                <p>Current Salary</p>
             </div>
 
             <!--Overview Card-->
@@ -88,15 +88,16 @@
             <h2>KSh 50,000</h2>
             <p>Outstanding Loans</p>
             </div>
-
+            
             <!--Advance salary Eligibility Card-->
             <div class="overview-card">
-            <div class="icon">
-                <img src="{% static 'img/icons/l2.png' %}" alt="Eligibility Icon">
+                <div class="icon">
+                    <img src="{% static 'img/icons/l2.png' %}" alt="Eligibility Icon">
+                </div>
+                <h2>{{ advance_eligibility }}</h2>
+                <p>Advance Eligibility</p>
             </div>
-            <h2>Eligible — Up to KSh 30,000</h2>
-            <p>Advance Eligibility</p>
-            </div>
+
 
         </div>
     </section>

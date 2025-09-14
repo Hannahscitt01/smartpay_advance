@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 from .forms import SignUpForm, SalaryAdvanceForm, EmployeeForm, ProfileUpdateForm
 from .models import Profile, SalaryAdvanceRequest, Employee
 from .decorators import admin_required
+from decimal import Decimal
 
 
 # ================================================================
@@ -108,11 +109,28 @@ def login_view(request):
 # ================================================================
 # Staff / User Dashboard & Profile Management
 # ================================================================
+
 @login_required
 def home(request):
-    """Staff dashboard (main home after login)."""
-    profile = Profile.objects.get(user=request.user)
-    return render(request, "smartpayapp/home.html", {"profile": profile})
+    profile = request.user.profile
+
+    current_salary = "N/A"
+    advance_eligibility = "N/A"
+
+    if profile.employee and profile.employee.salary is not None:
+        salary = profile.employee.salary
+        current_salary = f"KSh {salary:,.2f}"
+        advance_eligibility = f"Eligible — Up to KSh {float(salary) * 0.5:,.2f}"
+
+    context = {
+        "profile": profile,
+        "current_salary": current_salary,
+        "advance_eligibility": advance_eligibility,
+    }
+
+    return render(request, "smartpayapp/home.html", context)
+
+
 
 
 @login_required
@@ -157,7 +175,7 @@ def request_form(request):
             salary_request.user = request.user
             salary_request.save()
             messages.success(request, "Salary advance request submitted.")
-            return redirect("home")
+            return redirect("request_form_success")
     else:
         form = SalaryAdvanceForm()
 
@@ -167,6 +185,10 @@ def request_form(request):
         {"form": form, "employee": employee},
     )
 
+
+def request_form_success(request):
+    """Success page after employee requests salary advance."""
+    return render(request, 'smartpayapp/request_form_success.html')
 
 # ================================================================
 # Employee Management (HR/Admin)

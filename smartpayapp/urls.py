@@ -16,6 +16,7 @@ from .views import(
     employee_creation_success,
     update_profile,
     admin_home,
+    request_form_success
   
    
 )
@@ -37,5 +38,6 @@ urlpatterns = [
     path('employee_creation_success/', employee_creation_success, name='employee_creation_success'),
     path('update_profile/', update_profile, name='update_profile'),
     path('admin_home/', admin_home, name='admin_home'),
+    path('request_form_success/', request_form_success, name='request_form_success')
     
 ]
