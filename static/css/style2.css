@@ -980,6 +980,10 @@ b {
   margin: 0 0 0.5rem 0;
 }
 
+.staff_name{
+  color: #003366;
+}
+
 .welcome-text p {
   color: #6c7a92;
   font-size: 1rem;
@@ -3769,4 +3773,108 @@ tbody tr:nth-child(even) {
   outline: none;
   border-color: #003366;
   box-shadow: 0 0 5px rgba(0, 51, 102, 0.3);
+}
+
+
+/*============================================ Employee Creation Card ===========================================*/
+
+/* Center wrapper */
+.employee-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    background: #f5f7fa; 
+}
+
+/* Card styles */
+.employee-card {
+    background: #ffffff;
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    max-width: 440px;
+    text-align: center;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    animation: fadeIn 0.6s ease-in-out;
+}
+
+/* Logo on top */
+.employee-logo {
+    width: 80px;
+    margin-bottom: 1rem;
+}
+
+/* Heading */
+.employee-card h2 {
+    font-size: 1.6rem;
+    color: #1e293b;
+    margin-bottom: 0.8rem;
+}
+
+/* Sub-heading */
+.employee-card h3 {
+    font-size: 1.3rem;
+    color: #003366;
+    margin-bottom: 1rem;
+}
+
+/* Paragraph */
+.employee-card p {
+    font-size: 1rem;
+    color: #475569;
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+}
+
+/* Buttons row */
+.employee-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.employee-actions .btn {
+    flex: 1;
+    text-align: center;
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    background: #003366; /* blue accent */
+    color: #ffffff;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: background 0.3s ease;
+}
+
+.employee-actions .btn:hover {
+    background: #08bd4a;
+}
+
+.employee-actions .btn-1 {
+    flex: 1;
+    text-align: center;
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    background: #fff; 
+    border: 2px solid #003366;
+    color: #003366;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: background 0.3s ease;
+}
+
+.employee-actions .btn-1:hover {
+    background: #003366;
+    color: #fff;
+}
+
+/* Subtle fade-in animation */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
 }

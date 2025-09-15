@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}SmartPay  Salary Advance | Upload Picture{% endblock  %}
+{% block content %}
+<h2>Update Profile Picture</h2>
+
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Upload</button>
+</form>
+
+<a href="{% url 'home' %}">Back to Dashboard</a>
+{% endblock %}

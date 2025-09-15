@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Employee Created{% endblock %}
+{% block content %}
+
+    <div class="employee-wrapper">
+    <div class="employee-card">
+        <!-- Logo -->
+        <img src="{% static 'img/logo2.png' %}" alt="Company Logo" class="employee-logo">
+
+        <!-- Company Name -->
+        <h2>SmartPayApp</h2>
+
+        <!-- Heading -->
+        <h3>Employee Created Successfully!</h3>
+
+        <!-- Success Message -->
+        <p>
+        Employee <strong>{{ employee.full_name }}</strong> <br>
+        Staff ID: <strong>{{ employee.staff_id }}</strong> <br>
+        Department: <strong>{{ employee.department }}</strong> <br>
+        has been added to the system.
+        </p>
+
+        <!-- Buttons -->
+        <div class="employee-actions">
+        <a href="{% url 'home' %}" class="btn-1"> Home</a>
+        <a href="{% url 'employee_creation' %}" class="btn"> Create New</a>
+        </div>
+    </div>
+    </div>
+
+{% endblock %}

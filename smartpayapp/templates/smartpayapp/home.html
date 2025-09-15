@@ -1,18 +1,21 @@
 {% extends "base.html" %}
 {% load static %}
-{% block title  %}smartpayapp homepage{% endblock  %}
-
+{% block title  %}smartpayapp | Homepage{% endblock  %}
 {% block content %}
 
     <!--HEADER SECTION-->
     <section class="welcome-header">
         <div class="welcome-content">
             <div class="welcome-text">
-                <h1>Welcome back, Hannah</h1>
+                <h2>Welcome, {{ user.first_name }} {{ user.last_name }}!</h2>
                 <p>Here’s your salary advance and loan overview at a glance.</p>
+                <br>
+                <p>Your Staff ID: <strong>{{ user.username }}</strong></p>
             </div>
             <div class="profile-pic">
-                <img src="{% static 'img/profile/p1.png' %}" alt="Profile Picture">
+                <img src="{{ profile.profile_picture.url }}" alt="Profile Picture">
+                <br>
+                <a href="{% url 'update_profile' %}" class="btn-edit">Change Picture</a>
             </div>
         </div>
     </section>
@@ -20,8 +23,8 @@
     <!--QUICK GLANCE SECTION-->   
     <section class="quick-actions">
         <div class="container">
-
-            <!--request salary card--> 
+            
+            <!--Request Salary Card-->
             <a href="{% url 'request_form' %}" class="action-card">
             <div class="action-icon">
                 <img src="{% static 'img/icons/l1.png' %}" alt="Salary Advance">
@@ -29,8 +32,8 @@
             <h3>Request Salary Advance</h3>
             <p>Submit your salary advance request securely.</p>
             </a>
-
-            <!--internal loan card-->
+             
+            <!--Internal Loan Card-->
             <a href="{% url 'internal_loan' %}" class="action-card">
             <div class="action-icon">
                 <img src="{% static 'img/icons/l2.png' %}" alt="Internal Loan">
@@ -39,7 +42,7 @@
             <p>Apply for organizational loans easily.</p>
             </a>
 
-            <!--message finance card-->
+            <!--Message Finance Card-->
             <a href="{% url 'message_finance' %}" class="action-card">
             <div class="action-icon">
                 <img src="{% static 'img/icons/l3.png' %}" alt="Message Finance">
@@ -48,7 +51,7 @@
             <p>Send private messages directly to finance.</p>
             </a>
 
-            <!--support query card-->
+            <!--Support Query Card-->
             <a href="{% url 'support_query' %}" class="action-card">
             <div class="action-icon">
                 <img src="{% static 'img/icons/l1.png' %}" alt="Support Query">
@@ -60,37 +63,35 @@
         </div>
     </section>
     
-        <!--FINACIAL OVERVIEW-->
+    <!--FINACIAL OVERVIEW-->
     <section class="financial-overview">
-        <div class="overview-container">
-            <!--current salar card-->
+        <div class="overview-container">  
+            <!--Current Salary Card-->
             <div class="overview-card">
-            <div class="icon">
-                <img src="{% static 'img/icons/l2.png' %}" alt="Salary Icon">
-            </div>
-            <h2>KSh 150,000</h2>
-            <p>Current Salary</p>
+                <div class="icon">
+                    <img src="{% static 'img/icons/l2.png' %}" alt="Salary Icon">
+                </div>
+                <h2>{{ current_salary }}</h2>
+                <p>Current Salary</p>
             </div>
 
-            <!--overview card-->
+            <!--Overview Card-->
             <div class="overview-card">
-
             <div class="icon">
                 <img src="{% static 'img/icons/l2.png' %}" alt="Outstanding Loans Icon">
             </div>
             <h2>KSh 50,000</h2>
             <p>Outstanding Loans</p>
             </div>
-
-            <!--advance salary eligibility card-->
+            
+            <!--Advance salary Eligibility Card-->
             <div class="overview-card">
-            <div class="icon">
-                <img src="{% static 'img/icons/l2.png' %}" alt="Eligibility Icon">
+                <div class="icon">
+                    <img src="{% static 'img/icons/l2.png' %}" alt="Eligibility Icon">
+                </div>
+                <h2>{{ advance_eligibility }}</h2>
+                <p>Advance Eligibility</p>
             </div>
-            <h2>Eligible — Up to KSh 30,000</h2>
-            <p>Advance Eligibility</p>
-            </div>
-
         </div>
     </section>
     <br><br><br>
@@ -151,8 +152,7 @@
             </table>
         </div>
     </section>
-
-    
+  
     <br><br><br>
     <section class="messaging-support">
         <div class="section-header">
@@ -185,14 +185,7 @@
                         <div class="chat-content">Reminder: Pending loan repayment due this month.</div>
                         <div class="chat-time">09:30 AM | 2025-08-05</div>
                     </div>
-
-                    <div class="chat-message read">
-                        <div class="chat-sender">Finance Office</div>
-                        <div class="chat-content">Reminder: Pending loan repayment due this month.</div>
-                        <div class="chat-time">09:30 AM | 2025-08-05</div>
-                    </div> 
-                    
-                    <!-- Add more chat messages -->                   
+                    <!-- Add more chat messages -->
                 </div>
             </div>
 
