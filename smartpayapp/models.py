@@ -149,3 +149,21 @@ def create_user_profile(sender, instance, created, **kwargs):
     if created:
         Profile.objects.create(user=instance, role="STAFF")
 
+# ================================================================
+# Models.py
+# ================================================================
+class LoanRequest(models.Model):
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    amount = models.DecimalField(max_digits=12, decimal_places=2)
+    repayment_period = models.IntegerField(help_text="Repayment period in months")
+    reason = models.TextField(blank=True, null=True)
+    interest_rate = models.DecimalField(max_digits=5, decimal_places=2, default=10.0)  # 10% p.a.
+    created_at = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(
+        max_length=20,
+        choices=[("Pending", "Pending"), ("Approved", "Approved"), ("Rejected", "Rejected")],
+        default="Pending"
+    )
+
+    def __str__(self):
+        return f"LoanRequest({self.employee.staff_id} - {self.amount})"

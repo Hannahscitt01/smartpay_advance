@@ -4,10 +4,11 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 
-from .forms import SignUpForm, SalaryAdvanceForm, EmployeeForm, ProfileUpdateForm
-from .models import Profile, SalaryAdvanceRequest, Employee
+from .forms import SignUpForm, SalaryAdvanceForm, EmployeeForm, ProfileUpdateForm, LoanRequestForm
+from .models import Profile, SalaryAdvanceRequest, Employee, LoanRequest
 from .decorators import admin_required
 from decimal import Decimal
+from django.db.models import Sum
 
 
 # ================================================================
@@ -28,9 +29,47 @@ def signup_sucess(request):
     return render(request, 'smartpayapp/signup_sucess.html')
 
 
+@login_required
 def internal_loan(request):
-    """Internal loan request placeholder view."""
-    return render(request, 'smartpayapp/internal_loan.html')
+    """Internal loan request page view."""
+    profile = request.user.profile
+    employee = profile.employee  # Get logged in employee
+
+    if request.method == "POST":
+        form = LoanRequestForm(request.POST, employee=employee)
+        if form.is_valid():
+            loan = form.save(commit=False)
+            loan.employee = employee
+            loan.save()
+            messages.success(request, "Loan request submitted successfully.")
+            return redirect("internal_loan_success")  # define this URL
+    else:
+        form = LoanRequestForm(employee=employee)
+
+    # Calculate eligibility
+    monthly_salary = employee.salary
+    max_loan = monthly_salary * 2
+    active_loans = LoanRequest.objects.filter(employee=employee, status="Approved").aggregate(
+    total=Sum("amount")
+    )["total"] or 0
+
+
+    return render(
+        request,
+        "smartpayapp/internal_loan.html",
+        {
+            "form": form,
+            "employee": employee,
+            "monthly_salary": monthly_salary,
+            "max_loan": max_loan,
+            "active_loans": active_loans,
+        },
+    )
+
+
+def internal_loan_success(request):
+    """Internal loan request success view."""
+    return render(request, 'smartpayapp/internal_loan_success.html')
 
 
 def message_finance(request):
@@ -110,26 +149,89 @@ def login_view(request):
 # Staff / User Dashboard & Profile Management
 # ================================================================
 
+# ================================================================
+# Home Dashboard View
+# ================================================================
 @login_required
 def home(request):
-    profile = request.user.profile
+    """
+    Dashboard view for logged-in employees.
+    Displays:
+    - Current salary and advance eligibility.
+    - Outstanding loans and advances.
+    - Loan and salary advance history with repayment progress.
+    """
 
+    # Get the logged-in user's profile and linked employee record
+    profile = request.user.profile
+    employee = getattr(profile, "employee", None)
+
+    # Defaults for context
     current_salary = "N/A"
     advance_eligibility = "N/A"
+    active_loans = 0
+    salary_advances = []
+    internal_loans = []
 
-    if profile.employee and profile.employee.salary is not None:
-        salary = profile.employee.salary
+    if employee and employee.salary is not None:
+        salary = employee.salary
+
+        # Format salary and eligibility for display
         current_salary = f"KSh {salary:,.2f}"
         advance_eligibility = f"Eligible — Up to KSh {float(salary) * 0.5:,.2f}"
 
+        # ================================
+        # Salary Advances
+        # ================================
+        salary_advances = SalaryAdvanceRequest.objects.filter(
+            user=request.user
+        ).order_by("-date_requested")
+
+        # Attach remaining salary info per advance
+        for advance in salary_advances:
+            if advance.status == "Approved":
+                # Deduct only if approved
+                advance.remaining_salary = float(salary) - float(advance.amount)
+            else:
+                # For Pending or Rejected → full salary remains
+                advance.remaining_salary = float(salary)
+
+        # ================================
+        # Internal Loans
+        # ================================
+        internal_loans = LoanRequest.objects.filter(
+            employee=employee
+        ).order_by("-created_at")
+
+        # Attach repayment progress per loan
+        for loan in internal_loans:
+            if loan.status == "Approved":
+                # Example: Simple static repayment progress (customize later)
+                loan.repayment_progress = 70
+            else:
+                # Pending or Rejected loans → no repayment yet
+                loan.repayment_progress = 0
+
+        # ================================
+        # Outstanding Loan Balance
+        # ================================
+        active_loans = LoanRequest.objects.filter(
+            employee=employee, status="Approved"
+        ).aggregate(total=Sum("amount"))["total"] or 0
+
+    # ================================
+    # Context for Template
+    # ================================
     context = {
         "profile": profile,
         "current_salary": current_salary,
         "advance_eligibility": advance_eligibility,
+        "active_loans": active_loans,
+        "salary_advances": salary_advances,
+        "internal_loans": internal_loans,
     }
 
     return render(request, "smartpayapp/home.html", context)
-
 
 
 
@@ -223,6 +325,21 @@ def employee_creation_success(request):
     return render(request, 'smartpayapp/employee_creation_success.html')
 
 
+
+def employee_list(request):
+    """Shows a list of all employees grouped by department."""
+    departments = [dept[0] for dept in Employee.DEPARTMENTS]
+    grouped_employees = {}
+
+    for dept in departments:
+        grouped_employees[dept] = Employee.objects.filter(department=dept).order_by("full_name")
+
+    context = {
+        "grouped_employees": grouped_employees
+    }
+    return render(request, "smartpayapp/employee_list.html", context)
+
+
 # ================================================================
 # Admin Views
 # ================================================================
@@ -237,3 +354,11 @@ def redirect_after_login(request):
     if request.user.profile.role == "ADMIN":
         return redirect("admin_dashboard")
     return redirect("staff_dashboard")
+
+
+# ================================================================
+# Finance Views
+# ===============================================================
+#def finance(request):
+#    """finance view """
+ #   return render(request, "smartpayapp/finance.html")

@@ -503,6 +503,7 @@ body {
   color: #ffffff;
   padding-top: 2.5rem;
   font-size: 0.95rem;
+  bottom: 0;
 }
 
 .footer-container {
@@ -3878,3 +3879,320 @@ tbody tr:nth-child(even) {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
 }
+
+
+/*** -----------------------Employee List starts here -------------------------------------------------------------- ***/
+/* ===== Employee Directory ===== */
+.employees-hero {
+  text-align: center;
+  padding: 3.5rem 1rem;
+  background: linear-gradient(to right, #f9f9f9, #eef2f5);
+}
+
+.employees-hero h1 {
+  font-size: 2.4rem;
+  color: #003366;
+  margin-bottom: 0.7rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.employees-hero p {
+  font-size: 1.05rem;
+  color: #555;
+  max-width: 640px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* Departments */
+.department-block {
+  max-width: 1100px;
+  margin: 3rem auto;
+  padding: 0 1rem;
+}
+
+.department-title {
+  font-size: 1.7rem;
+  font-weight: 600;
+  color: #003366;
+  border-bottom: 2px solid #e0e6ef;
+  padding-bottom: 0.6rem;
+  margin-bottom: 1.8rem;
+  letter-spacing: -0.3px;
+}
+
+/* Employee cards grid */
+.employee-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  gap: 1.5rem;
+}
+
+.employee-card {
+  background: #ffffff;
+  border: 1px solid #e9eef5;
+  border-radius: 14px;
+  padding: 1.5rem;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+  transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+}
+
+.employee-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 14px 30px rgba(0, 51, 102, 0.15);
+  border-color: #cbd9ef;
+}
+
+/* Employee info container */
+.employee-info {
+  display: flex;
+  flex-direction: column;
+  padding-top: 0.5rem;
+}
+
+/* Employee name (always capitalized, no border) */
+.employee-info h3 {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #1a2b49;
+  margin: 0 0 0.6rem 0;
+  line-height: 1.4;
+  text-transform: capitalize;
+}
+
+/* Each info row */
+.employee-info p {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  padding: 0.5rem 0;
+  font-size: 0.95rem;
+  color: #4b5a6a;
+  line-height: 1.6;
+  border-top: 1px solid #e6ecf2; /* subtle separator */
+}
+
+/* First row after the name shouldn’t have a top border */
+.employee-info p:first-of-type {
+  border-top: none;
+}
+
+/* Label part */
+.employee-info p strong {
+  flex-basis: 120px;
+  flex-shrink: 0;
+  text-align: left;
+  font-weight: 600;
+  color: #0066cc;
+  text-transform: capitalize;
+  letter-spacing: 0.2px;
+}
+
+/* Value part */
+.employee-info p span {
+  flex-grow: 1;
+  color: #2d3e50;
+  font-weight: 500;
+  word-break: break-word;
+}
+
+
+/* No staff text */
+.no-staff {
+  font-style: italic;
+  color: #888;
+  text-align: center;
+  margin: 1.5rem 0;
+  font-size: 0.95rem;
+}
+
+
+/**********************/
+
+/* Toggle Buttons */
+.view-toggle {
+  text-align: center;
+  margin: 1rem 0 2rem;
+}
+
+.view-toggle button {
+  background: #f4f6f9;
+  border: 1px solid #ccd6e0;
+  padding: 0.6rem 1.2rem;
+  margin: 0 0.5rem;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  color: #003366;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.view-toggle button:hover {
+  background: #e6eef7;
+  border-color: #99b3d1;
+}
+
+.view-toggle button.active {
+  background: #003366;
+  color: #fff;
+  border-color: #003366;
+}
+
+/* Table Styling */
+.table-container {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 2rem;
+}
+
+table th,
+table td {
+  padding: 0.75rem 1rem;
+  border: 1px solid #e0e6ed;
+  text-align: left;
+  font-size: 0.95rem;
+}
+
+table th {
+  background: #f5f8fc;
+  font-weight: 600;
+  color: #003366;
+}
+
+table tr:nth-child(even) {
+  background: #fafcff;
+}
+
+/*** -----------------------Employee ends here -------------------------------------------------------------- ***/
+
+
+
+/**** ----------------------Finance Dashboard styling -----------------------------------------------------***/
+/* Layout */
+.dashboard-container {
+  display: flex;
+  min-height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #f9fafc;
+  color: #333;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 250px;
+  background: #1f2a44;
+  color: #fff;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-header {
+  padding: 1.5rem;
+  text-align: center;
+  background: #172033;
+  font-size: 1.3rem;
+  font-weight: bold;
+}
+
+.sidebar-nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar-nav li {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-nav a {
+  display: block;
+  padding: 1rem 1.5rem;
+  text-decoration: none;
+  color: #cbd5e1;
+  transition: background 0.3s, color 0.3s;
+}
+
+.sidebar-nav a:hover {
+  background: #32415f;
+  color: #fff;
+}
+
+/* Main Content */
+.main-content {
+  flex: 1;
+  padding: 2rem;
+}
+
+.main-header h1 {
+  font-size: 1.8rem;
+  margin-bottom: 0.5rem;
+}
+
+.main-header p {
+  color: #666;
+  margin-bottom: 2rem;
+}
+
+/* KPI Section */
+.kpi-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.kpi-card {
+  background: #fff;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  text-align: center;
+}
+
+.kpi-card h3 {
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+  color: #555;
+}
+
+.kpi-card p {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #1f2a44;
+}
+
+/* Quick Actions */
+.quick-actions h2 {
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+}
+
+.action-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+.action-card {
+  background: #fff;
+  padding: 1.2rem;
+  text-align: center;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.action-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  background: #f3f6fb;
+}
+
+/*** ----------------------Finance Dashboard styling -----------------------------------------------------***/

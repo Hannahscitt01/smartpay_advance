@@ -75,15 +75,16 @@
                 <p>Current Salary</p>
             </div>
 
-            <!--Overview Card-->
+            <!-- Overview Card -->
             <div class="overview-card">
-            <div class="icon">
-                <img src="{% static 'img/icons/l2.png' %}" alt="Outstanding Loans Icon">
+                <div class="icon">
+                    <img src="{% static 'img/icons/l2.png' %}" alt="Outstanding Loans Icon">
+                </div>
+                <!-- Display dynamic outstanding loan balance -->
+                <h2>KSh {{ active_loans|floatformat:2 }}</h2>
+                <p>Outstanding Loans</p>
             </div>
-            <h2>KSh 50,000</h2>
-            <p>Outstanding Loans</p>
-            </div>
-            
+
             <!--Advance salary Eligibility Card-->
             <div class="overview-card">
                 <div class="icon">
@@ -96,62 +97,96 @@
     </section>
     <br><br><br>
 
-    <!--Loans History-->    
+    <!-- ================================================================
+        Salary Advance History
+    ================================================================ -->
+    <section class="loan-history">
+        <h2>Salary Advance History</h2>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                    <th>Date Requested</th>
+                    <th>Amount (KSh)</th>
+                    <th>Remaining Salary (KSh)</th>
+                    <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if salary_advances %}
+                    {% for advance in salary_advances %}
+                    <tr>
+                        <td data-label="Date Requested">{{ advance.date_requested|date:"Y-m-d" }}</td>
+                        <td data-label="Amount (KSh)">KSh {{ advance.amount|floatformat:2 }}</td>
+                        <td data-label="Remaining Salary (KSh)">
+                        {% if advance.remaining_salary %}
+                            KSh {{ advance.remaining_salary|floatformat:2 }}
+                        {% else %}
+                            N/A
+                        {% endif %}
+                        </td>
+                        <td data-label="Status">
+                        <span class="status {{ advance.status|lower }}">{{ advance.status }}</span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td colspan="4" style="text-align:center;">No salary advances found</td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- ================================================================
+        Internal Loan History
+    ================================================================ -->
     <section class="loan-history">
         <h2>Loan History</h2>
         <div class="table-container">
             <table>
                 <thead>
                     <tr>
-                        <th>Date Requested</th>
-                        <th>Type</th>
-                        <th>Amount (KSh)</th>
-                        <th>Remaining (KSh)</th>
-                        <th>Status</th>
-                        <th>Repayment Progress</th>
+                    <th>Date Requested</th>
+                    <th>Amount (KSh)</th>
+                    <th>Status</th>
+                    <th>Repayment Progress</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td data-label="Date Requested">2025-08-01</td>
-                        <td data-label="Type">Advance</td>
-                        <td data-label="Amount (KSh)">20,000</td>
-                        <td data-label="Remaining (KSh)">12,000</td>
-                        <td data-label="Status"><span class="status pending">Pending</span></td>
-                        <td data-label="Repayment Progress">
-                            <div class="progress-bar">
-                                <div class="progress" style="width: 40%;"></div>
-                            </div>
+                    {% if internal_loans %}
+                    {% for loan in internal_loans %}
+                        <tr>
+                        <td data-label="Date Requested">{{ loan.created_at|date:"Y-m-d" }}</td>
+                        <td data-label="Amount (KSh)">KSh {{ loan.amount|floatformat:2 }}</td>
+                        <td data-label="Status">
+                            <span class="status {{ loan.status|lower }}">{{ loan.status }}</span>
                         </td>
-                    </tr>
-                    <tr>
-                        <td data-label="Date Requested">2025-07-10</td>
-                        <td data-label="Type">Loan</td>
-                        <td data-label="Amount (KSh)">50,000</td>
-                        <td data-label="Remaining (KSh)">15,000</td>
-                        <td data-label="Status"><span class="status approved">Approved</span></td>
                         <td data-label="Repayment Progress">
+                            {% if loan.status == "Approved" %}
                             <div class="progress-bar">
-                                <div class="progress" style="width: 70%;"></div>
+                                <div class="progress" style="width: {{ loan.repayment_progress }}%;"></div>
                             </div>
+                            <small>{{ loan.repayment_progress }}%</small>
+                            {% else %}
+                            <span style="color: #888;">N/A</span>
+                            {% endif %}
                         </td>
-                    </tr>
+                        </tr>
+                    {% endfor %}
+                    {% else %}
                     <tr>
-                        <td data-label="Date Requested">2025-06-15</td>
-                        <td data-label="Type">Advance</td>
-                        <td data-label="Amount (KSh)">30,000</td>
-                        <td data-label="Remaining (KSh)">30,000</td>
-                        <td data-label="Status"><span class="status rejected">Rejected</span></td>
-                        <td data-label="Repayment Progress">
-                            <div class="progress-bar">
-                                <div class="progress" style="width: 0%;"></div>
-                            </div>
-                        </td>
+                        <td colspan="4" style="text-align:center;">No loans found</td>
                     </tr>
+                    {% endif %}
                 </tbody>
             </table>
         </div>
     </section>
+
+    
   
     <br><br><br>
     <section class="messaging-support">

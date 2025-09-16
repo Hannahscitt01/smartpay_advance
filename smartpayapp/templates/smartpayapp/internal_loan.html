@@ -11,42 +11,44 @@
     <main class="request-container">
     <!-- Form Section -->
     <section class="form-section">
-        <form action="#" class="salary-form">
-        <label for="staffId">Staff ID</label>
-        <input type="text" id="staffId" value="SP-1023" readonly>
+        <form action="" method="POST" class="salary-form">
+            {% csrf_token %}
 
-        <label for="fullName">Full Name</label>
-        <input type="text" id="fullName" value="Hannah Wambui" readonly>
+            <label for="staffId">Staff ID</label>
+            <input type="text" id="staffId" value="{{ employee.staff_id }}" readonly>
 
-        <label for="department">Department</label>
-        <input type="text" id="department" value="Finance" readonly>
+            <label for="fullName">Full Name</label>
+            <input type="text" id="fullName" value="{{ employee.full_name }}" readonly>
 
-        <label for="loanAmount">Loan Amount Requested (KES)</label>
-        <input type="number" id="loanAmount" placeholder="Enter loan amount" max="200000" required>
+            <label for="department">Department</label>
+            <input type="text" id="department" value="{{ employee.department }}" readonly>
 
-        <label for="repaymentPeriod">Repayment Period (Months)</label>
-        <select id="repaymentPeriod" required>
-            <option value="">Select repayment duration</option>
-            <option value="6">6 Months</option>
-            <option value="12">12 Months</option>
-            <option value="18">18 Months</option>
-            <option value="24">24 Months</option>
-        </select>
+            <!-- LoanRequestForm fields -->
+            {{ form.amount.label_tag }}
+            {{ form.amount }}
 
-        <button type="submit" class="btn-primary">Submit Loan Request</button>
-        <button type="reset" class="btn-secondary">Clear Form</button>
+            {{ form.repayment_period.label_tag }}
+            {{ form.repayment_period }}
+
+            {{ form.reason.label_tag }}
+            {{ form.reason }}
+
+            <button type="submit" class="btn-primary">Submit Loan Request</button>
+            <button type="reset" class="btn-secondary">Clear Form</button>
         </form>
+
     </section>
 
     <!-- Info / Eligibility Section -->
     <aside class="info-section">
         <h2>Your Loan Eligibility</h2>
-        <p><strong>Monthly Salary:</strong> KES 100,000</p>
-        <p><strong>Maximum Loan Allowed:</strong> KES 200,000</p>
-        <p><strong>Interest Rate:</strong> 5% per annum</p>
-        <p><strong>Current Active Loans:</strong> KES 50,000</p>
-        <p class="tip">💡 Tip: Loan requests depend on your salary and repayment capacity.</p>
+        <p><strong>Monthly Salary:</strong> KES {{ monthly_salary|floatformat:2 }}</p>
+        <p><strong>Maximum Loan Allowed:</strong> KES {{ max_loan|floatformat:2 }}</p>
+        <p><strong>Interest Rate:</strong> 10% per annum</p>
+        <p><strong>Current Active Loans:</strong> KES {{ active_loans|floatformat:2 }}</p>
+        <p class="tip">💡 Tip: You can request up to twice your salary.</p>
     </aside>
+
     </main>
 
 

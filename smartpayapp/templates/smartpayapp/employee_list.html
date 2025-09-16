@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+
+    <!-- ================================================================
+        Employees Directory Page
+    ================================================================ -->
+    <section class="employees-hero">
+        <h1>Our Team</h1>
+        <p>
+            Meet the dedicated staff members who make everything possible.
+            Browse by department and get to know the amazing people behind our organization.
+        </p>
+
+        <!-- View Toggle Buttons -->
+        <div class="view-toggle">
+            <button id="gridViewBtn" class="active">Grid View</button>
+            <button id="tableViewBtn">Table View</button>
+        </div>
+    </section>
+
+
+    <!-- Grid (Cards) Layout -->
+    <div id="employeeCards">
+        {% for department, staff in grouped_employees.items %}
+        <div class="department-block">
+            <h2 class="department-title">{{ department }}</h2>
+            <div class="employee-grid">
+                {% for employee in staff %}
+                <div class="employee-card">
+                    <div class="employee-info">
+                        <h3>{{ employee.full_name }}</h3>
+                        <p><strong>Job Title:</strong> {{ employee.job_title }}</p>
+                        <p><strong>Email:</strong> <a href="mailto:{{ employee.email }}">{{ employee.email }}</a></p>
+                        <p><strong>Phone:</strong> {{ employee.phone }}</p>
+                        <p><strong>Employment Type:</strong> {{ employee.employment_type }}</p>
+                        <p><strong>Date Joined:</strong> {{ employee.date_joined|date:"Y-m-d" }}</p>
+                        <p><strong>Salary:</strong> KSh {{ employee.salary|floatformat:2 }}</p>
+                        <p><strong>Age:</strong> {{ employee.age }}</p>
+                    </div>
+                </div>
+                {% empty %}
+                <p class="no-staff">No staff found in this department.</p>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+
+
+    <!-- Table Layout -->
+    <div id="employeeTable" style="display:none;">
+        {% for department, staff in grouped_employees.items %}
+        <div class="department-block">
+            <h2 class="department-title">{{ department }}</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Job Title</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Employment Type</th>
+                            <th>Date Joined</th>
+                            <th>Salary (KSh)</th>
+                            <th>Age</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for employee in staff %}
+                        <tr>
+                            <td>{{ employee.full_name }}</td>
+                            <td>{{ employee.job_title }}</td>
+                            <td><a href="mailto:{{ employee.email }}">{{ employee.email }}</a></td>
+                            <td>{{ employee.phone }}</td>
+                            <td>{{ employee.employment_type }}</td>
+                            <td>{{ employee.date_joined|date:"Y-m-d" }}</td>
+                            <td>KSh {{ employee.salary|floatformat:2 }}</td>
+                            <td>{{ employee.age }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="8" style="text-align:center;">No staff found in this department.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+
+
+{% endblock %}

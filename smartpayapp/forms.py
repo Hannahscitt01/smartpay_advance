@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
-from .models import SalaryAdvanceRequest, Employee, Profile
+from .models import SalaryAdvanceRequest, Employee, Profile, LoanRequest
 from django.core.exceptions import ValidationError
 from django.db import transaction
 
@@ -162,3 +162,41 @@ class ProfileUpdateForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = ["profile_picture"]
+
+
+# ================================================================
+# Loan Request Form
+# ================================================================
+class LoanRequestForm(forms.ModelForm):
+    class Meta:
+        model = LoanRequest
+        fields = ['amount', 'repayment_period', 'reason']
+        widgets = {
+            'amount': forms.NumberInput(attrs={
+                'id': 'loanAmount',
+                'placeholder': 'Enter loan amount',
+                'required': True
+            }),
+            'repayment_period': forms.Select(attrs={
+                'id': 'repaymentPeriod',
+                'required': True
+            }, choices=[(6, "6 Months"), (12, "12 Months"), (18, "18 Months"), (24, "24 Months")]),
+            'reason': forms.Textarea(attrs={
+                'id': 'reason',
+                'placeholder': 'Optional: Enter reason for request'
+            }),
+        }
+
+    def __init__(self, *args, **kwargs):
+        self.employee = kwargs.pop("employee", None)
+        super().__init__(*args, **kwargs)
+
+    def clean_amount(self):
+        amount = self.cleaned_data.get("amount")
+        if self.employee:
+            max_allowed = self.employee.salary * 2
+            if amount > max_allowed:
+                raise forms.ValidationError(
+                    f"You cannot request more than KES {max_allowed:,.2f}."
+                )
+        return amount
