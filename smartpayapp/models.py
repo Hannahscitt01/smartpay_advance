@@ -150,7 +150,7 @@ def create_user_profile(sender, instance, created, **kwargs):
         Profile.objects.create(user=instance, role="STAFF")
 
 # ================================================================
-# Models.py
+# Loan Request Mode;
 # ================================================================
 class LoanRequest(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
@@ -167,3 +167,33 @@ class LoanRequest(models.Model):
 
     def __str__(self):
         return f"LoanRequest({self.employee.staff_id} - {self.amount})"
+
+
+
+# ================================================================
+# Chat Message Model
+# ================================================================
+class ChatMessage(models.Model):
+    sender = models.ForeignKey(User, related_name="sent_messages", on_delete=models.CASCADE)
+    receiver = models.ForeignKey(User, related_name="received_messages", on_delete=models.CASCADE)
+    message = models.TextField()
+    timestamp = models.DateTimeField(default=timezone.now)
+    is_read = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"From {self.sender.username} to {self.receiver.username} at {self.timestamp}"
+
+
+# ================================================================
+# Support Query Model
+# ================================================================
+
+class SupportChatMessage(models.Model):
+    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name="support_sent")
+    receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name="support_received")
+    message = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+    is_read = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"SupportChat from {self.sender.username} to {self.receiver.username}"

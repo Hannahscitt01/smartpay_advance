@@ -5,10 +5,11 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 
 from .forms import SignUpForm, SalaryAdvanceForm, EmployeeForm, ProfileUpdateForm, LoanRequestForm
-from .models import Profile, SalaryAdvanceRequest, Employee, LoanRequest
+from .models import Profile, SalaryAdvanceRequest, Employee, LoanRequest, ChatMessage, SupportChatMessage
 from .decorators import admin_required
 from decimal import Decimal
-from django.db.models import Sum
+from django.db.models import Sum, Q
+from django.utils import timezone
 
 
 # ================================================================
@@ -69,7 +70,7 @@ def internal_loan(request):
 
 def internal_loan_success(request):
     """Internal loan request success view."""
-    return render(request, 'smartpayapp/internal_loan_success.html')
+    return render(request, 'smartpayapp/internal_loan_sucess.html')
 
 
 def message_finance(request):
@@ -77,14 +78,73 @@ def message_finance(request):
     return render(request, 'smartpayapp/message_finance.html')
 
 
+@login_required
 def chat_finance(request):
-    """Finance chat placeholder view."""
-    return render(request, 'smartpayapp/chat_finance.html')
+    user = request.user
+    finance_officer, created = User.objects.get_or_create(
+        username="finance",
+        defaults={"first_name": "Finance", "last_name": "Dept", "email": "finance@company.com"}
+    )
+
+    # Fetch all messages between logged in user and finance
+    messages = ChatMessage.objects.filter(
+        Q(sender=user, receiver=finance_officer) |
+        Q(sender=finance_officer, receiver=user)
+    ).order_by("timestamp")
 
 
+
+    # Mark received messages as read
+    messages.filter(receiver=user, is_read=False).update(is_read=True)
+
+    if request.method == "POST":
+        msg = request.POST.get("message")
+        if msg.strip():
+            ChatMessage.objects.create(
+                sender=user,
+                receiver=finance_officer,
+                message=msg
+            )
+        return redirect("chat_finance")
+
+    context = {
+        "messages": messages,
+        "finance_officer": finance_officer
+    }
+    return render(request, "smartpayapp/chat_finance.html", context)
+
+
+
+@login_required
 def support_query(request):
     """Support query placeholder view."""
-    return render(request, 'smartpayapp/support-query.html')
+    user = request.user
+
+    # Assume support staff is a specific user or group; for now, pick the first admin
+    support_user = User.objects.filter(is_superuser=True).first()
+
+    if request.method == "POST":
+        msg = request.POST.get("message")
+        if msg and support_user:
+            SupportChatMessage.objects.create(
+                sender=user,
+                receiver=support_user,
+                message=msg,
+                timestamp=timezone.now()
+            )
+        return redirect("support_query")
+
+    # Fetch conversation
+    messages = []
+    if support_user:
+        messages = SupportChatMessage.objects.filter(
+            Q(sender=user, receiver=support_user) |
+            Q(sender=support_user, receiver=user)
+        ).order_by("timestamp")
+
+    context = {"messages": messages}
+    return render(request, "smartpayapp/support-query.html", context)
+
 
 
 def admin_home(request):
@@ -359,6 +419,6 @@ def redirect_after_login(request):
 # ================================================================
 # Finance Views
 # ===============================================================
-#def finance(request):
-#    """finance view """
- #   return render(request, "smartpayapp/finance.html")
+def finance(request):
+    """finance view """
+    return render(request, "smartpayapp/finance.html")

@@ -1,9 +1,8 @@
 {% extends "base.html" %}
 {% load static %}
-{% block title %}smartpay_advance | Support Query{% endblock  %}
+{% block title %}SmartPay Advance | Support Query{% endblock %}
 {% block content %}
 
-  <!--Support Query starts here-->
   <div class="sq-container">
     <!-- Header -->
     <div class="sq-header">
@@ -16,29 +15,24 @@
 
     <!-- Chat Window -->
     <div class="sq-chat-window">
-      <!-- Example Previous Messages -->
-      <div class="sq-message sq-staff">
-        <p>Hi Support, I need help with my account setup.</p>
-        <span class="sq-status">Sent • 10:15 AM</span>
-      </div>
-
-      <div class="sq-message sq-support">
-        <p>Hello, your account setup is now complete. Please refresh and try again.</p>
-        <span class="sq-status">Viewed • 10:20 AM</span>
-      </div>
-
-      <div class="sq-message sq-staff">
-        <p>It worked! Thank you so much.</p>
-        <span class="sq-status">Sent • 10:25 AM</span>
-      </div>
+      {% for message in messages %}
+        <div class="sq-message {% if message.sender == user %}sq-staff{% else %}sq-support{% endif %}">
+          <p>{{ message.message }}</p>
+          <span class="sq-status">
+            {% if message.is_read %}Viewed{% else %}Sent{% endif %} • {{ message.timestamp|date:"h:i A" }}
+          </span>
+        </div>
+      {% empty %}
+        <p class="sq-empty">No support queries yet. Start by sending a message below.</p>
+      {% endfor %}
     </div>
 
     <!-- Input Box -->
-    <div class="sq-input-area">
-      <textarea placeholder="Type your support query..." rows="2"></textarea>
-      <button type="button">Send</button>
-    </div>
+    <form method="POST" class="sq-input-area">
+      {% csrf_token %}
+      <textarea name="message" placeholder="Type your support query..." rows="2"></textarea>
+      <button type="submit">Send</button>
+    </form>
   </div>
-  <!--Support Query starts here-->
 
 {% endblock %}
