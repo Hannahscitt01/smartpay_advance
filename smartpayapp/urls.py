@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import(
+from .views import (
     index,
     application,
     login_view,
@@ -19,24 +19,30 @@ from .views import(
     request_form_success,
     internal_loan_success,
     employee_list,
-    finance
-  
-   
+    finance,
+    finance_message_centre,
+    finance_chat_detail,
+    redirect_after_login,         
+    finance_salary_request,       
+    finance_internal_loan_request,
+    hr_home, 
+    approve_salary_request,
+    reject_salary_request                 
 )
 
 urlpatterns = [
     path('', index, name='index'),
     path('application/', application, name='application'),
     path('login/', login_view, name='login'),
-    path('signup/', signup,name='signup'),
+    path('signup/', signup, name='signup'),
     path('home/', home, name='home'),
-    path('request_form/', request_form, name= 'request_form'),
-    path('internal_loan/', internal_loan, name= 'internal_loan'),
-    path('message_finance/', message_finance, name= 'message_finance'),
+    path('request_form/', request_form, name='request_form'),
+    path('internal_loan/', internal_loan, name='internal_loan'),
+    path('message_finance/', message_finance, name='message_finance'),
     path('chat_finance/', chat_finance, name='chat_finance'),
     path('support_query/', support_query, name='support_query'),
     path('signup_sucess/', signup_sucess, name='signup_sucess'),
-    path('admin_dashboard/', admin_dashboard, name='admin_dashboard'),
+    path('admin/', admin_dashboard, name='admin'),
     path('employee_creation/', employee_creation, name='employee_creation'),
     path('employee_creation_success/', employee_creation_success, name='employee_creation_success'),
     path('update_profile/', update_profile, name='update_profile'),
@@ -44,6 +50,18 @@ urlpatterns = [
     path('request_form_success/', request_form_success, name='request_form_success'),
     path('internal_loan_success/', internal_loan_success, name='internal_loan_success'),
     path('employee_list/', employee_list, name='employee_list'),
-    path('finance/', finance, name='finance')
-    
+    path('finance/', finance, name='finance'),
+    path('finance_message_centre/', finance_message_centre, name='finance_message_centre'),
+    path("finance_chat_detail/<int:user_id>/", finance_chat_detail, name="finance_chat_detail"),
+  
+    path('redirect_after_login/', redirect_after_login, name='redirect_after_login'),
+    path('finance_salary_request/', finance_salary_request, name='finance_salary_request'),
+    path('finance_internal_loan_request/', finance_internal_loan_request, name='finance_internal_loan_request'),
+    path('hr_home/', hr_home, name='hr_home'),
+
+    path('finance/requests/', finance_salary_request, name='finance_salary_request'),
+    path('finance/requests/<int:pk>/approve/', approve_salary_request, name='approve_salary_request'),
+    path('finance/requests/<int:pk>/reject/', reject_salary_request, name='reject_salary_request'),
 ]
+
+

@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}SmartPay Advance | Chat with {{ chat_user.get_full_name|default:chat_user.username }}{% endblock %}
+
+{% block content %}
+<div class="finchat-page">
+
+  <!-- Left Sidebar -->
+  <div class="finchat-sidebar">
+    <h3>Staff Messages</h3>
+    <div class="finchat-thread-list">
+      {% for thread_user in all_threads %}
+        <a href="{% url 'finance_chat_detail' thread_user.id %}" class="finchat-thread {% if thread_user.id == chat_user.id %}active{% endif %}">
+          <div class="finchat-thread-avatar">{{ thread_user.first_name|slice:":1"|default:"U" }}</div>
+          <div class="finchat-thread-info">
+            <h4>{{ thread_user.get_full_name|default:thread_user.username }}</h4>
+            <span>{{ thread_user.profile.employee.department }} • ID: {{ thread_user.profile.employee.staff_id }}</span>
+          </div>
+          {% if thread_user.has_unread %}
+            <span class="finchat-new-badge">New</span>
+          {% endif %}
+        </a>
+      {% empty %}
+        <p>No staff messages yet.</p>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Right Panel -->
+  <div class="finchat-detail">
+
+    <!-- Back -->
+    <div class="finchat-back">
+        <a href="{% url 'finance_message_centre' %}" class="finchat-back-link">
+        ← Back to Messages
+        </a>
+    </div>
+
+    <!-- Header -->
+    <div class="finchat-header">
+      <div class="finchat-user">
+        <div class="finchat-avatar">{{ chat_user.first_name|slice:":1"|default:"U" }}</div>
+        <div class="finchat-user-info">
+          <h3>{{ chat_user.get_full_name|default:chat_user.username }}</h3>
+          <span>{{ chat_user.profile.employee.department }} • ID: {{ chat_user.profile.employee.staff_id }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Messages -->
+    <div class="finchat-body" id="chat-body">
+    {% if messages %}
+        {% for message in messages %}
+        <div class="finchat-message {% if message.sender == request.user %}sent{% else %}received{% endif %}">
+            <div class="finchat-bubble">
+            <p>{{ message.message }}</p>
+            <div class="finchat-meta">
+                <span class="finchat-time">{{ message.timestamp|date:"M d, H:i" }}</span>
+                <span class="finchat-sender-meta">
+                {{ message.sender.get_full_name|default:message.sender.username }} • 
+                ID: {{ message.sender.profile.employee.staff_id }}
+                </span>
+            </div>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="finchat-empty">
+        <img src="{% static 'img/empty_state/chat.png' %}" alt="No messages">
+        <p>No messages yet. Start the conversation!</p>
+        </div>
+    {% endif %}
+    </div>
+
+
+    <!-- Input -->
+    <div class="finchat-input">
+      <form method="POST" class="finchat-form">
+        {% csrf_token %}
+        <textarea id="chatInput" name="content" placeholder="Type your message..." rows="1" required></textarea>
+        <button type="submit">Send</button>
+      </form>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Auto expand textarea
+  const textarea = document.getElementById('chatInput');
+  textarea.addEventListener('input', function() {
+    this.style.height = 'auto';
+    this.style.height = this.scrollHeight + 'px';
+  });
+
+  // Always scroll to latest message
+  const chatBody = document.getElementById("chat-body");
+  if (chatBody) {
+    chatBody.scrollTop = chatBody.scrollHeight;
+  }
+</script>
+{% endblock %}

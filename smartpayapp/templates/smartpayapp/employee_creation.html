@@ -5,11 +5,10 @@
 
     <!--Header starts here-->
     <header class="page-header">
-    <h1>Employee Creation Form</h1>
-    <p class="breadcrumb">Home &gt; Admin Dashboard &gt; Create a New Employee</p>
+        <h1>Employee Creation Form</h1>
+        <p class="breadcrumb">Home &gt; Admin Dashboard &gt; Create a New Employee</p>
     </header>
     <!--Header ends here-->
-
 
     <!--Employee creation form starts here-->
     <main class="request-container">
@@ -17,7 +16,17 @@
         <section class="form-section">
             <form method="POST" class="salary-form">
                 {% csrf_token %}
-                
+                {% if form.errors %}
+                    <div class="error-messages">
+                        <ul>
+                            {% for field, errors in form.errors.items %}
+                                <li><strong>{{ field }}:</strong> {{ errors|join:", " }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+
+                <!-- Personal Information -->
                 <h2 class='employee-title'>Personal Information</h2>
                 {{ form.full_name.label_tag }}
                 {{ form.full_name }}
@@ -28,9 +37,17 @@
                 <label for="age">Age</label>
                 <input type="number" id="age" readonly placeholder="Auto-calculated">
 
+                <!-- Employment Information -->
                 <h2 class='employee-title'>Employment Information</h2>
-                <label for="staffId">Staff ID</label>
-                <input type="text" id="staffId" readonly placeholder="Auto-generated">
+                <label for="staff_id">Staff ID</label>
+                <input 
+                    type="text" 
+                    id="staff_id" 
+                    name="staff_id" 
+                    value="{{ form.instance.staff_id|default:'' }}" 
+                    placeholder="Auto-generated" 
+                    readonly
+                >
 
                 {{ form.date_joined.label_tag }}
                 {{ form.date_joined }}
@@ -43,6 +60,7 @@
                 {{ form.salary.label_tag }}
                 {{ form.salary }}
 
+                <!-- Contact Information -->
                 <h2 class='employee-title'>Contact Information</h2>
                 {{ form.email.label_tag }}
                 {{ form.email }}

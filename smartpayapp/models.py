@@ -2,81 +2,15 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.core.validators import MinValueValidator  
+from django.core.validators import MinValueValidator
 from django.utils import timezone
 
 
 # ================================================================
-# Profile Model
+# Employee Model (Created by HR)
 # ================================================================
-class Profile(models.Model):
-    """
-    Extension of the built-in Django User model to store 
-    additional staff-related information.
-    - Links each User account to an Employee record (if available).
-    - Defines staff role (Admin/Staff).
-    - Stores a profile picture with a default avatar fallback.
-    """
 
-    ROLE_CHOICES = (
-        ("ADMIN", "Admin"),
-        ("STAFF", "Staff"),
-    )
-
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    employee = models.OneToOneField("Employee", on_delete=models.SET_NULL, null=True, blank=True)
-    role = models.CharField(max_length=10, choices=ROLE_CHOICES, default="STAFF")
-    profile_picture = models.ImageField(
-        upload_to="profile_pics/",
-        default="profile_pics/default_avatar.png",
-        blank=True,
-        null=True
-    )
-
-    def __str__(self):
-        """Readable representation using employee name if available, else fallback to username."""
-        if self.employee:
-            return f"{self.employee.full_name} ({self.role})"
-        return f"{self.user.username} ({self.role})"
-
-
-# ================================================================
-# Salary Advance Request Model
-# ================================================================
-class SalaryAdvanceRequest(models.Model):
-    """
-    Stores salary advance requests made by staff.
-    - Links the request to a User.
-    - Tracks amount, reason, request date, and approval status.
-    """
-
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
-    reason = models.TextField(blank=True, null=True)
-    date_requested = models.DateTimeField(null=True, auto_now_add=True)
-    status = models.CharField(
-        max_length=20,
-        choices=[("Pending", "Pending"), ("Approved", "Approved"), ("Rejected", "Rejected")],
-        default="Pending"
-    )
-
-    def __str__(self):
-        """Return username and requested amount for quick identification."""
-        return f"{self.user.username} - {self.amount}"
-
-
-# ================================================================
-# Employee Model
-# ================================================================
 class Employee(models.Model):
-    """
-    Core employee database model containing personal, employment,
-    and contact details.
-    - Staff ID is auto-generated if not provided.
-    - Age is auto-calculated from date of birth.
-    - Used to link HR records to User accounts and Profiles.
-    """
-
     EMPLOYMENT_TYPES = [
         ('Permanent', 'Permanent'),
         ('Contract', 'Contract'),
@@ -90,14 +24,27 @@ class Employee(models.Model):
         ('Operations', 'Operations'),
     ]
 
+    ROLES = [
+        ("admin", "Admin"),
+        ("hr", "HR"),
+        ("finance", "Finance"),
+        ("employee", "Employee"),
+    ]
+
     # ---------------- Personal Info ----------------
     full_name = models.CharField(max_length=150)
     national_id = models.CharField(max_length=20, unique=True)
-    dob = models.DateField(null=True, blank=True)  # Date of Birth (optional for migration safety)
-    age = models.PositiveIntegerField(null=True, blank=True)  # Auto-calculated on save()
+    dob = models.DateField(null=True, blank=True)
+    age = models.PositiveIntegerField(null=True, blank=True)  
 
     # ---------------- Employment Info ----------------
-    staff_id = models.CharField(max_length=10, unique=True, blank=True)  # Auto-generated if empty
+    staff_id = models.CharField(
+        max_length=20,
+        unique=True,
+        editable=False,
+        blank=True,
+        null=True,
+    )
     date_joined = models.DateField(default=timezone.now)
     department = models.CharField(max_length=50, choices=DEPARTMENTS)
     job_title = models.CharField(max_length=100)
@@ -108,56 +55,116 @@ class Employee(models.Model):
         validators=[MinValueValidator(0)]
     )
 
+    # ---------------- Role Info ----------------
+    role = models.CharField(max_length=20, choices=ROLES, default="employee")
+
     # ---------------- Contact Info ----------------
     email = models.EmailField(unique=True)
     phone = models.CharField(max_length=20)
     address = models.TextField(blank=True, null=True)
 
-    # ---------------- Save Method ----------------
     def save(self, *args, **kwargs):
-        """
-        Custom save() logic:
-        - Automatically calculates employee age if DOB is provided.
-        - Generates a staff ID in format 'SP-XXXX' if not already set.
-        """
+        # --- Auto-calc age ---
         if self.dob:
             today = timezone.now().date()
             self.age = today.year - self.dob.year - (
                 (today.month, today.day) < (self.dob.month, self.dob.day)
             )
 
+        # --- Auto-generate sequential staff_id (SP-0001, SP-0002, ...) ---
         if not self.staff_id:
-            latest_id = Employee.objects.all().count() + 1
-            self.staff_id = f"SP-{latest_id:04d}"  # e.g., SP-0001
+            last_employee = Employee.objects.exclude(staff_id__isnull=True).order_by('-id').first()
+            if last_employee and last_employee.staff_id and last_employee.staff_id.startswith("SP-"):
+                try:
+                    last_number = int(last_employee.staff_id.replace("SP-", ""))
+                except ValueError:
+                    last_number = 0
+                new_number = last_number + 1
+                self.staff_id = f"SP-{new_number:04d}"
+            else:
+                self.staff_id = "SP-0001"
 
         super().save(*args, **kwargs)
 
     def __str__(self):
-        """Return full name with staff ID for easy reference."""
-        return f"{self.full_name} ({self.staff_id})"
+        return f"{self.full_name} ({self.staff_id}) - {self.role}"
+
 
 
 # ================================================================
-# Signals - Auto Profile Creation
+# Profile Model (Links User ↔ Employee)
 # ================================================================
-@receiver(post_save, sender=User)
-def create_user_profile(sender, instance, created, **kwargs):
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    employee = models.OneToOneField(Employee, on_delete=models.CASCADE, null=True, blank=True)
+    profile_picture = models.ImageField(
+        upload_to="profile_pics/",
+        default="profile_pics/default_avatar.png",
+        blank=True,
+        null=True
+    )
+
+    def __str__(self):
+        if self.employee:
+            return f"{self.employee.full_name} ({self.employee.role})"
+        return self.user.username
+
+# ================================================================
+# Salary Advance Request Model
+# ================================================================
+
+class SalaryAdvanceRequest(models.Model):
     """
-    Automatically create a Profile for each new User instance.
-    Defaults the role to 'STAFF'.
+    Tracks staff requests for salary advances.
+
+    - Linked to a User account.
+    - Stores amount, reason, timestamp, and approval status.
+    - Tracks which finance officer approved/rejected and when.
     """
-    if created:
-        Profile.objects.create(user=instance, role="STAFF")
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    reason = models.TextField(blank=True, null=True)
+    date_requested = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(
+        max_length=20,
+        choices=[("Pending", "Pending"), ("Approved", "Approved"), ("Rejected", "Rejected")],
+        default="Pending"
+    )
+
+    # -------- Audit Trail Fields --------
+    approved_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="approved_salary_requests",
+        editable=False
+    )
+    action_datetime = models.DateTimeField(null=True, blank=True, editable=False)
+
+    def __str__(self):
+        """Readable format: username and requested amount."""
+        return f"{self.user.username} - {self.amount}"
+
+
 
 # ================================================================
-# Loan Request Mode;
+# Loan Request Model
 # ================================================================
 class LoanRequest(models.Model):
+    """
+    Tracks staff loan requests.
+
+    - Linked to Employee records (HR-controlled).
+    - Stores amount, repayment details, reason, interest, and status.
+    """
+
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
     amount = models.DecimalField(max_digits=12, decimal_places=2)
     repayment_period = models.IntegerField(help_text="Repayment period in months")
     reason = models.TextField(blank=True, null=True)
-    interest_rate = models.DecimalField(max_digits=5, decimal_places=2, default=10.0)  # 10% p.a.
+    interest_rate = models.DecimalField(max_digits=5, decimal_places=2, default=10.0)  # 10% per annum
     created_at = models.DateTimeField(auto_now_add=True)
     status = models.CharField(
         max_length=20,
@@ -166,14 +173,21 @@ class LoanRequest(models.Model):
     )
 
     def __str__(self):
+        """Readable format: staff ID with loan amount."""
         return f"LoanRequest({self.employee.staff_id} - {self.amount})"
-
 
 
 # ================================================================
 # Chat Message Model
 # ================================================================
 class ChatMessage(models.Model):
+    """
+    Internal messaging model.
+
+    - Supports direct communication between staff and departments.
+    - Tracks sender, receiver, message content, timestamp, and read status.
+    """
+
     sender = models.ForeignKey(User, related_name="sent_messages", on_delete=models.CASCADE)
     receiver = models.ForeignKey(User, related_name="received_messages", on_delete=models.CASCADE)
     message = models.TextField()
@@ -181,14 +195,21 @@ class ChatMessage(models.Model):
     is_read = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"From {self.sender.username} to {self.receiver.username} at {self.timestamp}"
+        """Readable format: sender → receiver with timestamp."""
+        return f"From {self.sender.username} to {self.receiver.username} at {self.timestamp}"    
 
 
 # ================================================================
 # Support Query Model
 # ================================================================
-
 class SupportChatMessage(models.Model):
+    """
+    Dedicated support messaging model.
+
+    - Separates general chat from support queries.
+    - Tracks sender, receiver, content, timestamp, and read status.
+    """
+
     sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name="support_sent")
     receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name="support_received")
     message = models.TextField()
@@ -196,4 +217,20 @@ class SupportChatMessage(models.Model):
     is_read = models.BooleanField(default=False)
 
     def __str__(self):
+        """Readable format for audit/logging purposes."""
         return f"SupportChat from {self.sender.username} to {self.receiver.username}"
+
+
+# ================================================================
+# Signals - Auto Profile Creation
+# ================================================================
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    """
+    Signal to auto-create a Profile when a new User is registered.
+
+    - Default role = 'employee'.
+    - HR/Admin can update role later based on department or position.
+    """
+    if created:
+        Profile.objects.create(user=instance, role="employee")

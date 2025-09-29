@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}SmartPay Advance | Finance Message Centre{% endblock %}
+
+{% block content %}
+<div class="finmsg-centre">
+
+  <!-- Page Header -->
+  <div class="finmsg-centre-header">
+    <div class="finmsg-centre-title">
+      <img src="{% static 'img/icons/l3.png' %}" alt="Finance" class="finmsg-header-icon">
+      <h2>Finance Message Centre</h2>
+    </div>
+    <p class="finmsg-subtitle">View, manage, and respond to staff messages seamlessly.</p>
+  </div>
+
+  <!-- Message Threads -->
+  <div class="finmsg-thread-section">
+    {% if threads %}
+      <div class="finmsg-thread-list">
+        {% for thread in threads %}
+          <a href="{% url 'finance_chat_detail' thread.sender.id %}" class="finmsg-thread-card">
+            
+            <!-- Thread Header -->
+            <div class="finmsg-thread-header">
+              <div class="finmsg-thread-user">
+                <!-- Avatar with initials -->
+                <div class="finmsg-avatar">
+                  {{ thread.sender.first_name|default:thread.sender.username|slice:":1"|upper }}
+                </div>
+                <div class="finmsg-thread-user-info">
+                  <h4>{{ thread.sender.get_full_name|default:thread.sender.username }}</h4>
+                  <p class="finmsg-thread-meta">
+                    {{ thread.sender.profile.employee.department }} | ID: {{ thread.sender.profile.employee.staff_id }}
+                  </p>
+                </div>
+              </div>
+
+              <span class="finmsg-thread-timestamp">
+                {{ thread.timestamp|date:"M d, H:i" }}
+              </span>
+            </div>
+
+            <!-- Thread Content -->
+            <p class="finmsg-thread-snippet">{{ thread.latest_message|truncatechars:80 }}</p>
+
+            <!-- Status -->
+            <div class="finmsg-thread-footer">
+              {% if not thread.is_read %}
+                <span class="finmsg-thread-status new">New</span>
+              {% else %}
+                <span class="finmsg-thread-status replied">Replied</span>
+              {% endif %}
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <!-- Empty State -->
+      <div class="finmsg-empty">
+        <img src="{% static 'img/empty_state/mailbox.png' %}" alt="No Messages" class="finmsg-empty-img">
+        <h3>No messages yet</h3>
+        <p>Staff messages will appear here once received. Stay tuned.</p>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
