@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Smart Pay | Salary Requests{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+  <!-- Sidebar Navigation -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <h2>Finance</h2>
+    </div>
+    <nav class="sidebar-nav">
+      <ul>
+        <li><a href="#">Dashboard</a></li>
+        <li><a href="#">Reports</a></li>
+        <li><a href="#">Budgets</a></li>
+        <li><a href="#">Expenses</a></li>
+        <li><a href="#">Payroll</a></li>
+        <li><a href="#">Settings</a></li>
+      </ul>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+
+    <!-- Header + Toggle -->
+    <section class="salary-hero">
+      <div class="salary-header-row">
+        <div>
+          <h1>Salary Advance Requests</h1>
+          <p class="muted">Review and process salary requests, organized by department.</p>
+        </div>
+
+        <div class="view-toggle" aria-hidden="false">
+          <button id="reqCardViewBtn" type="button" class="view-toggle-btn active">Card View</button>
+          <button id="reqTableViewBtn" type="button" class="view-toggle-btn">Table View</button>
+        </div>
+      </div>
+
+      <p style="margin-top:12px; text-align:center; color:#666;">
+        Total requests: <strong>{{ total_requests }}</strong>
+      </p>
+    </section>
+
+    <!-- Messages -->
+    {% if messages %}
+      <ul class="messages">
+        {% for message in messages %}
+          <li class="{{ message.tags }}">{{ message }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    <!-- Card Layout -->
+    <div id="requestCards" aria-live="polite">
+      {% for department, reqs in grouped_requests.items %}
+      <div class="department-block">
+        <h2 class="department-title">{{ department }}</h2>
+
+        <div class="request-grid">
+          {% for req in reqs %}
+          <div class="request-card" data-request-id="{{ req.id }}">
+            <div class="card-row">
+              <div class="card-left">
+                <h3>{{ req.user.get_full_name|default:req.user.username }}</h3>
+                <p class="muted"><strong>Requested:</strong> {{ req.date_requested|date:"Y-m-d H:i" }}</p>
+              </div>
+              <div class="card-right">
+                <div class="amount">KSh {{ req.amount|floatformat:2 }}</div>
+                <div class="status">
+                  <span class="badge status-{{ req.status|lower }}">{{ req.status }}</span>
+                </div>
+              </div>
+            </div>
+
+            <p class="reason"><strong>Reason:</strong> {{ req.reason|default:"—" }}</p>
+
+            {% if req.status != "Pending" and req.approved_by %}
+            <div class="finance-info">
+              <strong>Processed by:</strong> {{ req.approved_by.get_full_name|default:req.approved_by.username }} <br>
+              <strong>Staff ID:</strong> {{ req.approved_by.profile.employee.staff_id|default:"N/A" }} <br>
+              <strong>Date & Time:</strong> {{ req.action_datetime|date:"Y-m-d H:i" }}
+            </div>
+            {% endif %}
+
+            {% if req.status == "Pending" %}
+            <div class="action-row">
+              <form action="{% url 'approve_salary_request' req.id %}" method="post" class="inline-form">
+                {% csrf_token %}
+                <button type="submit" class="btn-approve">Approve</button>
+              </form>
+              <form action="{% url 'reject_salary_request' req.id %}" method="post" class="inline-form">
+                {% csrf_token %}
+                <button type="submit" class="btn-reject">Reject</button>
+              </form>
+            </div>
+            {% else %}
+            <p class="processed-text"><em>Processed</em></p>
+            {% endif %}
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- Table Layout -->
+    <div id="requestTable" style="display:none;" aria-hidden="true">
+      {% for department, reqs in grouped_requests.items %}
+      <div class="department-block">
+        <h2 class="department-title">{{ department }}</h2>
+        <div class="table-container">
+          <table class="request-table">
+            <thead>
+              <tr>
+                <th>Employee</th>
+                <th>Amount (KSh)</th>
+                <th>Date Requested</th>
+                <th>Status</th>
+                <th>Processed By</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for req in reqs %}
+              <tr data-request-id="{{ req.id }}">
+                <td>{{ req.user.get_full_name|default:req.user.username }}</td>
+                <td>KSh {{ req.amount|floatformat:2 }}</td>
+                <td>{{ req.date_requested|date:"Y-m-d H:i" }}</td>
+                <td><span class="badge status-{{ req.status|lower }}">{{ req.status }}</span></td>
+                <td>
+                  {% if req.status != "Pending" and req.approved_by %}
+                  {{ req.approved_by.get_full_name|default:req.approved_by.username }} <br>
+                  ID: {{ req.approved_by.profile.employee.staff_id|default:"N/A" }} <br>
+                  {{ req.action_datetime|date:"Y-m-d H:i" }}
+                  {% else %}—{% endif %}
+                </td>
+                <td>
+                  {% if req.status == "Pending" %}
+                  <form action="{% url 'approve_salary_request' req.id %}" method="post" class="inline-form">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-approve small">Approve</button>
+                  </form>
+                  <form action="{% url 'reject_salary_request' req.id %}" method="post" class="inline-form">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-reject small">Reject</button>
+                  </form>
+                  {% else %}
+                  <em>Processed</em>
+                  {% endif %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+  </main>
+</div>
+
+<!-- Optional JS to toggle card/table view -->
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const cardViewBtn = document.getElementById("reqCardViewBtn");
+  const tableViewBtn = document.getElementById("reqTableViewBtn");
+  const cards = document.getElementById("requestCards");
+  const table = document.getElementById("requestTable");
+
+  cardViewBtn.addEventListener("click", () => {
+    cards.style.display = "block";
+    table.style.display = "none";
+    cardViewBtn.classList.add("active");
+    tableViewBtn.classList.remove("active");
+  });
+
+  tableViewBtn.addEventListener("click", () => {
+    cards.style.display = "none";
+    table.style.display = "block";
+    tableViewBtn.classList.add("active");
+    cardViewBtn.classList.remove("active");
+  });
+});
+</script>
+
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Smart Pay | Salary Requests{% endblock %}
+{% block content %}
+
+<div class="dashboard-container">
+  <!-- Sidebar Navigation (unchanged look) -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <h2>Finance</h2>
+    </div>
+    <nav class="sidebar-nav">
+      <ul>
+        <li><a href="{% url 'finance_salary_request' %}">Dashboard</a></li>
+        <li><a href="#">Reports</a></li>
+        <li><a href="#">Budgets</a></li>
+        <li><a href="#">Expenses</a></li>
+        <li><a href="#">Payroll</a></li>
+        <li><a href="#">Settings</a></li>
+      </ul>
+    </nav>
+  </aside>
+
+
+
+  </main>
+</div>
+
+{% endblock %}
+

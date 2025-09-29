@@ -4196,3 +4196,758 @@ table tr:nth-child(even) {
 }
 
 /*** ----------------------Finance Dashboard styling -----------------------------------------------------***/
+
+
+/*** ----------------------Finance Message Centre styling -----------------------------------------------------***/
+
+
+/* Page Wrapper */
+.finmsg-centre {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  font-family: "Inter", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: #1f2937;
+  background: #f9fafb;
+}
+
+/* Header */
+.finmsg-centre-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.finmsg-centre-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+}
+
+.finmsg-header-icon {
+  width: 48px;
+  height: 48px;
+}
+
+.finmsg-centre-header h2 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+}
+
+.finmsg-subtitle {
+  font-size: 15px;
+  color: #6b7280;
+  margin-top: 8px;
+}
+
+/* Threads Section */
+.finmsg-thread-section {
+  margin-top: 10px;
+}
+
+.finmsg-thread-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.finmsg-thread-card {
+  display: block;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 18px 20px;
+  text-decoration: none;
+  color: inherit;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.04);
+  transition: all 0.2s ease;
+}
+
+.finmsg-thread-card:hover {
+  border-color: #d1d5db;
+  transform: translateY(-2px);
+}
+
+/* Thread Header */
+.finmsg-thread-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.finmsg-thread-user {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.finmsg-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #4f46e5, #6366f1);
+  color: #fff;
+  font-weight: 700;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-transform: uppercase;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* User Info */
+.finmsg-user-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.finmsg-user-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+
+.finmsg-user-meta {
+  font-size: 13px;
+  color: #6b7280;
+  margin-top: 2px;
+}
+
+/* Timestamp */
+.finmsg-thread-timestamp {
+  font-size: 12px;
+  color: #9ca3af;
+  white-space: nowrap;
+}
+
+/* Thread Snippet */
+.finmsg-thread-snippet {
+  font-size: 14px;
+  line-height: 1.5;
+  color: #374151;
+  margin: 0 0 14px 0;
+}
+
+/* Status Labels */
+.finmsg-thread-footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.finmsg-thread-status {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 14px;
+  border-radius: 16px;
+}
+
+.finmsg-thread-status.new {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.finmsg-thread-status.replied {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+/* Empty State */
+.finmsg-empty {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.finmsg-empty-img {
+  width: 130px;
+  opacity: 0.8;
+  margin-bottom: 22px;
+}
+
+.finmsg-empty h3 {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #111827;
+}
+
+.finmsg-empty p {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .finmsg-thread-card {
+    padding: 14px;
+  }
+
+  .finmsg-avatar {
+    width: 44px;
+    height: 44px;
+    font-size: 16px;
+  }
+
+  .finmsg-user-name {
+    font-size: 15px;
+  }
+
+  .finmsg-thread-snippet {
+    font-size: 13px;
+  }
+}
+
+
+/*** ----------------------Finance Message Centre styling End -----------------------------------------------------***/
+
+/*** ----------------------Finance Chat Detail styling End -----------------------------------------------------***/
+/* Chat Page Layout */
+.finchat-page {
+  display: flex;
+  gap: 20px;
+  height: 90vh;
+  font-family: "Segoe UI", Tahoma, sans-serif;
+}
+
+/* Sidebar */
+.finchat-sidebar {
+  width: 280px;
+  background: #f9f9f9;
+  border-radius: 12px;
+  padding: 20px;
+  overflow-y: auto;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+.finchat-thread {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: #333;
+  transition: 0.2s;
+}
+.finchat-thread:hover,
+.finchat-thread.active {
+  background: #e0f2ff;
+}
+.finchat-thread-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #003366;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+/* Chat Detail */
+.finchat-detail {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+  overflow: hidden;
+}
+.finchat-header {
+  padding: 15px 20px;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #eee;
+}
+.finchat-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #003366;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  margin-right: 12px;
+}
+.finchat-body {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  background: #f4f7fb;
+}
+
+/* Messages */
+.finchat-message {
+  margin-bottom: 15px;
+  max-width: 65%;
+}
+.finchat-message.sent {
+  margin-left: auto;
+}
+.finchat-bubble {
+  background: #003366;
+  color: #fff;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  word-wrap: break-word;
+  word-break: break-word;
+}
+.finchat-message.received .finchat-bubble {
+  background: #e8eef7;
+  color: #333;
+}
+.finchat-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  margin-top: 5px;
+  opacity: 0.8;
+}
+.finchat-time {
+  color: #666;
+}
+.finchat-sender-meta {
+  font-weight: 500;
+}
+
+/* Input */
+.finchat-input {
+  border-top: 1px solid #ddd;
+  padding: 12px;
+  background: #fff;
+}
+.finchat-form {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  width: 100%;
+}
+.finchat-input textarea {
+  flex: 1;
+  resize: none;
+  min-height: 42px;
+  max-height: 150px;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  outline: none;
+}
+.finchat-input button {
+  padding: 10px 20px;
+  background: #003366;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.finchat-input button:hover {
+  background: #0055aa;
+}
+
+.finchat-back {
+  margin: 15px;
+}
+
+.finchat-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #444;
+  text-decoration: none;
+  padding: 6px 14px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  transition: all 0.3s ease;
+}
+
+.finchat-back-link:hover {
+  background-color: #0077cc;
+  color: #fff;
+  border-color: #0077cc;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+
+/* Responsive */
+@media (max-width: 768px) {
+  .finchat-page {
+    flex-direction: column;
+  }
+  .finchat-sidebar {
+    width: 100%;
+    margin-bottom: 12px;
+  }
+  .finchat-message {
+    max-width: 85%;
+  }
+}
+
+/*** ----------------------Finance Chat Detail styling End -----------------------------------------------------***/
+
+/* ---------------------------Finance Salary Advance Requests Start---------------------------------------------------------- */
+
+/* ==========================
+   General Layout
+   ========================== */
+.dashboard-container {
+  display: flex;
+  min-height: 100vh;
+  flex-wrap: wrap;
+  background: #f8f9fb;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: #1f2a44;
+}
+
+/* ==========================
+   Sidebar
+   ========================== */
+
+.sidebar {
+  background-color: #1f2a44; /* Dark blue/navy */
+  color: #ffffff;
+  min-width: 220px;
+  max-width: 240px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  padding: 20px 0;
+  box-shadow: 2px 0 12px rgba(0,0,0,0.08);
+  position: sticky;
+  top: 0;
+  transition: all 0.3s ease;
+  z-index: 1000;
+}
+
+.sidebar-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.sidebar-header h2 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+  letter-spacing: 0.5px;
+}
+
+.sidebar-nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar-nav li {
+  margin-bottom: 12px;
+}
+
+.sidebar-nav a {
+  display: flex;
+  align-items: center;
+  padding: 10px 20px;
+  color: #cfd8e6; /* softer light text */
+  font-weight: 500;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: all 0.2s ease-in-out;
+}
+
+.sidebar-nav a:hover {
+  background-color: #003366; /* darker hover */
+  color: #ffffff;
+  transform: translateX(3px);
+}
+
+.sidebar-nav a.active {
+  background-color: #007bff; /* highlight active link */
+  color: #fff;
+}
+
+.sidebar-nav a i {
+  margin-right: 12px; /* if using icons */
+  font-size: 1.1rem;
+}
+
+/* For smaller screens - collapse sidebar */
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    left: -250px;
+    transition: left 0.3s ease;
+  }
+
+  .sidebar.open {
+    left: 0;
+  }
+}
+
+
+/* ==========================
+   Main Content
+   ========================== */
+.main-content {
+  flex: 1;
+  padding: 24px;
+  background: #f8f9fb;
+}
+
+/* ==========================
+   Header + Toggle
+   ========================== */
+.salary-header-row {
+  display: flex;
+  flex-direction: column; /* stacked on mobile */
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.salary-hero h1 {
+  font-size: 1.8rem;
+  margin: 0;
+  color: #1f2a44;
+}
+
+.salary-hero .muted {
+  color: #666;
+  margin: 0;
+}
+
+.view-toggle {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.view-toggle-btn {
+  padding: 10px 18px;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 115, 230, 0.15);
+  background: #fff;
+  color: #003366;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.view-toggle-btn:hover {
+  background: #f0f6ff;
+}
+
+.view-toggle-btn.active {
+  background: #003366;
+  color: #fff;
+  border-color: #003366;
+}
+
+/* ==========================
+   Messages
+   ========================== */
+.messages {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 20px;
+}
+
+.messages li {
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.messages li.error { background: #f8d7da; color: #721c24; }
+.messages li.success { background: #d4edda; color: #155724; }
+.messages li.warning { background: #fff3cd; color: #856404; }
+
+/* ==========================
+   Department Block
+   ========================== */
+.department-block { margin-bottom: 32px; }
+.department-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #003366;
+  margin-bottom: 12px;
+  border-left: 4px solid #007bff;
+  padding-left: 10px;
+}
+
+/* ==========================
+   Card Grid
+   ========================== */
+.request-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 1024px) {
+  .request-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 640px) {
+  .request-grid { grid-template-columns: 1fr; }
+}
+
+/* ==========================
+   Card Styles
+   ========================== */
+.request-card {
+  background: #fff;
+  border: 1px solid #e9eef5;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.request-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+}
+
+.card-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.card-left h3 { 
+  margin: 0 0 6px 0; 
+  font-size: 1.05rem; 
+  color: #1a2b49; 
+}
+
+.card-right .amount {
+  font-weight: 700;
+  color: #1f2a44;
+  font-size: 1rem;
+}
+
+.reason { color: #444; font-size: 0.95rem; }
+
+.finance-info {
+  background: #f1f5f9;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  color: #1f2a44;
+  line-height: 1.4;
+}
+
+/* Badges */
+.badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.82rem;
+}
+
+.status-pending { background: #fff3cd; color: #856404; }
+.status-approved { background: #d4edda; color: #155724; }
+.status-rejected { background: #f8d7da; color: #721c24; }
+
+/* Action Buttons */
+.action-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.btn-approve, .btn-reject {
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  transition: transform 0.12s, box-shadow 0.12s;
+}
+
+.btn-approve { background: #198754; }
+.btn-approve:hover { transform: translateY(-2px); box-shadow: 0 6px 14px rgba(25,135,84,0.18); }
+
+.btn-reject { background: #d63334; }
+.btn-reject:hover { transform: translateY(-2px); box-shadow: 0 6px 14px rgba(214,51,52,0.18); }
+
+/* Small buttons for table */
+.btn-approve.small, .btn-reject.small {
+  padding: 6px 10px;
+  font-size: 0.86rem;
+  border-radius: 6px;
+}
+
+/* Processed Text */
+.processed-text { color: #666; font-style: italic; margin-top: 10px; }
+
+/* ==========================
+   Table Styles
+   ========================== */
+.table-container { overflow-x: auto; margin-top: 8px; }
+.request-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 680px;
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.request-table th, .request-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid #eef2f7;
+  text-align: left;
+}
+
+.request-table thead th {
+  background: #f5f8fc;
+  color: #003366;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.request-table tbody tr:hover { background: #f1f5f9; }
+
+/* ==========================
+   Responsive Adjustments
+   ========================== */
+@media (max-width: 1024px) {
+  .request-grid { grid-template-columns: repeat(2, 1fr); }
+  .sidebar { flex: 0 0 180px; }
+}
+
+@media (max-width: 640px) {
+  .salary-hero h1 { font-size: 1.4rem; }
+  .department-title { font-size: 1.05rem; }
+  .request-grid { grid-template-columns: 1fr; }
+  .view-toggle { justify-content: center; }
+  .sidebar { flex: 0 0 100%; display: flex; flex-direction: row; overflow-x: auto; }
+  .sidebar-nav li { margin-bottom: 0; margin-right: 12px; }
+}
+
+/* ---------------------------Finance Salary Advance Requests End---------------------------------------------------------- */
