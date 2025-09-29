@@ -4615,20 +4615,35 @@ table tr:nth-child(even) {
 /* ==========================
    Sidebar
    ========================== */
+
 .sidebar {
-  flex: 0 0 220px;
-  background: #003366;
-  color: #fff;
-  padding: 20px;
+  background-color: #1f2a44; /* Dark blue/navy */
+  color: #ffffff;
+  min-width: 220px;
+  max-width: 240px;
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
+  height: 100vh;
+  padding: 20px 0;
+  box-shadow: 2px 0 12px rgba(0,0,0,0.08);
+  position: sticky;
+  top: 0;
+  transition: all 0.3s ease;
+  z-index: 1000;
+}
+
+.sidebar-header {
+  text-align: center;
+  margin-bottom: 30px;
 }
 
 .sidebar-header h2 {
-  margin: 0 0 20px;
   font-size: 1.4rem;
   font-weight: 700;
-  text-transform: uppercase;
+  color: #ffffff;
+  margin: 0;
+  letter-spacing: 0.5px;
 }
 
 .sidebar-nav ul {
@@ -4642,18 +4657,45 @@ table tr:nth-child(even) {
 }
 
 .sidebar-nav a {
-  color: #fff;
+  display: flex;
+  align-items: center;
+  padding: 10px 20px;
+  color: #cfd8e6; /* softer light text */
+  font-weight: 500;
+  border-radius: 8px;
   text-decoration: none;
-  font-weight: 600;
-  display: block;
-  padding: 6px 10px;
-  border-radius: 6px;
-  transition: background 0.2s;
+  transition: all 0.2s ease-in-out;
 }
 
 .sidebar-nav a:hover {
-  background: rgba(255, 255, 255, 0.15);
+  background-color: #003366; /* darker hover */
+  color: #ffffff;
+  transform: translateX(3px);
 }
+
+.sidebar-nav a.active {
+  background-color: #007bff; /* highlight active link */
+  color: #fff;
+}
+
+.sidebar-nav a i {
+  margin-right: 12px; /* if using icons */
+  font-size: 1.1rem;
+}
+
+/* For smaller screens - collapse sidebar */
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    left: -250px;
+    transition: left 0.3s ease;
+  }
+
+  .sidebar.open {
+    left: 0;
+  }
+}
+
 
 /* ==========================
    Main Content
@@ -4830,6 +4872,82 @@ table tr:nth-child(even) {
 .status-rejected { background: #f8d7da; color: #721c24; }
 
 /* Action Buttons */
-.action
+.action-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.btn-approve, .btn-reject {
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  transition: transform 0.12s, box-shadow 0.12s;
+}
+
+.btn-approve { background: #198754; }
+.btn-approve:hover { transform: translateY(-2px); box-shadow: 0 6px 14px rgba(25,135,84,0.18); }
+
+.btn-reject { background: #d63334; }
+.btn-reject:hover { transform: translateY(-2px); box-shadow: 0 6px 14px rgba(214,51,52,0.18); }
+
+/* Small buttons for table */
+.btn-approve.small, .btn-reject.small {
+  padding: 6px 10px;
+  font-size: 0.86rem;
+  border-radius: 6px;
+}
+
+/* Processed Text */
+.processed-text { color: #666; font-style: italic; margin-top: 10px; }
+
+/* ==========================
+   Table Styles
+   ========================== */
+.table-container { overflow-x: auto; margin-top: 8px; }
+.request-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 680px;
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.request-table th, .request-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid #eef2f7;
+  text-align: left;
+}
+
+.request-table thead th {
+  background: #f5f8fc;
+  color: #003366;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.request-table tbody tr:hover { background: #f1f5f9; }
+
+/* ==========================
+   Responsive Adjustments
+   ========================== */
+@media (max-width: 1024px) {
+  .request-grid { grid-template-columns: repeat(2, 1fr); }
+  .sidebar { flex: 0 0 180px; }
+}
+
+@media (max-width: 640px) {
+  .salary-hero h1 { font-size: 1.4rem; }
+  .department-title { font-size: 1.05rem; }
+  .request-grid { grid-template-columns: 1fr; }
+  .view-toggle { justify-content: center; }
+  .sidebar { flex: 0 0 100%; display: flex; flex-direction: row; overflow-x: auto; }
+  .sidebar-nav li { margin-bottom: 0; margin-right: 12px; }
+}
 
 /* ---------------------------Finance Salary Advance Requests End---------------------------------------------------------- */
