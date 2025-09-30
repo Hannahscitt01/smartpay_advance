@@ -500,7 +500,7 @@ def finance_message_centre(request):
             })
 
     context = {"threads": threads}
-    return render(request, "smartpayapp/finance_message_center.html", context)
+    return render(request, "smartpayapp/finance_message_centre.html", context)
 
 
 def finance_chat_detail(request, user_id):
@@ -571,6 +571,37 @@ def support_query(request):
 # ================================================================
 # 11. HR Views
 # ================================================================
+@login_required
 def hr_home(request):
     """HR landing page/dashboard."""
-    return render(request, "smartpayapp/hr_dashboard.html")
+    
+    # Assuming your logged-in user is linked to an Employee instance
+    try:
+        employee = Employee.objects.get(email=request.user.email)
+    except Employee.DoesNotExist:
+        employee = None
+
+    current_date = timezone.localtime(timezone.now()).strftime("%b %d, %Y")
+    current_time = timezone.localtime(timezone.now()).strftime("%I:%M %p")
+
+    context = {
+        "employee": employee,
+        "current_date": current_date,
+        "current_time": current_time,
+    }
+
+    return render(request, "smartpayapp/hr_dashboard.html", context)
+
+@login_required
+def hr_departments(request):
+    """HR Departments page: display all departments and their details."""
+    return render(request, 'smartpayapp/hr_departments.html')
+
+@login_required
+def payroll_payslips(request):
+    """Placeholder view for Payroll & Payslips (UI stub)."""
+    return render(request, 'smartpayapp/payroll_payslips.html')
+
+def hr_track_performance(request):
+    """Placeholder view for Track Performance (UI stub)."""
+    return render(request, 'smartpayapp/hr_track_performance.html')

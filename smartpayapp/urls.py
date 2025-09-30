@@ -27,7 +27,10 @@ from .views import (
     finance_internal_loan_request,
     hr_home, 
     approve_salary_request,
-    reject_salary_request                 
+    reject_salary_request,
+    hr_departments, 
+    payroll_payslips,
+    hr_track_performance          
 )
 
 urlpatterns = [
@@ -58,6 +61,12 @@ urlpatterns = [
     path('finance_salary_request/', finance_salary_request, name='finance_salary_request'),
     path('finance_internal_loan_request/', finance_internal_loan_request, name='finance_internal_loan_request'),
     path('hr_home/', hr_home, name='hr_home'),
+    path('hr/departments/', hr_departments, name='hr_departments'),
+    path('hr/payroll/', payroll_payslips, name='payroll_payslips'),
+    path('hr/track-performance/', hr_track_performance, name='hr_track_performance'),
+
+
+
 
     path('finance/requests/', finance_salary_request, name='finance_salary_request'),
     path('finance/requests/<int:pk>/approve/', approve_salary_request, name='approve_salary_request'),

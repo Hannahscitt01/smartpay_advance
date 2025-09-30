@@ -1,32 +1,30 @@
 from django.db.models.signals import post_save
 from django.contrib.auth.models import User
 from django.dispatch import receiver
-from .models import Profile
-
+from .models import Profile, Employee
 
 @receiver(post_save, sender=User)
-def manage_user_profile(sender, instance, created, **kwargs):
+def create_user_profile(sender, instance, created, **kwargs):
     """
-    Signal: Fired whenever a User is saved.
+    Signal to automatically create a Profile (and optional Employee) 
+    whenever a new User is created.
 
-    - On creation → create Profile with default role 'employee'.
-    - Role stays 'employee' unless HR updates the linked Employee's department.
-    - Admin role must be manually assigned in the DB or via superuser creation.
+    - Profile is always created.
+    - Employee is created if not assigned manually by HR/admin.
+    - Role is stored in Employee, not Profile.
     """
     if created:
-        # Always default to employee (not admin)
-        profile, _ = Profile.objects.get_or_create(user=instance, role="employee")
+        # 1️⃣ Create a default Employee (if you want automatic role assignment)
+        employee = Employee.objects.create(
+            full_name=instance.username,  # default to username
+            email=instance.email,
+            role="employee"
+        )
 
-        # If linked Employee exists, adjust role
-        if profile.employee:
-            if profile.employee.department == "Finance":
-                profile.role = "finance"
-            elif profile.employee.department == "HR":
-                profile.role = "hr"
-            else:
-                profile.role = "employee"  # fallback
-            profile.save()
+        # 2️⃣ Create Profile and link to Employee
+        Profile.objects.create(user=instance, employee=employee)
+
     else:
-        # Sync profile on user update
+        # Optional: sync profile on User updates
         if hasattr(instance, "profile"):
             instance.profile.save()

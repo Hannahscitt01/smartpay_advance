@@ -104,3 +104,25 @@ function getCookie(name) {
     }
     return cookieValue;
 }
+
+
+// hr_dashboard.js
+
+function updateTime() {
+    const now = new Date();
+    const options = { year: 'numeric', month: 'short', day: 'numeric' };
+    const dateStr = now.toLocaleDateString(undefined, options);
+    const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
+
+    const dateElement = document.getElementById('current-date');
+    const timeElement = document.getElementById('current-time');
+
+    if(dateElement) dateElement.textContent = dateStr;
+    if(timeElement) timeElement.textContent = timeStr;
+}
+
+// Initial call
+updateTime();
+
+// Update every minute
+setInterval(updateTime, 60000);
