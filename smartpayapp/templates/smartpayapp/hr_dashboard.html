@@ -14,63 +14,60 @@
       <ul>
         <li><a href="{% url 'hr_home' %}">Dashboard</a></li>
         <li><a href="{% url 'employee_list' %}">Employees</a></li>
-        <li><a href="#">Departments</a></li>
-        <li><a href="#">Payroll</a></li>
-        <li><a href="#">Performance</a></li>
-        <li><a href="#">Requests</a></li>
-        <li><a href="#">Messages</a></li>
-        <li><a href="#">Reports</a></li>
-        <li><a href="#">Settings</a></li>
+        <li><a href="{% url 'hr_departments' %}">Departments</a></li>
+        <li><a href="{% url 'payroll_payslips' %}">Payroll</a></li>
+        <li><a href="{% url 'hr_track_performance' %}">Performance</a></li>
+        <li><a href="{% url 'hr_loan_requests' %}">Requests</a></li>
+        <li><a href="{% url 'hr_message_centre' %}">Messages</a></li>
+        <li><a href="{% url 'hr_reports' %}">Reports</a></li>
+        <li><a href="{% url 'hr_settings' %}">Settings</a></li>
       </ul>
     </nav>
   </aside>
 
   <!-- Main Content -->
   <main class="main-content">
-  <header class="dashboard-header">
-  <div class="welcome-text">
-      {% if employee %}
-          <h1>Hi {{ employee.full_name }} </h1>
-          <p>Welcome back to the HR Dashboard</p>
-          <small>
-              Staff ID: {{ employee.staff_id }} |
-              Date: <span id="current-date">{{ current_date }}</span> |
-              Time: <span id="current-time">{{ current_time }}</span>
-          </small>
-      {% else %}
-          <h1>Hi HR 👋</h1>
-          <p>Welcome back to the HR Dashboard</p>
-          <small>
-              Staff ID: N/A |
-              Date: <span id="current-date">{{ current_date }}</span> |
-              Time: <span id="current-time">{{ current_time }}</span>
-          </small>
-      {% endif %}
-  </div>
-
-
-    <div class="header-right">
-      <div class="header-icons">
-        <!-- Messages -->
-        <div class="icon">
-          <i class="fas fa-envelope"></i>
-          <span class="icon-badge">3</span>
-        </div>
-        <!-- Notifications -->
-        <div class="icon">
-          <i class="fas fa-bell"></i>
-          <span class="icon-badge">5</span>
-        </div>
+    <header class="dashboard-header">
+      <div class="welcome-text">
+          {% if employee %}
+              <h1>Hi {{ employee.full_name }} </h1>
+              <p>Welcome back to the HR Dashboard</p>
+              <small>
+                  Staff ID: {{ employee.staff_id }} |
+                  Date: <span id="current-date">{{ current_date }}</span> |
+                  Time: <span id="current-time">{{ current_time }}</span>
+              </small>
+          {% else %}
+              <h1>Hi HR 👋</h1>
+              <p>Welcome back to the HR Dashboard</p>
+              <small>
+                  Staff ID: N/A |
+                  Date: <span id="current-date">{{ current_date }}</span> |
+                  Time: <span id="current-time">{{ current_time }}</span>
+              </small>
+          {% endif %}
       </div>
 
-      <!-- Profile Avatar -->
-      <div class="profile-avatar">
-        <i class="fas fa-user"></i>
+      <div class="header-right">
+        <div class="header-icons">
+          <!-- Messages -->
+          <div class="icon">
+            <i class="fas fa-envelope"></i>
+            <span class="icon-badge">3</span>
+          </div>
+          <!-- Notifications -->
+          <div class="icon">
+            <i class="fas fa-bell"></i>
+            <span class="icon-badge">5</span>
+          </div>
+        </div>
+
+        <!-- Profile Avatar -->
+        <div class="profile-avatar">
+          <i class="fas fa-user"></i>
+        </div>
       </div>
-    </div>
-  </header>
-
-
+    </header>
 
     <!-- Search + Filter Bar -->
     <div class="search-filter-container">
@@ -122,25 +119,25 @@
           <p>Monitor staff goals & achievements</p>
         </a>
 
-        <a href="#" class="action-card">
+        <a href="{% url 'attendance_tracking' %}" class="action-card">
           <div class="action-icon"><i class="fas fa-clock"></i></div>
           <h3>Attendance & Reporting</h3>
           <p>Log working hours and reports</p>
         </a>
 
-        <a href="#" class="action-card">
+        <a href="{% url 'hr_message_centre' %}" class="action-card">
           <div class="action-icon"><i class="fas fa-envelope"></i></div>
           <h3>Send Message</h3>
           <p>Quickly communicate with staff</p>
         </a>
 
-        <a href="#" class="action-card">
+        <a href="{% url 'hr_loan_requests' %}" class="action-card">
           <div class="action-icon"><i class="fas fa-exclamation-circle"></i></div>
           <h3>Loan Request Holds</h3>
           <p>Approve or reject pending requests</p>
         </a>
 
-        <a href="#" class="action-card">
+        <a href="{% url 'hr_reports' %}" class="action-card">
           <div class="action-icon"><i class="fas fa-file-alt"></i></div>
           <h3>Reports</h3>
           <p>Generate detailed HR reports</p>
@@ -160,20 +157,20 @@
         </a>
       </div>
       <div class="stat-card">
-        <a href="{% url 'employee_list' %}">
+        <a href="{% url 'hr_appraissals' %}">
           <h3>Departments</h3>
           <p>12</p>
         </a>
       </div>
       <div class="stat-card">
-        <a href="{% url 'employee_list' %}">
-          <h3>Active Requests</h3>
-          <p>27</p>
+        <a href="{% url 'employee_today' %}">
+          <h3>Employees Today</h3>
+          <p>27/30</p>
         </a>
       </div>
       <div class="stat-card">
-        <a href="{% url 'employee_list' %}">
-          <h3>Pending Approvals</h3>
+        <a href="{% url 'hr_appraissals' %}">
+          <h3>Staff Appraisals</h3>
           <p>6</p>
         </a>
       </div>
@@ -263,196 +260,253 @@
         </table>
     </section>
 
-<!-- 1. Attendance Overview -->
-<section class="attendance-overview">
-  <h2><i class="fas fa-user-check icon-blue"></i> Attendance Overview</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>Employee</th>
-        <th>Status</th>
-        <th>Check-in</th>
-        <th>Check-out</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>Jane Doe</td>
-        <td><span class="badge present">Present</span></td>
-        <td>8:45 AM</td>
-        <td>5:00 PM</td>
-      </tr>
-      <tr>
-        <td>John Smith</td>
-        <td><span class="badge absent">Absent</span></td>
-        <td>-</td>
-        <td>-</td>
-      </tr>
-    </tbody>
-  </table>
-</section>
+  <!-- 1. Attendance Overview -->
+  <section class="attendance-overview">
+    <h2><i class="fas fa-user-check icon-blue"></i> Attendance Overview</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Employee</th>
+          <th>Status</th>
+          <th>Check-in</th>
+          <th>Check-out</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Jane Doe</td>
+          <td><span class="badge present">Present</span></td>
+          <td>8:45 AM</td>
+          <td>5:00 PM</td>
+        </tr>
+        <tr>
+          <td>John Smith</td>
+          <td><span class="badge absent">Absent</span></td>
+          <td>-</td>
+          <td>-</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
 
-<!-- 2. Payroll Overview -->
-<section class="payroll-overview">
-  <h2><i class="fas fa-coins icon-blue"></i> Payroll Overview</h2>
-  <div class="kpi-grid">
-    <div class="kpi-card">
-      <i class="fas fa-users kpi-icon"></i>
-      <h3>Total Employees</h3>
-      <p>120</p>
+  <!-- 2. Payroll Overview -->
+  <section class="payroll-overview">
+    <h2><i class="fas fa-coins icon-blue"></i> Payroll Overview</h2>
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <i class="fas fa-users kpi-icon"></i>
+        <h3>Total Employees</h3>
+        <p>120</p>
+      </div>
+      <div class="kpi-card">
+        <i class="fas fa-file-invoice-dollar kpi-icon"></i>
+        <h3>Payroll (This Month)</h3>
+        <p>KSh 5,200,000</p>
+      </div>
+      <div class="kpi-card">
+        <i class="fas fa-hand-holding-usd kpi-icon"></i>
+        <h3>Pending Advances</h3>
+        <p>8</p>
+      </div>
+      <div class="kpi-card">
+        <i class="fas fa-university kpi-icon"></i>
+        <h3>Approved Loans</h3>
+        <p>15</p>
+      </div>
     </div>
-    <div class="kpi-card">
-      <i class="fas fa-file-invoice-dollar kpi-icon"></i>
-      <h3>Payroll (This Month)</h3>
-      <p>KSh 5,200,000</p>
+  </section>
+
+  <!-- 3. Performance Tracking -->
+  <section class="performance-tracking">
+    <h2><i class="fas fa-chart-line icon-blue"></i> Performance Tracking</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Employee</th>
+          <th>Department</th>
+          <th>Performance</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Mary W.</td>
+          <td>Sales</td>
+          <td><progress value="90" max="100"></progress> 90%</td>
+        </tr>
+        <tr>
+          <td>David K.</td>
+          <td>HR</td>
+          <td><progress value="75" max="100"></progress> 75%</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- 4. Leave Management -->
+  <section class="leave-requests">
+    <h2><i class="fas fa-calendar-alt icon-blue"></i> Leave Requests</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Employee</th>
+          <th>Type</th>
+          <th>Duration</th>
+          <th>Status</th>
+          <th>HR Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Lucy A.</td>
+          <td>Annual Leave</td>
+          <td>5 Days</td>
+          <td>Pending</td>
+          <td>
+            <button class="btn-approve"><i class="fas fa-check"></i> Approve</button>
+            <button class="btn-reject"><i class="fas fa-times"></i> Reject</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- 5. Sick Leaves & Off Management -->
+  <section class="leave-requests">
+    <h2><i class="fas fa-notes-medical icon-blue"></i> Sick Leaves & Off Management</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Employee</th>
+          <th>Type</th>
+          <th>Duration</th>
+          <th>Status</th>
+          <th>HR Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Brian Otieno</td>
+          <td>Sick Leave</td>
+          <td>3 Days</td>
+          <td>Pending</td>
+          <td>
+            <button class="btn-approve"><i class="fas fa-check"></i> Approve</button>
+            <button class="btn-reject"><i class="fas fa-times"></i> Reject</button>
+          </td>
+        </tr>
+        <tr>
+          <td>Mary Wambui</td>
+          <td>Emergency Off</td>
+          <td>1 Day</td>
+          <td>Approved</td>
+          <td>
+            <button class="btn-approve" disabled><i class="fas fa-check"></i> Approved</button>
+          </td>
+        </tr>
+        <tr>
+          <td>James Mwangi</td>
+          <td>Sick Leave</td>
+          <td>2 Days</td>
+          <td>Rejected</td>
+          <td>
+            <button class="btn-reject" disabled><i class="fas fa-times"></i> Rejected</button>
+          </td>
+        </tr>
+        <tr>
+          <td>Faith Akinyi</td>
+          <td>Off Day</td>
+          <td>1 Day</td>
+          <td>Pending</td>
+          <td>
+            <button class="btn-approve"><i class="fas fa-check"></i> Approve</button>
+            <button class="btn-reject"><i class="fas fa-times"></i> Reject</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+
+  <!-- 6. Announcements -->
+  <section class="announcements">
+    <h2><i class="fas fa-bullhorn icon-blue"></i> HR Announcements</h2>
+    <div class="announcement-card"><i class="fas fa-money-bill-wave icon-blue"></i> Payroll deadline is 5th October.</div>
+    <div class="announcement-card"><i class="fas fa-users icon-blue"></i> Team building scheduled for 20th October.</div>
+    <div class="announcement-card"><i class="fas fa-clipboard-check icon-blue"></i> Submit performance reviews by Friday.</div>
+  </section>
+
+  <!-- 7. Reports & Analytics -->
+  <section class="reports-analytics">
+    <h2><i class="fas fa-chart-pie icon-blue"></i> Analytics & Reports</h2>
+    <div class="report-card"><i class="fas fa-venus-mars icon-blue"></i> Gender Distribution</div>
+    <div class="report-card"><i class="fas fa-sitemap icon-blue"></i> Department Sizes</div>
+    <div class="report-card"><i class="fas fa-chart-bar icon-blue"></i> Payroll Trends</div>
+  </section>
+      
+
+  <!-- Upcoming Events -->
+  <section class="upcoming-events">
+    <h2><i class="fas fa-calendar-alt"></i> Upcoming Events</h2>
+    <ul>
+      <li>
+        <span class="event-title">Team Training</span>
+        <span class="event-date">Oct 5, 2025</span>
+      </li>
+      <li>
+        <span class="event-title">HR Policy Review</span>
+        <span class="event-date">Oct 10, 2025</span>
+      </li>
+      <li>
+        <span class="event-title">Appraisal Meetings</span>
+        <span class="event-date">Oct 15, 2025</span>
+      </li>
+    </ul>
+  </section>
+
+  <!-- Compliance Alerts -->
+  <section class="compliance-alerts">
+    <h2><i class="fas fa-exclamation-circle"></i> Compliance & Alerts</h2>
+    <ul>
+      <li>3 contracts expiring this month</li>
+      <li>Performance appraisals due in 2 weeks</li>
+      <li>Probation ending for 5 employees</li>
+    </ul>
+  </section>
+
+  <!-- Analytics Section -->
+  <section class="analytics">
+    <h2><i class="fas fa-chart-pie"></i> Analytics Overview</h2>
+    <div class="analytics-cards">
+      <div class="card">
+        <i class="fas fa-venus-mars"></i>
+        <h3>Gender Ratio</h3>
+        <canvas id="genderChart"></canvas>
+      </div>
+      <div class="card">
+        <i class="fas fa-users"></i>
+        <h3>Employee Growth</h3>
+        <canvas id="growthChart"></canvas>
+      </div>
+      <div class="card">
+        <i class="fas fa-coins"></i>
+        <h3>Payroll Distribution</h3>
+        <canvas id="payrollChart"></canvas>
+      </div>
     </div>
-    <div class="kpi-card">
-      <i class="fas fa-hand-holding-usd kpi-icon"></i>
-      <h3>Pending Advances</h3>
-      <p>8</p>
+  </section>
+
+  <!-- Messaging Center -->
+  <section class="messaging-center">
+    <h2><i class="fas fa-envelope"></i> Messaging Center</h2>
+    <div class="chat-box">
+      <div class="message received">Hi HR, when is my appraisal?</div>
+      <div class="message sent">Appraisals start next week, you’ll be notified!</div>
     </div>
-    <div class="kpi-card">
-      <i class="fas fa-university kpi-icon"></i>
-      <h3>Approved Loans</h3>
-      <p>15</p>
+    <div class="chat-input">
+      <input type="text" placeholder="Type a message...">
+      <button><i class="fas fa-paper-plane"></i></button>
     </div>
-  </div>
-</section>
-
-<!-- 3. Performance Tracking -->
-<section class="performance-tracking">
-  <h2><i class="fas fa-chart-line icon-blue"></i> Performance Tracking</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>Employee</th>
-        <th>Department</th>
-        <th>Performance</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>Mary W.</td>
-        <td>Sales</td>
-        <td><progress value="90" max="100"></progress> 90%</td>
-      </tr>
-      <tr>
-        <td>David K.</td>
-        <td>HR</td>
-        <td><progress value="75" max="100"></progress> 75%</td>
-      </tr>
-    </tbody>
-  </table>
-</section>
-
-<!-- 4. Leave Management -->
-<section class="leave-requests">
-  <h2><i class="fas fa-calendar-alt icon-blue"></i> Leave Requests</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>Employee</th>
-        <th>Type</th>
-        <th>Duration</th>
-        <th>Status</th>
-        <th>HR Action</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>Lucy A.</td>
-        <td>Annual Leave</td>
-        <td>5 Days</td>
-        <td>Pending</td>
-        <td>
-          <button class="btn-approve"><i class="fas fa-check"></i> Approve</button>
-          <button class="btn-reject"><i class="fas fa-times"></i> Reject</button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-</section>
-
-<!-- 5. Announcements -->
-<section class="announcements">
-  <h2><i class="fas fa-bullhorn icon-blue"></i> HR Announcements</h2>
-  <div class="announcement-card"><i class="fas fa-money-bill-wave icon-blue"></i> Payroll deadline is 5th October.</div>
-  <div class="announcement-card"><i class="fas fa-users icon-blue"></i> Team building scheduled for 20th October.</div>
-  <div class="announcement-card"><i class="fas fa-clipboard-check icon-blue"></i> Submit performance reviews by Friday.</div>
-</section>
-
-<!-- 6. Reports & Analytics -->
-<section class="reports-analytics">
-  <h2><i class="fas fa-chart-pie icon-blue"></i> Analytics & Reports</h2>
-  <div class="report-card"><i class="fas fa-venus-mars icon-blue"></i> Gender Distribution</div>
-  <div class="report-card"><i class="fas fa-sitemap icon-blue"></i> Department Sizes</div>
-  <div class="report-card"><i class="fas fa-chart-bar icon-blue"></i> Payroll Trends</div>
-</section>
-    
-
-<!-- Upcoming Events -->
-<section class="upcoming-events">
-  <h2><i class="fas fa-calendar-alt"></i> Upcoming Events</h2>
-  <ul>
-    <li>
-      <span class="event-title">Team Training</span>
-      <span class="event-date">Oct 5, 2025</span>
-    </li>
-    <li>
-      <span class="event-title">HR Policy Review</span>
-      <span class="event-date">Oct 10, 2025</span>
-    </li>
-    <li>
-      <span class="event-title">Appraisal Meetings</span>
-      <span class="event-date">Oct 15, 2025</span>
-    </li>
-  </ul>
-</section>
-
-<!-- Compliance Alerts -->
-<section class="compliance-alerts">
-  <h2><i class="fas fa-exclamation-circle"></i> Compliance & Alerts</h2>
-  <ul>
-    <li>3 contracts expiring this month</li>
-    <li>Performance appraisals due in 2 weeks</li>
-    <li>Probation ending for 5 employees</li>
-  </ul>
-</section>
-
-<!-- Analytics Section -->
-<section class="analytics">
-  <h2><i class="fas fa-chart-pie"></i> Analytics Overview</h2>
-  <div class="analytics-cards">
-    <div class="card">
-      <i class="fas fa-venus-mars"></i>
-      <h3>Gender Ratio</h3>
-      <canvas id="genderChart"></canvas>
-    </div>
-    <div class="card">
-      <i class="fas fa-users"></i>
-      <h3>Employee Growth</h3>
-      <canvas id="growthChart"></canvas>
-    </div>
-    <div class="card">
-      <i class="fas fa-coins"></i>
-      <h3>Payroll Distribution</h3>
-      <canvas id="payrollChart"></canvas>
-    </div>
-  </div>
-</section>
-
-<!-- Messaging Center -->
-<section class="messaging-center">
-  <h2><i class="fas fa-envelope"></i> Messaging Center</h2>
-  <div class="chat-box">
-    <div class="message received">Hi HR, when is my appraisal?</div>
-    <div class="message sent">Appraisals start next week, you’ll be notified!</div>
-  </div>
-  <div class="chat-input">
-    <input type="text" placeholder="Type a message...">
-    <button><i class="fas fa-paper-plane"></i></button>
-  </div>
-</section>
+  </section>
 
 
   </main>

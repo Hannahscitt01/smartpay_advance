@@ -126,3 +126,241 @@ updateTime();
 
 // Update every minute
 setInterval(updateTime, 60000);
+
+
+// Hr department js
+document.addEventListener("DOMContentLoaded", function () {
+  // Toggle Card/Table view
+  const toggleBtn = document.getElementById('deptToggleBtn');
+  const cardView = document.getElementById('cardView');
+  const tableView = document.getElementById('tableView');
+
+  toggleBtn && toggleBtn.addEventListener('click', () => {
+    const showingCards = !cardView.classList.contains('hidden');
+    if (showingCards) {
+      cardView.classList.add('hidden');
+      tableView.classList.remove('hidden');
+      toggleBtn.innerHTML = '<i class="fas fa-th-large"></i> Switch to Card View';
+    } else {
+      cardView.classList.remove('hidden');
+      tableView.classList.add('hidden');
+      toggleBtn.innerHTML = '<i class="fas fa-th-large"></i> Switch to Table View';
+    }
+  });
+
+  // Add department placeholder
+  const addBtn = document.getElementById('addDeptBtn');
+  addBtn && addBtn.addEventListener('click', () => {
+    // placeholder action for now (you'll hook the modal/form later)
+    alert('Add New Department — modal will open here (to be implemented).');
+  });
+
+  // When "View" clicked (either in card or table), reveal operations/staff/analytics
+  function onViewClicked(deptName) {
+    // show sections
+    const ops = document.getElementById('deptOperations');
+    const staff = document.getElementById('deptStaff');
+    const analytics = document.getElementById('deptAnalytics');
+
+    if (ops) ops.classList.remove('hidden');
+    if (staff) staff.classList.remove('hidden');
+    if (analytics) analytics.classList.remove('hidden');
+
+    // populate headings
+    const opsDeptName = document.getElementById('opsDeptName');
+    const staffDeptName = document.getElementById('staffDeptName');
+    const analyticsDeptName = document.getElementById('analyticsDeptName');
+
+    if (opsDeptName) opsDeptName.textContent = deptName;
+    if (staffDeptName) staffDeptName.textContent = deptName;
+    if (analyticsDeptName) analyticsDeptName.textContent = deptName;
+
+    // populate placeholder operations data (you will replace with real data via AJAX)
+    const opsProjects = document.getElementById('opsProjects');
+    const opsBudget = document.getElementById('opsBudget');
+    const opsKpis = document.getElementById('opsKpis');
+    const opsOpenPositions = document.getElementById('opsOpenPositions');
+
+    if (opsProjects) opsProjects.textContent = 'Project A, Project B';
+    if (opsBudget) opsBudget.textContent = 'KSh 1,200,000';
+    if (opsKpis) opsKpis.textContent = 'On-time payroll, < 2% variance';
+    if (opsOpenPositions) opsOpenPositions.textContent = '2';
+
+    // scroll to operations
+    setTimeout(() => {
+      ops && ops.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 120);
+
+    // init/update charts with demo data
+    initCharts(deptName);
+  }
+
+  // wire view buttons from both card & table
+  document.querySelectorAll('.btn-view').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      // find dept name from nearest card or table row
+      const card = e.target.closest('.dept-card');
+      let deptName = null;
+      if (card) deptName = card.getAttribute('data-dept') || card.querySelector('h3').innerText;
+      else {
+        const row = e.target.closest('tr');
+        if (row) deptName = row.getAttribute('data-dept') || row.children[0].innerText;
+      }
+      if (!deptName) deptName = 'Department';
+      onViewClicked(deptName);
+    });
+  });
+
+  // ------------------- Charts (demo placeholders) -------------------
+  function initCharts(deptName) {
+    // Staff Growth (line)
+    const sCtx = document.getElementById('staffGrowthChart');
+    if (sCtx) {
+      if (sCtx._chart) sCtx._chart.destroy();
+      sCtx._chart = new Chart(sCtx, {
+        type: 'line',
+        data: {
+          labels: ['Mar', 'Apr', 'May', 'Jun', 'Jul'],
+          datasets: [{ label: `${deptName} - Staff`, data: [20, 22, 24, 26, 28], borderColor: '#0055aa', backgroundColor: 'rgba(0,85,170,0.06)', fill: true }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+      });
+    }
+
+    // Gender Ratio (doughnut)
+    const gCtx = document.getElementById('genderRatioChart');
+    if (gCtx) {
+      if (gCtx._chart) gCtx._chart.destroy();
+      gCtx._chart = new Chart(gCtx, {
+        type: 'doughnut',
+        data: { labels: ['Male','Female'], datasets: [{ data: [60,40], backgroundColor: ['#0055aa','#08bd4a'] }] },
+        options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:'bottom' } } }
+      });
+    }
+
+    // Attrition (bar)
+    const aCtx = document.getElementById('attritionChart');
+    if (aCtx) {
+      if (aCtx._chart) aCtx._chart.destroy();
+      aCtx._chart = new Chart(aCtx, {
+        type: 'bar',
+        data: { labels:['Jan','Feb','Mar','Apr'], datasets:[{ label:'Attrition %', data:[2,3,1.5,2.8], backgroundColor:'#ef4444' }] },
+        options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false } } }
+      });
+    }
+
+    // Budget (pie)
+    const bCtx = document.getElementById('budgetChart');
+    if (bCtx) {
+      if (bCtx._chart) bCtx._chart.destroy();
+      bCtx._chart = new Chart(bCtx, {
+        type:'pie',
+        data:{ labels:['Used','Remaining'], datasets:[{ data:[65,35], backgroundColor:['#2563eb','#cbd5e1'] }] },
+        options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:'bottom' } } }
+      });
+    }
+  }
+
+  // Optional: pre-init charts (hidden until view clicked)
+});
+
+//toggle department analytics
+document.addEventListener('DOMContentLoaded', function () {
+  // --- reference elements ---
+  const toggleAnalyticsBtn = document.getElementById('toggleAnalyticsBtn');
+  const analyticsSection = document.getElementById('deptAnalytics');
+
+  // safety checks & helpful console warnings
+  if (!toggleAnalyticsBtn) {
+    console.warn('hr_departments.js: toggleAnalyticsBtn not found. Check the button id in the template.');
+    return;
+  }
+  if (!analyticsSection) {
+    console.warn('hr_departments.js: deptAnalytics section not found. Check the section id in the template.');
+    return;
+  }
+
+  // utility: render button text/icon according to visible state
+  function updateAnalyticsButton() {
+    const visible = !analyticsSection.classList.contains('hidden');
+    // keep icon + text, matching your fontawesome usage
+    toggleAnalyticsBtn.innerHTML = visible
+      ? '<i class="fas fa-chart-bar"></i>&nbsp; Hide Analytics'
+      : '<i class="fas fa-chart-bar"></i>&nbsp; Show Analytics';
+    toggleAnalyticsBtn.setAttribute('aria-pressed', visible ? 'true' : 'false');
+  }
+
+  // initial button label state
+  updateAnalyticsButton();
+
+  // toggle on click
+  toggleAnalyticsBtn.addEventListener('click', function (e) {
+    e.preventDefault();
+    const isHidden = analyticsSection.classList.contains('hidden');
+
+    if (isHidden) {
+      analyticsSection.classList.remove('hidden');
+      // optional: smooth scroll to analytics
+      setTimeout(() => analyticsSection.scrollIntoView({ behavior: 'smooth', block: 'start' }), 120);
+    } else {
+      analyticsSection.classList.add('hidden');
+    }
+    updateAnalyticsButton();
+  });
+});
+
+
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll(".alert-dismiss").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      e.target.closest("li").remove();
+    });
+  });
+});
+
+
+//Payroll
+document.addEventListener("DOMContentLoaded", function() {
+  const toggleBtn = document.getElementById("togglePayrollBtn");
+  const previewSection = document.getElementById("payrollPreview");
+
+  toggleBtn.addEventListener("click", function() {
+    previewSection.classList.toggle("hidden");
+  });
+});
+
+
+// ===== Modal Functionality =====
+const modal = document.getElementById('payslipModal');
+const modalEmployeeName = document.getElementById('modalEmployeeName');
+const modalGross = document.getElementById('modalGross');
+const modalDeductions = document.getElementById('modalDeductions');
+const modalNet = document.getElementById('modalNet');
+const modalBreakdown = document.getElementById('modalBreakdown');
+
+document.querySelectorAll('.btn-view-payslip').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    const row = btn.closest('tr');
+    modalEmployeeName.textContent = row.children[0].textContent;
+    modalGross.textContent = row.children[2].textContent;
+    modalDeductions.textContent = row.children[3].textContent;
+    modalNet.textContent = row.children[4].textContent;
+    modal.classList.remove('hidden');
+  });
+});
+
+document.querySelector('.modal .close').addEventListener('click', ()=>{
+  modal.classList.add('hidden');
+});
+
+// ===== Search Filter =====
+const searchInput = document.getElementById('searchPayroll');
+searchInput.addEventListener('keyup', ()=>{
+  const filter = searchInput.value.toLowerCase();
+  document.querySelectorAll('#payrollBody tr').forEach(tr=>{
+    const name = tr.children[0].textContent.toLowerCase();
+    tr.style.display = name.includes(filter) ? '' : 'none';
+  });
+});
+
+

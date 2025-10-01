@@ -602,6 +602,59 @@ def payroll_payslips(request):
     """Placeholder view for Payroll & Payslips (UI stub)."""
     return render(request, 'smartpayapp/payroll_payslips.html')
 
+@login_required
 def hr_track_performance(request):
     """Placeholder view for Track Performance (UI stub)."""
     return render(request, 'smartpayapp/hr_track_performance.html')
+
+@login_required
+def hr_departments(request):
+    """Placeholder view for HR Departments (UI stub)."""
+    return render(request, 'smartpayapp/hr_departments.html')
+
+@login_required
+def attendance_tracking(request):
+    """Placeholder view for Attendance & Tracking (UI stub)."""
+    return render(request, 'smartpayapp/attendance_tracking.html')
+
+@login_required
+def hr_message_centre(request):
+    """Placeholder view for HR Message Centre (UI stub)."""
+    return render(request, 'smartpayapp/hr_message_centre.html')
+
+@login_required
+def hr_loan_requests(request):
+    """Placeholder view for HR Loan Requests (UI stub)."""
+    return render(request, 'smartpayapp/hr_loan_requests.html')
+
+@login_required
+def hr_reports(request):
+    """Placeholder view for HR Reports (UI stub)."""
+    return render(request, 'smartpayapp/hr_reports.html')
+
+
+@login_required
+def employee_today(request):
+    """Placeholder view for Employees Today (UI stub)."""
+    return render(request, 'smartpayapp/employee_today.html')
+
+
+@login_required
+def hr_leaves_offs(request):
+    """Placeholder view for Leaves & Offs (UI stub)."""
+    return render(request, 'smartpayapp/hr_leaves_offs.html')
+
+@login_required
+def hr_settings(request):
+    """Placeholder view for Hr settings (UI stub)."""
+    return render(request, 'smartpayapp/hr_settings.html')
+
+@login_required
+def hr_settings(request):
+    """Placeholder view for Hr settings (UI stub)."""
+    return render(request, 'smartpayapp/hr_settings.html')
+
+@login_required
+def hr_appraissals(request):
+    """Placeholder view for hr appraissals (UI stub)."""
+    return render(request, 'smartpayapp/hr_appraissals.html')

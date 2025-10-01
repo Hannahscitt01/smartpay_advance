@@ -30,7 +30,16 @@ from .views import (
     reject_salary_request,
     hr_departments, 
     payroll_payslips,
-    hr_track_performance          
+    hr_track_performance,
+    attendance_tracking,
+    hr_message_centre,
+    hr_loan_requests,
+    hr_reports,
+    hr_leaves_offs,
+    employee_today,
+    hr_settings,
+    hr_appraissals
+          
 )
 
 urlpatterns = [
@@ -64,6 +73,19 @@ urlpatterns = [
     path('hr/departments/', hr_departments, name='hr_departments'),
     path('hr/payroll/', payroll_payslips, name='payroll_payslips'),
     path('hr/track-performance/', hr_track_performance, name='hr_track_performance'),
+ 
+
+    path('hr/attendance/', attendance_tracking, name='attendance_tracking'),
+    path('hr/messages/', hr_message_centre, name='hr_message_centre'),
+    path('hr/loan-requests/', hr_loan_requests, name='hr_loan_requests'),
+    path('hr/reports/', hr_reports, name='hr_reports'),
+    path('hr/departments/', hr_departments, name='hr_departments'),
+    path('hr/employees-today/', employee_today, name='employee_today'),
+    path('hr/leaves-offs/', hr_leaves_offs, name='hr_leaves_offs'),
+    path('hr/settings/', hr_settings, name='hr_settings'),
+    path('hr/appraissals/', hr_appraissals, name='hr_appraissals'),
+
+
 
 
 
