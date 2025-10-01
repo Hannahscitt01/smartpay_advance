@@ -500,7 +500,7 @@ def finance_message_centre(request):
             })
 
     context = {"threads": threads}
-    return render(request, "smartpayapp/finance_message_center.html", context)
+    return render(request, "smartpayapp/finance_message_centre.html", context)
 
 
 def finance_chat_detail(request, user_id):
@@ -571,6 +571,90 @@ def support_query(request):
 # ================================================================
 # 11. HR Views
 # ================================================================
+@login_required
 def hr_home(request):
     """HR landing page/dashboard."""
-    return render(request, "smartpayapp/hr_dashboard.html")
+    
+    # Assuming your logged-in user is linked to an Employee instance
+    try:
+        employee = Employee.objects.get(email=request.user.email)
+    except Employee.DoesNotExist:
+        employee = None
+
+    current_date = timezone.localtime(timezone.now()).strftime("%b %d, %Y")
+    current_time = timezone.localtime(timezone.now()).strftime("%I:%M %p")
+
+    context = {
+        "employee": employee,
+        "current_date": current_date,
+        "current_time": current_time,
+    }
+
+    return render(request, "smartpayapp/hr_dashboard.html", context)
+
+@login_required
+def hr_departments(request):
+    """HR Departments page: display all departments and their details."""
+    return render(request, 'smartpayapp/hr_departments.html')
+
+@login_required
+def payroll_payslips(request):
+    """Placeholder view for Payroll & Payslips (UI stub)."""
+    return render(request, 'smartpayapp/payroll_payslips.html')
+
+@login_required
+def hr_track_performance(request):
+    """Placeholder view for Track Performance (UI stub)."""
+    return render(request, 'smartpayapp/hr_track_performance.html')
+
+@login_required
+def hr_departments(request):
+    """Placeholder view for HR Departments (UI stub)."""
+    return render(request, 'smartpayapp/hr_departments.html')
+
+@login_required
+def attendance_tracking(request):
+    """Placeholder view for Attendance & Tracking (UI stub)."""
+    return render(request, 'smartpayapp/attendance_tracking.html')
+
+@login_required
+def hr_message_centre(request):
+    """Placeholder view for HR Message Centre (UI stub)."""
+    return render(request, 'smartpayapp/hr_message_centre.html')
+
+@login_required
+def hr_loan_requests(request):
+    """Placeholder view for HR Loan Requests (UI stub)."""
+    return render(request, 'smartpayapp/hr_loan_requests.html')
+
+@login_required
+def hr_reports(request):
+    """Placeholder view for HR Reports (UI stub)."""
+    return render(request, 'smartpayapp/hr_reports.html')
+
+
+@login_required
+def employee_today(request):
+    """Placeholder view for Employees Today (UI stub)."""
+    return render(request, 'smartpayapp/employee_today.html')
+
+
+@login_required
+def hr_leaves_offs(request):
+    """Placeholder view for Leaves & Offs (UI stub)."""
+    return render(request, 'smartpayapp/hr_leaves_offs.html')
+
+@login_required
+def hr_settings(request):
+    """Placeholder view for Hr settings (UI stub)."""
+    return render(request, 'smartpayapp/hr_settings.html')
+
+@login_required
+def hr_settings(request):
+    """Placeholder view for Hr settings (UI stub)."""
+    return render(request, 'smartpayapp/hr_settings.html')
+
+@login_required
+def hr_appraissals(request):
+    """Placeholder view for hr appraissals (UI stub)."""
+    return render(request, 'smartpayapp/hr_appraissals.html')

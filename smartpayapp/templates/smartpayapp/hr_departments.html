@@ -1,0 +1,367 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Smart Pay | HR Departments{% endblock %}
+{% block content %}
+
+
+
+<div class="dashboard-container">
+
+  <!-- Sidebar (UNCHANGED from your template) -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <h2>HR</h2>
+    </div>
+    <nav class="sidebar-nav">
+      <ul>
+        <li><a href="{% url 'hr_home' %}">Dashboard</a></li>
+        <li><a href="{% url 'employee_list' %}">Employees</a></li>
+        <li><a class="active" href="{% url 'hr_departments' %}">Departments</a></li>
+        <li><a href="{% url 'payroll_payslips' %}">Payroll</a></li>
+        <li><a href="{% url 'hr_track_performance' %}">Performance</a></li>
+        <li><a href="{% url 'hr_loan_requests' %}">Requests</a></li>
+        <li><a href="{% url 'hr_message_centre' %}">Messages</a></li>
+        <li><a href="{% url 'hr_reports' %}">Reports</a></li>
+        <li><a href="{% url 'hr_settings' %}">Settings</a></li>
+      </ul>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+
+    <!-- Header / Departments Control Panel -->
+    <header class="dashboard-header departments-header">
+        <div class="header-left">
+            <h1>Departments Management</h1>
+            <p class="subtitle">Manage departments, staff, and operations</p>
+
+            <!-- Inline KPIs (Badges) -->
+            <div class="header-stats">
+                <span class="stat-badge contracts">3 Expiring Contracts</span>
+                <span class="stat-badge approvals">2 Pending Approvals</span>
+                <span class="stat-badge leaves">5 New Leave Requests</span>
+            </div>
+        </div>
+
+        <div class="header-right">
+            <!-- Action Buttons -->
+            <div class="header-actions">
+                <button class="btn-primary">+ Add Department</button>
+                <button class="btn-export">Export Report</button>
+            </div>
+
+            <!-- Icons + Profile -->
+            <div class="header-icons">
+                <div class="icon" title="Messages">
+                    <i class="fas fa-envelope"></i>
+                    <span class="icon-badge">3</span>
+                </div>
+                <div class="icon" title="Notifications">
+                    <i class="fas fa-bell"></i>
+                    <span class="icon-badge">5</span>
+                </div>
+            </div>
+            <div class="profile-avatar" title="Profile">
+                <i class="fas fa-user"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- ====== 1) Departments Overview (stat cards) ====== -->
+    <section class="stats-overview">
+      <div class="stat-card">
+        <a href="#">
+          <div style="display:flex; align-items:center; gap:12px;">
+            <div class="stat-icon"><i class="fas fa-sitemap"></i></div>
+            <div>
+              <h3>Total Departments</h3>
+              <p>12</p>
+            </div>
+          </div>
+        </a>
+      </div>
+
+      <div class="stat-card">
+        <a href="#">
+          <div style="display:flex; align-items:center; gap:12px;">
+            <div class="stat-icon"><i class="fas fa-users"></i></div>
+            <div>
+              <h3>Total Staff</h3>
+              <p>324</p>
+            </div>
+          </div>
+        </a>
+      </div>
+
+      <div class="stat-card">
+        <a href="#">
+          <div style="display:flex; align-items:center; gap:12px;">
+            <div class="stat-icon"><i class="fas fa-briefcase"></i></div>
+            <div>
+              <h3>Open Positions</h3>
+              <p>18</p>
+            </div>
+          </div>
+        </a>
+      </div>
+
+      <div class="stat-card">
+        <a href="#">
+          <div style="display:flex; align-items:center; gap:12px;">
+            <div class="stat-icon"><i class="fas fa-exchange-alt"></i></div>
+            <div>
+              <h3>Pending Transfers</h3>
+              <p>4</p>
+            </div>
+          </div>
+        </a>
+      </div>
+    </section>    
+  
+
+    <!-- Search + filter kept for consistency -->
+    <div class="search-filter-container">
+      <div class="search-bar">
+        <input type="text" placeholder="Search departments, heads, or projects..." aria-label="Search departments">
+        <button><i class="fas fa-search"></i></button>
+      </div>
+      <div class="filter-bar">
+        <select aria-label="Filter departments">
+          <option value="">Filter by...</option>
+          <option value="size">Staff size</option>
+          <option value="open_positions">Open positions</option>
+          <option value="pending_transfers">Pending transfers</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- ====== Departments Header Actions ====== -->
+    <section class="section" style="padding:18px 20px; margin-bottom:18px;">
+      <div style="display:flex; align-items:center; justify-content:space-between;">
+        <h2 style="margin:0; display:flex; gap:10px; align-items:center;"><i class="fas fa-sitemap icon-blue"></i> Departments Management</h2>
+
+        <div style="display:flex; gap:12px; align-items:center;">
+          <button id="addDeptBtn" class="btn-primary"> <i class="fas fa-plus"></i> Add New Department</button>
+          <button id="deptToggleBtn" class="btn-secondary"> <i class="fas fa-th-large"></i> Switch to Table View</button>
+          <button id="toggleAnalyticsBtn" class="btn-analytics"><i class="fas fa-chart-bar"></i> Toggle Analytics</button>
+        </div>
+      </div>
+    </section>
+
+
+
+    <!-- ====== 2) Department List (Card view default) ====== -->
+    <section class="section">
+      <div id="cardView" class="department-cards">
+        <!-- Example dept card -->
+        <article class="dept-card" data-dept="Finance">
+          <h3>Finance</h3>
+          <p><strong>Head:</strong> Jane Mwangi</p>
+          <p><strong>Staff:</strong> 32</p>
+          <p><strong>Projects:</strong> Budget 2025, Payroll Automation</p>
+          <div class="card-actions">
+            <button class="btn-small btn-view">View</button>
+            <button class="btn-small btn-edit">Edit</button>
+            <button class="btn-small btn-delete">Delete</button>
+          </div>
+        </article>
+
+        <article class="dept-card" data-dept="Human Resources">
+          <h3>Human Resources</h3>
+          <p><strong>Head:</strong> Peter Otieno</p>
+          <p><strong>Staff:</strong> 15</p>
+          <p><strong>Projects:</strong> Recruitment Drive, Onboarding</p>
+          <div class="card-actions">
+            <button class="btn-small btn-view">View</button>
+            <button class="btn-small btn-edit">Edit</button>
+            <button class="btn-small btn-delete">Delete</button>
+          </div>
+        </article>
+
+        <!-- Add more department cards as needed -->
+      </div>
+
+      <!-- Table view (hidden initially) -->
+      <div id="tableView" class="department-table hidden">
+        <table>
+          <thead>
+            <tr>
+              <th>Department Name</th>
+              <th>Head of Department</th>
+              <th>No. of Staff</th>
+              <th>Current Projects</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-dept="Finance">
+              <td>Finance</td>
+              <td>Jane Mwangi</td>
+              <td>32</td>
+              <td>Budget 2025, Payroll Automation</td>
+              <td class="table-actions">
+                <button class="btn-small btn-view">View</button>
+                <button class="btn-small btn-edit">Edit</button>
+                <button class="btn-small btn-delete">Delete</button>
+              </td>
+            </tr>
+
+            <tr data-dept="Human Resources">
+              <td>Human Resources</td>
+              <td>Peter Otieno</td>
+              <td>15</td>
+              <td>Recruitment Drive</td>
+              <td class="table-actions">
+                <button class="btn-small btn-view">View</button>
+                <button class="btn-small btn-edit">Edit</button>
+                <button class="btn-small btn-delete">Delete</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ====== 3) Department Operations (expandable when clicking View) ====== -->
+    <section id="deptOperations" class="dept-operations">
+      <h2><i class="fas fa-cogs icon-blue"></i> <span id="opsDeptName">[Department]</span> — Operations</h2>
+
+      <ul>
+        <li><strong>Projects handled:</strong> <span id="opsProjects">—</span></li>
+        <li><strong>Budget allocations:</strong> <span id="opsBudget">—</span></li>
+        <li><strong>KPIs / Goals:</strong> <span id="opsKpis">—</span></li>
+        <li><strong>Open positions:</strong> <span id="opsOpenPositions">—</span></li>
+      </ul>
+    </section>
+
+    <!-- ====== 4) Staff Management per Department ====== -->
+    <section id="deptStaff" class="dept-staff">
+      <h2><i class="fas fa-users icon-blue"></i> <span id="staffDeptName">[Department]</span> — Staff</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Role / Job Title</th>
+            <th>Contact</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="staffList">
+          <!-- Filled by JS when "View" clicked; sample rows initially -->
+          <tr><td>Mary Njeri</td><td>Accountant</td><td>mary.njeri@example.com</td><td>Active</td></tr>
+          <tr><td>Paul Kim</td><td>Financial Analyst</td><td>paul.kim@example.com</td><td>On Leave</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ====== 5) Department Analytics (mini-charts) ====== -->
+    <section id="deptAnalytics" class="dept-analytics">
+      <h2><i class="fas fa-chart-bar icon-blue"></i> <span id="analyticsDeptName">[Department]</span> — Analytics</h2>
+      <div class="analytics-grid">
+        <div class="analytics-card">
+          <h4>Staff Growth</h4>
+          <canvas id="staffGrowthChart" height="120"></canvas>
+        </div>
+        <div class="analytics-card">
+          <h4>Gender Ratio</h4>
+          <canvas id="genderRatioChart" height="120"></canvas>
+        </div>
+        <div class="analytics-card">
+          <h4>Attrition Rate</h4>
+          <canvas id="attritionChart" height="120"></canvas>
+        </div>
+        <div class="analytics-card">
+          <h4>Budget Utilization</h4>
+          <canvas id="budgetChart" height="120"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== 6) Operations Buttons & Alerts ====== -->
+    <section class="section" style="display:flex; gap:12px; align-items:center; justify-content:space-between;">
+      <div class="dept-buttons">
+        <button class="btn-primary"> <i class="fas fa-random"></i> Transfer Employee</button>
+        <button class="btn-secondary"> <i class="fas fa-object-group"></i> Merge Departments</button>
+        <button class="btn-secondary"> <i class="fas fa-file-export"></i> Export Report</button>
+      </div>
+
+      <div class="dept-alerts" style="max-width:480px;">
+        <h3 style="margin:0 0 8px 0;"><i class="fas fa-bell icon-blue"></i> Alerts</h3>
+        <ul>
+          <li>2 contracts expiring in IT this month</li>
+          <li>Finance OT hours high</li>
+          <li>HR: 3 pending recruitments</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ====== Department Policies & Documents ====== -->
+    <section class="dept-policies">
+        <h3><i class="fas fa-file-alt"></i> Department Policies & Documents</h3>
+        <ul>
+            <li>
+            IT Security Policy <button class="policy-action">Download</button>
+            </li>
+            <li>
+            HR Leave Policy <button class="policy-action">Download</button>
+            </li>
+        </ul>
+        <button class="btn-primary"><i class="fas fa-upload"></i> Upload New Document</button>
+    </section>
+
+    <!-- ====== Succession & Training Plans ====== -->
+    <section class="succession-plans">
+        <h3><i class="fas fa-chalkboard-teacher"></i> Succession & Training Plans</h3>
+        <ul>
+            <li>
+            Finance Leadership Training <button class="training-action">View Plan</button>
+            </li>
+            <li>
+            Junior Dev → Senior Dev Roadmap <button class="training-action">View Plan</button>
+            </li>
+        </ul>
+        <button class="btn-primary"><i class="fas fa-upload"></i> Upload New Document</button>
+    </section>
+
+
+    <!-- ====== 9) HR Actions History (Audit Trail) ====== -->
+    <section id="deptAudit" class="dept-audit section">
+      <h2><i class="fas fa-history icon-blue"></i> HR Actions History</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Action</th>
+            <th>Department</th>
+            <th>By</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>2025-09-25</td>
+            <td>Merged HR & Admin Departments</td>
+            <td>Human Resources</td>
+            <td>Admin User</td>
+          </tr>
+          <tr>
+            <td>2025-09-20</td>
+            <td>Transferred 2 staff</td>
+            <td>Finance → IT</td>
+            <td>Peter Otieno</td>
+          </tr>
+          <tr>
+            <td>2025-09-10</td>
+            <td>Added new department</td>
+            <td>Research & Development</td>
+            <td>Jane Mwangi</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>    
+
+
+  </main>
+</div>
+
+{% endblock %}
