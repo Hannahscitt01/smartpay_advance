@@ -1,0 +1,333 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Smart Pay | Employee Performance{% endblock %}
+
+{% block content %}
+
+<div class="dashboard-container">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <h2>HR</h2>
+    </div>
+    <nav class="sidebar-nav">
+      <ul>
+        <li><a href="{% url 'hr_home' %}">Dashboard</a></li>
+        <li><a href="{% url 'employee_list' %}">Employees</a></li>
+        <li><a href="{% url 'hr_departments' %}">Departments</a></li>
+        <li><a href="{% url 'payroll_payslips' %}">Payroll</a></li>
+        <li><a class="active" href="{% url 'hr_track_performance' %}">Performance</a></li>
+        <li><a href="{% url 'hr_loan_requests' %}">Requests</a></li>
+        <li><a href="{% url 'hr_message_centre' %}">Messages</a></li>
+        <li><a href="{% url 'hr_reports' %}">Reports</a></li>
+        <li><a href="{% url 'hr_settings' %}">Settings</a></li>
+      </ul>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+
+    <!-- Header -->
+    <header class="dashboard-header performance-header">
+      <div class="header-left">
+        <h1>Employee Performance</h1>
+        <p class="subtitle">Track appraisals, goals, and departmental performance</p>
+
+        <!-- KPIs Badges -->
+        <div class="header-stats">
+          <span class="stat-badge contracts">312 Employees Evaluated</span>
+          <span class="stat-badge approvals">12 Pending Reviews</span>
+          <span class="stat-badge leaves">Top Rating: 4.8</span>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <div class="header-actions">
+          <button class="btn-primary">+ Add Performance Record</button>
+          <button class="btn-export">Export Report</button>
+        </div>
+        <div class="header-icons">
+          <div class="icon" title="Messages"><i class="fas fa-envelope"></i><span class="icon-badge">2</span></div>
+          <div class="icon" title="Notifications"><i class="fas fa-bell"></i><span class="icon-badge">4</span></div>
+        </div>
+        <div class="profile-avatar" title="Profile"><i class="fas fa-user"></i></div>
+      </div>
+    </header>
+
+    <!-- ====== Quick Stats Cards ====== -->
+    <section class="stats-overview performance-quick-stats">
+      <div class="stat-card">
+        <div class="stat-header">
+          <div class="stat-icon"><i class="fas fa-user-check"></i></div>
+          <div>
+            <h3>Total Employees</h3>
+            <p>312</p>
+          </div>
+        </div>
+        <div class="stat-links">
+          <a href="#">Individual Performance</a>
+          <a href="#">Department Overview</a>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-header">
+          <div class="stat-icon"><i class="fas fa-chart-line"></i></div>
+          <div>
+            <h3>Average Rating</h3>
+            <p>4.2 / 5</p>
+          </div>
+        </div>
+        <div class="stat-links">
+          <a href="#">By Employee</a>
+          <a href="#">By Department</a>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-header">
+          <div class="stat-icon"><i class="fas fa-trophy"></i></div>
+          <div>
+            <h3>Top Performers</h3>
+            <p>Mary Njeri</p>
+          </div>
+        </div>
+        <div class="stat-links">
+          <a href="#">View List</a>
+          <a href="#">Send Recognition</a>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-header">
+          <div class="stat-icon"><i class="fas fa-exclamation-circle"></i></div>
+          <div>
+            <h3>Pending Reviews</h3>
+            <p>12</p>
+          </div>
+        </div>
+        <div class="stat-links">
+          <a href="#">Review Now</a>
+          <a href="#">Remind Employees</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== Filters ====== -->
+    <section class="section performance-filters">
+      <div class="filter-search">
+        <input type="text" id="searchEmployee" placeholder="Search employee..." aria-label="Search employee">
+        <button><i class="fas fa-search"></i></button>
+      </div>
+      <div class="filter-department">
+        <select id="departmentFilter" aria-label="Filter by department">
+          <option value="">All Departments</option>
+          <option value="Finance">Finance</option>
+          <option value="HR">HR</option>
+          <option value="IT">IT</option>
+        </select>
+      </div>
+      <div class="filter-rating">
+        <select id="ratingFilter" aria-label="Filter by rating">
+          <option value="">All Ratings</option>
+          <option value="5">5 Stars</option>
+          <option value="4">4 Stars & above</option>
+          <option value="3">3 Stars & above</option>
+        </select>
+      </div>
+    </section>
+
+    <!-- ====== Employee Performance Table ====== -->
+    <section class="section employee-performance-table">
+      <h2><i class="fas fa-users icon-blue"></i> Employee Performance</h2>
+
+        <!-- Attendance KPI Cards -->
+        <div class="attendance-cards">
+            <div class="stat-card">
+            <div class="stat-header">
+                <div class="stat-icon"><i class="fas fa-calendar-check"></i></div>
+                <div>
+                <h3>Days Attended</h3>
+                <p>220</p>
+                </div>
+            </div>
+            <div class="stat-links">
+                <a href="#">Daily</a>
+                <a href="#">Weekly</a>
+                <a href="#">Monthly</a>
+                <a href="#">Yearly</a>
+            </div>
+            </div>
+
+            <div class="stat-card">
+            <div class="stat-header">
+                <div class="stat-icon"><i class="fas fa-calendar-times"></i></div>
+                <div>
+                <h3>Absences</h3>
+                <p>12</p>
+                </div>
+            </div>
+            <div class="stat-links">
+                <a href="#">Daily</a>
+                <a href="#">Weekly</a>
+                <a href="#">Monthly</a>
+                <a href="#">Yearly</a>
+            </div>
+            </div>
+
+            <div class="stat-card">
+            <div class="stat-header">
+                <div class="stat-icon"><i class="fas fa-clock"></i></div>
+                <div>
+                <h3>Late Check-ins</h3>
+                <p>8</p>
+                </div>
+            </div>
+            <div class="stat-links">
+                <a href="#">Daily</a>
+                <a href="#">Weekly</a>
+                <a href="#">Monthly</a>
+                <a href="#">Yearly</a>
+            </div>
+            </div>
+
+            <div class="stat-card">
+            <div class="stat-header">
+                <div class="stat-icon"><i class="fas fa-clock"></i></div>
+                <div>
+                <h3>Early Check-outs</h3>
+                <p>5</p>
+                </div>
+            </div>
+            <div class="stat-links">
+                <a href="#">Daily</a>
+                <a href="#">Weekly</a>
+                <a href="#">Monthly</a>
+                <a href="#">Yearly</a>
+            </div>
+            </div>
+        </div>
+
+
+      <table>
+        <thead>
+          <tr>
+            <th>Employee</th>
+            <th>Department</th>
+            <th>Appraisal Period</th>
+            <th>Rating</th>
+            <th>Goals Completed</th>
+            <th>Feedback</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Mary Njeri</td>
+            <td>Finance</td>
+            <td>Jan - Jun 2025</td>
+            <td>4.8</td>
+            <td>95%</td>
+            <td>Excellent progress in Q2 projects</td>
+            <td>
+              <button class="btn-small btn-view">View</button>
+              <button class="btn-small btn-edit">Edit</button>
+            </td>
+          </tr>
+          <tr>
+            <td>Paul Kim</td>
+            <td>HR</td>
+            <td>Jan - Jun 2025</td>
+            <td>4.1</td>
+            <td>88%</td>
+            <td>Good performance but needs improvement in reporting</td>
+            <td>
+              <button class="btn-small btn-view">View</button>
+              <button class="btn-small btn-edit">Edit</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ====== Appraisals & Feedback Section ====== -->
+    <section class="section performance-appraisals">
+        <h2><i class="fas fa-star icon-blue"></i> Employee Appraisals & Feedback</h2>
+
+        <!-- Recent Appraisals Table -->
+        <div class="appraisals-table-container">
+            <table class="styled-table">
+            <thead>
+                <tr>
+                <th>Employee</th>
+                <th>Date</th>
+                <th>Rating</th>
+                <th>Comments</th>
+                <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                <td>Mary Njeri</td>
+                <td>2025-09-20</td>
+                <td>4.5 / 5</td>
+                <td>Exceeded targets for September</td>
+                <td><button class="btn-small btn-view" data-employee="Mary Njeri">View Details</button></td>
+                </tr>
+                <tr>
+                <td>Paul Kim</td>
+                <td>2025-09-18</td>
+                <td>3.8 / 5</td>
+                <td>Needs improvement in time management</td>
+                <td><button class="btn-small btn-view" data-employee="Paul Kim">View Details</button></td>
+                </tr>
+            </tbody>
+            </table>
+        </div>
+
+    </section>
+
+    <!-- ====== Modal: Appraisal Details ====== -->
+    <div id="appraisalModal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3>Appraisal - <span id="modalEmployeeName"></span></h3>
+            <p><strong>Rating:</strong> <span id="modalRating"></span></p>
+            <p><strong>Comments:</strong></p>
+            <p id="modalComments"></p>
+            <p><strong>Reviewed By:</strong> <span id="modalReviewer"></span></p>
+            <p><strong>Date:</strong> <span id="modalDate"></span></p>
+            <button class="btn-primary">Download Report</button>
+        </div>
+    </div>
+    
+
+    <!-- ====== Department Performance Analytics ====== -->
+    <section id="performanceAnalytics" class="performance-analytics">
+      <h3><i class="fas fa-chart-bar icon-blue"></i> Department Performance</h3>
+      <div class="analytics-grid">
+        <div class="analytics-card">
+          <h4>Average Rating per Department</h4>
+          <canvas id="deptRatingChart" height="120"></canvas>
+        </div>
+        <div class="analytics-card">
+          <h4>Goal Completion per Department</h4>
+          <canvas id="deptGoalChart" height="120"></canvas>
+        </div>
+        <div class="analytics-card">
+          <h4>Pending Reviews per Department</h4>
+          <canvas id="deptPendingChart" height="120"></canvas>
+        </div>
+        <div class="analytics-card">
+          <h4>Top Performers per Department</h4>
+          <canvas id="deptTopPerformersChart" height="120"></canvas>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+{% endblock %}

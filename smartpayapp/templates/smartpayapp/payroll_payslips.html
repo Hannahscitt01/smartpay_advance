@@ -161,15 +161,69 @@
       </table>
     </section>
 
-    <!-- ====== 4) Payroll Alerts ====== -->
-    <section class="dept-alerts" style="margin-top:20px;">
-      <h3><i class="fas fa-bell icon-blue"></i> Payroll Alerts</h3>
-      <ul>
-        <li>5 employees have missing bank details</li>
-        <li>2 unprocessed overtime claims</li>
-        <li>Approval required for Finance payroll batch</li>
-      </ul>
-    </section>
+    <!-- ====== Payroll Alerts + Quick Stats Cards Row ====== -->
+    <div class="payroll-alerts-row" style="display:flex; flex-wrap:wrap; gap:20px; margin-top:20px;">
+
+      <!-- Payroll Alerts -->
+      <section class="dept-alerts" style="flex:1; min-width:280px;">
+        <h3><i class="fas fa-bell icon-blue"></i> Payroll Alerts</h3>
+        <ul>
+          <li>5 employees have missing bank details</li>
+          <li>2 unprocessed overtime claims</li>
+          <li>Approval required for Finance payroll batch</li>
+        </ul>
+      </section>
+
+      <!-- Quick Stats Cards -->
+      <section class="stats-overview payroll-quick-stats" style="flex:2; display:flex; gap:16px; flex-wrap:wrap;">
+        <div class="stat-card">
+          <div class="stat-header" style="display:flex; align-items:center; gap:12px;">
+            <div class="stat-icon"><i class="fas fa-users"></i></div>
+            <div>
+              <h3>Employee Payroll</h3>
+              <p id="totalEmployeePayroll">45</p>
+            </div>
+          </div>
+          <div class="stat-links">
+            <a href="#">Individual Payroll</a>
+            <a href="#">Department Payroll</a>
+            <a href="#">General Payroll</a>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-header" style="display:flex; align-items:center; gap:12px;">
+            <div class="stat-icon"><i class="fas fa-file-invoice"></i></div>
+            <div>
+              <h3>Employee Payslips</h3>
+              <p id="totalPayslipsGenerated">298</p>
+            </div>
+          </div>
+          <div class="stat-links">
+            <a href="#">Individual Payslip</a>
+            <a href="#">Department Payslips</a>
+            <a href="#">General Payslips</a>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-header" style="display:flex; align-items:center; gap:12px;">
+            <div class="stat-icon"><i class="fas fa-clock"></i></div>
+            <div>
+              <h3>Overtime Claims</h3>
+              <p id="overtimeClaims">7 Pending</p>
+            </div>
+          </div>
+          <div class="stat-links">
+            <a href="#">Individual Claims</a>
+            <a href="#">Department Claims</a>
+            <a href="#">General Claims</a>
+          </div>
+        </div>
+      </section>
+
+    </div>
+    
 
     <!-- ====== 5) Payroll Audit Trail ====== -->
     <section id="payrollAudit" class="dept-audit section">
@@ -379,7 +433,7 @@
         <td>HR</td>
         <td>75,000</td>
         <td>18,500</td>
-        <td>56,500</td>
+        <td>56,500</td> 
         <td><span class="status-badge pending">Pending Approval</span></td>
         <td>
           <button class="btn-small btn-view-payslip" data-employee="Paul Kim">View Payslip</button>

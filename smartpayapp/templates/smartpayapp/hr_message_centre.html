@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Smart Pay | HR Message Centre{% endblock %}
+
+{% block content %}
+<div class="hr-dashboard">
+  
+  <!-- Sidebar -->
+  <aside class="aside-nav">
+    <div class="logo">HR Dashboard</div>
+    <nav class="nav-links">
+      <a href="{% url 'hr_home' %}">Dashboard</a>
+      <a href="{% url 'employee_list' %}">Employees</a>
+      <a href="{% url 'hr_departments' %}">Departments</a>
+      <a href="{% url 'payroll_payslips' %}">Payroll</a>
+      <a href="{% url 'hr_track_performance' %}">Performance</a>
+      <a href="{% url 'hr_loan_requests' %}">Requests</a>
+      <a class="active" href="{% url 'hr_message_centre' %}">Messages</a>
+      <a href="{% url 'hr_reports' %}">Reports</a>
+      <a href="{% url 'hr_settings' %}">Settings</a>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    
+    <!-- Page Header -->
+    <header class="page-header">
+      <div class="page-header-left">
+        <h1><i class="fas fa-envelope"></i> Message Centre</h1>
+        <p class="breadcrumb">Home > Dashboard > Messages</p>
+      </div>
+      <div class="page-header-right">
+        <div class="search-container">
+        <input 
+            type="text" 
+            class="search-bar" 
+            placeholder="Search conversations..."
+        >
+        <i class="fa fa-search search-icon"></i>
+        </div>
+
+        <button class="btn-primary"><i class="fas fa-plus"></i> New Message</button>
+        <button class="btn-help" title="Notifications">
+          <i class="fas fa-bell"></i>
+          <span class="notification-badge">3</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Messaging Container -->
+    <div class="message-centre">
+      
+      <!-- Left Panel: Conversation List -->
+      <aside class="conversation-list">
+        <div class="conversation-tabs">
+          <button class="tab active">All</button>
+          <button class="tab">Departments</button>
+          <button class="tab">Employees</button>
+        </div>
+        <ul class="conversation-items">
+          <li class="conversation active">
+            <div class="avatar">HR</div>
+            <div class="details">
+              <h4>HR Department</h4>
+              <p>Reminder: Submit reports by Friday.</p>
+            </div>
+            <span class="time">09:20</span>
+          </li>
+          <li class="conversation">
+            <div class="avatar">JD</div>
+            <div class="details">
+              <h4>John Doe</h4>
+              <p>Can I request leave for next week?</p>
+            </div>
+            <span class="time">Yesterday</span>
+          </li>
+        </ul>
+      </aside>
+
+      <!-- Right Panel: Message Thread -->
+      <section class="chat-window">
+        <header class="chat-header">
+          <h3>HR Department</h3>
+          <div class="chat-actions">
+            <button>Mute</button>
+            <button>Delete</button>
+          </div>
+        </header>
+        
+        <div class="chat-body">
+          <div class="message received">
+            <p>Hello HR team, please note the updated payroll policy.</p>
+            <span class="time">09:15</span>
+          </div>
+          <div class="message sent">
+            <p>Thank you, received.</p>
+            <span class="time">09:18</span>
+          </div>
+        </div>
+
+        <footer class="chat-footer">
+          <input type="text" placeholder="Type your message...">
+          <button class="btn-primary"><i class="fas fa-paper-plane"></i></button>
+        </footer>
+      </section>
+    </div>
+  </main>
+</div>
+{% endblock %}

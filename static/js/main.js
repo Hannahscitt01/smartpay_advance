@@ -21,3 +21,27 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
 
+///Message centre
+// Handle switching tabs (All / Departments / Employees)
+document.querySelectorAll('.conversation-tabs .tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.conversation-tabs .tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+  });
+});
+
+// Handle sending messages
+const chatInput = document.querySelector('.chat-footer input');
+const chatBody = document.querySelector('.chat-body');
+const sendBtn = document.querySelector('.chat-footer button');
+
+sendBtn.addEventListener('click', () => {
+  if (chatInput.value.trim() !== "") {
+    const msg = document.createElement('div');
+    msg.classList.add('message', 'sent');
+    msg.innerHTML = `<p>${chatInput.value}</p><span class="time">Now</span>`;
+    chatBody.appendChild(msg);
+    chatInput.value = "";
+    chatBody.scrollTop = chatBody.scrollHeight;
+  }
+});

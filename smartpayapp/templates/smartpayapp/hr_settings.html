@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Smart Pay | HR Settings{% endblock %}
+
+{% block content %}
+<!-- ====== HR Dashboard Settings Page ====== -->
+<div class="hr-dashboard">
+  
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <h2>HR</h2>
+    </div>
+    <nav class="sidebar-nav">
+      <ul>
+        <li><a href="{% url 'hr_home' %}">Dashboard</a></li>
+        <li><a href="{% url 'employee_list' %}">Employees</a></li>
+        <li><a href="{% url 'hr_departments' %}">Departments</a></li>
+        <li><a href="{% url 'payroll_payslips' %}">Payroll</a></li>
+        <li><a href="{% url 'hr_track_performance' %}">Performance</a></li>
+        <li><a href="{% url 'hr_loan_requests' %}">Requests</a></li>
+        <li><a href="{% url 'hr_message_centre' %}">Messages</a></li>
+        <li><a href="{% url 'hr_reports' %}">Reports</a></li>
+        <li><a class="active" href="{% url 'hr_settings' %}">Settings</a></li>
+      </ul>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+
+    <!-- ====== Settings Page Header ====== -->
+    <header class="page-header">
+      <div class="page-header-left">
+        <h1><i class="fas fa-cog"></i> Settings</h1>
+        <p class="breadcrumb">Home &gt; Dashboard &gt; Settings</p>
+      </div>
+      <div class="page-header-right">
+        <select class="quick-nav" onchange="navigateToSection(this)">
+          <option value="">Jump to Section...</option>
+          <option value="#profile-settings">Profile</option>
+          <option value="#notification-settings">Notifications</option>
+          <option value="#system-settings">System</option>
+          <option value="#security-settings">Security</option>
+          <option value="#hr-preferences">HR Preferences</option>
+        </select>
+        <button class="btn-secondary"><i class="fas fa-undo"></i> Reset</button>
+        <button class="btn-primary"><i class="fas fa-save"></i> Save</button>
+        <button class="btn-help" title="Help"><i class="fas fa-question-circle"></i></button>
+      </div>
+    </header>
+
+    <!-- Profile + Notifications -->
+    <div class="settings-container">
+      <!-- Profile Settings -->
+      <section class="settings-section" id="profile-settings">
+        <h3><i class="fas fa-user"></i> Profile Settings</h3>
+        <form class="settings-form">
+          <div class="form-group">
+            <label for="fullName">Full Name</label>
+            <input type="text" id="fullName" value="John Doe">
+          </div>
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" value="john.doe@example.com">
+          </div>
+          <div class="form-group">
+            <label for="role">Role</label>
+            <select id="role">
+              <option>HR Manager</option>
+              <option>Employee</option>
+              <option>Admin</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="password">Change Password</label>
+            <input type="password" id="password" placeholder="New Password">
+          </div>
+          <button type="submit" class="btn-primary">Update Profile</button>
+        </form>
+      </section>
+
+      <!-- Notification Preferences -->
+      <section class="settings-section" id="notification-settings">
+        <h3><i class="fas fa-bell"></i> Notification Preferences</h3>
+        <form class="settings-form">
+          <div class="form-group checkbox-group">
+            <input type="checkbox" id="emailNotify" checked>
+            <label for="emailNotify">Email Notifications</label>
+          </div>
+          <div class="form-group checkbox-group">
+            <input type="checkbox" id="smsNotify">
+            <label for="smsNotify">SMS Notifications</label>
+          </div>
+          <div class="form-group checkbox-group">
+            <input type="checkbox" id="pushNotify" checked>
+            <label for="pushNotify">Push Notifications</label>
+          </div>
+          <button type="submit" class="btn-primary">Save Preferences</button>
+        </form>
+      </section>
+    </div>
+
+    <!-- System Settings -->
+    <section class="settings-section" id="system-settings">
+      <h3><i class="fas fa-cogs"></i> System Settings</h3>
+      <form class="settings-form">
+        <div class="form-group">
+          <label for="timezone">Timezone</label>
+          <select id="timezone">
+            <option>GMT +3:00 Nairobi</option>
+            <option>GMT +0:00 London</option>
+            <option>GMT -5:00 New York</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="dateFormat">Date Format</label>
+          <select id="dateFormat">
+            <option>YYYY-MM-DD</option>
+            <option>DD-MM-YYYY</option>
+            <option>MM-DD-YYYY</option>
+          </select>
+        </div>
+        <button type="submit" class="btn-primary">Save System Settings</button>
+      </form>
+    </section>
+
+    <!-- Security Settings -->
+    <section class="settings-section" id="security-settings">
+      <h3><i class="fas fa-shield-alt"></i> Security Settings</h3>
+      <form class="settings-form">
+        <div class="form-group checkbox-group">
+          <input type="checkbox" id="twoFactor">
+          <label for="twoFactor">Enable Two-Factor Authentication</label>
+        </div>
+        <div class="form-group checkbox-group">
+          <input type="checkbox" id="passwordExpiry" checked>
+          <label for="passwordExpiry">Force password change every 90 days</label>
+        </div>
+        <button type="submit" class="btn-primary">Save Security Settings</button>
+      </form>
+    </section>
+
+    <!-- HR Preferences -->
+    <section class="settings-section" id="hr-preferences">
+      <h3><i class="fas fa-users-cog"></i> HR Preferences</h3>
+      <form class="settings-form">
+        <div class="form-group">
+          <label for="leavePolicy">Leave Policy</label>
+          <select id="leavePolicy">
+            <option>Standard (21 days annual)</option>
+            <option>Extended (30 days annual)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="workHours">Work Hours</label>
+          <input type="text" id="workHours" value="9 AM - 5 PM">
+        </div>
+        <button type="submit" class="btn-primary">Save Preferences</button>
+      </form>
+    </section>
+
+  </main>
+</div>
+{% endblock %}

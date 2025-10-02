@@ -364,3 +364,166 @@ searchInput.addEventListener('keyup', ()=>{
 });
 
 
+//hr settings
+
+function navigateToSection(select) {
+  const sectionId = select.value;
+  if (sectionId) {
+    const target = document.querySelector(sectionId);
+    if (target) {
+      target.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+  }
+}
+
+
+
+///Message centre
+// messages.js
+document.addEventListener('DOMContentLoaded', () => {
+  // --- Elements ---
+  const tabs = document.querySelectorAll('.conversation-tabs .tab');
+  const conversations = document.querySelectorAll('.conversation');
+  const chatHeaderTitle = document.querySelector('.chat-header h3');
+  const chatBody = document.querySelector('.chat-body');
+  const chatInput = document.querySelector('.chat-footer input');
+  const sendBtn = document.querySelector('.chat-footer button');
+
+  // Defensive checks
+  if (!chatBody) console.warn('messages.js: .chat-body not found');
+  if (!chatInput) console.warn('messages.js: .chat-footer input not found');
+  if (!sendBtn) console.warn('messages.js: .chat-footer button not found');
+
+  // --- Helper: format time "HH:MM" ---
+  function nowTime() {
+    try {
+      return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    } catch (e) {
+      return new Date().toLocaleTimeString();
+    }
+  }
+
+  // --- Helper: append message safely ---
+  function appendMessage({ text, type = 'sent', time = null }) {
+    if (!chatBody) return;
+    const wrapper = document.createElement('div');
+    wrapper.className = `message ${type}`;
+    const p = document.createElement('p');
+    p.textContent = text;
+    const timeSpan = document.createElement('span');
+    timeSpan.className = 'time';
+    timeSpan.textContent = time || nowTime();
+    wrapper.appendChild(p);
+    wrapper.appendChild(timeSpan);
+    chatBody.appendChild(wrapper);
+    // scroll to bottom
+    chatBody.scrollTop = chatBody.scrollHeight;
+  }
+
+  // --- Send message action ---
+  function sendMessage() {
+    if (!chatInput) return;
+    const text = chatInput.value.trim();
+    if (!text) return;
+    appendMessage({ text, type: 'sent' });
+    chatInput.value = '';
+
+    // TODO: send to backend (fetch / websocket) - placeholder
+    // fetch('/api/messages/send', { method: 'POST', body: JSON.stringify({ text, recipient }) })
+
+    // mimic auto-reply for demo (optional)
+    // setTimeout(() => appendMessage({ text: 'Auto-reply: message received', type: 'received' }), 700);
+  }
+
+  // Wire up send button
+  if (sendBtn) {
+    sendBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      sendMessage();
+    });
+  }
+
+  // Enter to send (Shift+Enter = newline)
+  if (chatInput) {
+    chatInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+  }
+
+  // --- Tabs switching (All / Departments / Employees) ---
+  if (tabs && tabs.length) {
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+
+        // optional filter: uses data-filter on tab and data-type on items
+        const filter = (tab.dataset.filter || tab.textContent || '').toLowerCase().trim();
+        if (filter && filter !== 'all' && conversations && conversations.length) {
+          conversations.forEach(conv => {
+            const type = (conv.dataset.type || '').toLowerCase();
+            conv.style.display = (type === filter || type === '') ? '' : 'none';
+          });
+        } else {
+          conversations.forEach(conv => conv.style.display = '');
+        }
+      });
+    });
+  }
+
+  // --- Conversation click: load into chat window ---
+  if (conversations && conversations.length) {
+    conversations.forEach(item => {
+      item.addEventListener('click', () => {
+        // toggle active visual
+        conversations.forEach(c => c.classList.remove('active'));
+        item.classList.add('active');
+
+        // set header title
+        const nameEl = item.querySelector('.details h4');
+        const snippetEl = item.querySelector('.details p');
+        const timeEl = item.querySelector('.time');
+        if (chatHeaderTitle && nameEl) chatHeaderTitle.textContent = nameEl.textContent.trim();
+
+        // clear existing messages
+        if (chatBody) chatBody.innerHTML = '';
+
+        // If your li has data-messages (JSON) you'd parse and display them.
+        // For now show the snippet as the most recent received message:
+        if (snippetEl && chatBody) {
+          appendMessage({ text: snippetEl.textContent.trim(), type: 'received', time: timeEl ? timeEl.textContent : nowTime() });
+        }
+
+        // Optionally, you can fetch the full thread from backend here:
+        // fetch(`/api/messages/thread/${threadId}`).then(...)
+
+      });
+    });
+  }
+
+  // --- Keyboard accessibility for tabs (optional) ---
+  if (tabs && tabs.length) {
+    tabs.forEach(tab => {
+      tab.setAttribute('tabindex', '0');
+      tab.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          tab.click();
+        }
+      });
+    });
+  }
+
+  // Auto-select first conversation (if none active)
+  if (conversations && conversations.length) {
+    const active = document.querySelector('.conversation.active') || conversations[0];
+    if (active) active.click();
+  }
+});
+
