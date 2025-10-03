@@ -1,0 +1,229 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="dashboard-container">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <h2>HR</h2>
+    </div>
+    <nav class="sidebar-nav">
+      <ul>
+        <li><a href="{% url 'hr_home' %}">Dashboard</a></li>
+        <li><a href="{% url 'employee_list' %}">Employees</a></li>
+        <li><a href="{% url 'hr_departments' %}">Departments</a></li>
+        <li><a href="{% url 'payroll_payslips' %}">Payroll</a></li>
+        <li><a href="{% url 'hr_track_performance' %}">Performance</a></li>
+        <li><a href="{% url 'hr_loan_requests' %}">Requests</a></li>
+        <li><a href="{% url 'hr_message_centre' %}">Messages</a></li>
+        <li><a class="active" href="{% url 'hr_reports' %}">Reports</a></li>
+        <li><a href="{% url 'hr_settings' %}">Settings</a></li>
+      </ul>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- Page Header -->
+    <header class="page-header">
+      <div class="page-header-left">
+        <h1><i class="fas fa-chart-line"></i> Reports</h1>
+        <p class="breadcrumb">Home > Dashboard > Reports</p>
+      </div>
+      <div class="page-header-right">
+        <button class="btn-primary"><i class="fas fa-download"></i> Export</button>
+        <button class="btn-help" title="Notifications">
+          <i class="fas fa-bell"></i>
+          <span class="notification-badge">5</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Key Metrics -->
+    <section class="metrics-section">
+        <a href="{% url 'employee_list' %}" class="metric-card">
+            <h4>Total Employees</h4>
+            <p>120</p>
+        </a>
+        <a href="{% url 'hr_departments' %}" class="metric-card">
+            <h4>Active Departments</h4>
+            <p>8</p>
+        </a>
+        <a href="{% url 'hr_reports' %}" class="metric-card">
+            <h4>Pending Reports</h4>
+            <p>15</p>
+        </a>
+        <a href="{% url 'hr_reports' %}" class="metric-card">
+            <h4>Completed Reports</h4>
+            <p>85</p>
+        </a>
+    </section>
+
+    <!-- Filters -->
+    <section class="filters-section">
+      <h3><i class="fas fa-filter"></i> Filter Reports</h3>
+      <form class="filters-form">
+        <select>
+          <option>All Departments</option>
+          <option>Finance</option>
+          <option>HR</option>
+          <option>IT</option>
+        </select>
+        <select>
+          <option>This Month</option>
+          <option>Last Month</option>
+          <option>Quarterly</option>
+          <option>Yearly</option>
+        </select>
+        <select>
+          <option>All Reports</option>
+          <option>Performance</option>
+          <option>Attendance</option>
+          <option>Payroll</option>
+        </select>
+        <button type="submit" class="btn-primary"><i class="fas fa-search"></i> Apply</button>
+      </form>
+    </section>
+
+    <!-- Charts Section -->
+    <section class="charts-section">
+      <div class="chart-card">
+        <h3><i class="fas fa-users"></i> Department Performance</h3>
+        <canvas id="deptPerformanceChart"></canvas>
+      </div>
+      <div class="chart-card">
+        <h3><i class="fas fa-clock"></i> Attendance Trends</h3>
+        <canvas id="attendanceChart"></canvas>
+      </div>
+      <div class="chart-card">
+        <h3><i class="fas fa-coins"></i> Payroll Distribution</h3>
+        <canvas id="payrollChart"></canvas>
+      </div>
+    </section>
+
+    <!-- Recent Reports -->
+    <section class="recent-reports">
+      <h3><i class="fas fa-file-alt"></i> Recent Reports</h3>
+      <ul>
+        <li>
+          <span>Payroll Summary - August 2025</span>
+          <button class="btn-primary-sm">View</button>
+        </li>
+        <li>
+          <span>Department Performance - Q2 2025</span>
+          <button class="btn-primary-sm">View</button>
+        </li>
+        <li>
+          <span>Attendance Report - September 2025</span>
+          <button class="btn-primary-sm">View</button>
+        </li>
+      </ul>
+    </section>
+
+    <!-- Reports Table -->
+    <section class="reports-table">
+      <h3><i class="fas fa-database"></i> Employee Reports</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Employee</th>
+            <th>Department</th>
+            <th>Last Report</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Jane Doe</td>
+            <td>HR</td>
+            <td>Sep 28, 2025</td>
+            <td><span class="status complete">Complete</span></td>
+            <td><button class="btn-primary-sm">Download</button></td>
+          </tr>
+          <tr>
+            <td>John Smith</td>
+            <td>IT</td>
+            <td>Sep 30, 2025</td>
+            <td><span class="status pending">Pending</span></td>
+            <td><button class="btn-primary-sm">View</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Downloadable Reports -->
+    <section class="downloads-section">
+      <h3><i class="fas fa-download"></i> Download Reports</h3>
+      <div class="downloads-grid">
+        <div class="download-card">
+          <h4>Annual HR Report 2024</h4>
+          <button class="btn-primary-sm"><i class="fas fa-file-pdf"></i> PDF</button>
+        </div>
+        <div class="download-card">
+          <h4>Quarterly Payroll Report</h4>
+          <button class="btn-primary-sm"><i class="fas fa-file-excel"></i> Excel</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Audit Logs -->
+    <section class="audit-section">
+      <h3><i class="fas fa-clipboard-list"></i> Audit Logs</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>User</th>
+            <th>Action</th>
+            <th>Details</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Oct 2, 2025</td>
+            <td>Admin</td>
+            <td>Report Generated</td>
+            <td>Payroll Summary September</td>
+          </tr>
+          <tr>
+            <td>Oct 1, 2025</td>
+            <td>Manager</td>
+            <td>Report Viewed</td>
+            <td>Attendance Report September</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Summary Stats Section -->
+    <section class="summary-stats">
+        <h3><i class="fas fa-chart-pie"></i> Summary Stats</h3>
+        <div class="stats-grid">
+            <div class="stat-card">
+            <h4>Average Report Completion Time</h4>
+            <p>3 Days</p>
+            </div>
+            <div class="stat-card">
+            <h4>Most Active Department</h4>
+            <p>IT</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Notifications / Alerts Section -->
+    <section class="alerts-section">
+        <h3><i class="fas fa-bell"></i> Notifications</h3>
+        <div class="alert-card warning">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span>⚠ 3 pending reports require attention this week.</span>
+        </div>
+        <div class="alert-card success">
+            <i class="fas fa-check-circle"></i>
+            <span>✔ All payroll reports have been submitted on time.</span>
+        </div>
+    </section>
+
+
+  </main>
+</div>
+{% endblock %}

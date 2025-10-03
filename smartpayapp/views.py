@@ -658,3 +658,8 @@ def hr_settings(request):
 def hr_appraissals(request):
     """Placeholder view for hr appraissals (UI stub)."""
     return render(request, 'smartpayapp/hr_appraissals.html')
+
+@login_required
+def hr_profile(request):
+    """Placeholder view for hr profile (UI stub)."""
+    return render(request, 'smartpayapp/hr_profile.html')

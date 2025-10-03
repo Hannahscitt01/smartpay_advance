@@ -38,7 +38,8 @@ from .views import (
     hr_leaves_offs,
     employee_today,
     hr_settings,
-    hr_appraissals
+    hr_appraissals,
+    hr_profile
           
 )
 
@@ -84,6 +85,7 @@ urlpatterns = [
     path('hr/leaves-offs/', hr_leaves_offs, name='hr_leaves_offs'),
     path('hr/settings/', hr_settings, name='hr_settings'),
     path('hr/appraissals/', hr_appraissals, name='hr_appraissals'),
+    path('hr/profile/', hr_profile, name='hr_profile'),
 
 
 
