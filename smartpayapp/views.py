@@ -8,7 +8,7 @@ from .forms import SignUpForm, SalaryAdvanceForm, EmployeeForm, ProfileUpdateFor
 from .models import Profile, SalaryAdvanceRequest, Employee, LoanRequest, ChatMessage, SupportChatMessage
 from .decorators import admin_required
 from decimal import Decimal
-from django.db.models import Sum, Q, Max
+from django.db.models import Sum, Q, Max, Count
 from django.utils import timezone
 
 from collections import OrderedDict
@@ -269,7 +269,7 @@ def internal_loan(request):
 
 def internal_loan_success(request):
     """Confirmation page after successful loan request."""
-    return render(request, 'smartpayapp/internal_loan_sucess.html')
+    return render(request, 'smartpayapp/internal_loan_success.html')
 
 
 # ================================================================
@@ -574,23 +574,37 @@ def support_query(request):
 @login_required
 def hr_home(request):
     """HR landing page/dashboard."""
-    
-    # Assuming your logged-in user is linked to an Employee instance
+
+    # Logged-in employee
     try:
         employee = Employee.objects.get(email=request.user.email)
     except Employee.DoesNotExist:
         employee = None
 
+    # Current date and time
     current_date = timezone.localtime(timezone.now()).strftime("%b %d, %Y")
     current_time = timezone.localtime(timezone.now()).strftime("%I:%M %p")
+
+    # Dynamic employee and department counts
+    total_employees = Employee.objects.count()
+    total_departments = Employee.objects.values("department").distinct().count()
+
+    # Fetch recent loan requests only (latest 5)
+    loan_requests = LoanRequest.objects.select_related("employee").order_by("-created_at")[:5]
 
     context = {
         "employee": employee,
         "current_date": current_date,
         "current_time": current_time,
+        "total_employees": total_employees,
+        "total_departments": total_departments,
+        "loan_requests": loan_requests,
     }
 
     return render(request, "smartpayapp/hr_dashboard.html", context)
+
+
+
 
 @login_required
 def hr_departments(request):
@@ -658,3 +672,8 @@ def hr_settings(request):
 def hr_appraissals(request):
     """Placeholder view for hr appraissals (UI stub)."""
     return render(request, 'smartpayapp/hr_appraissals.html')
+
+@login_required
+def hr_profile(request):
+    """Placeholder view for hr profile (UI stub)."""
+    return render(request, 'smartpayapp/hr_profile.html')

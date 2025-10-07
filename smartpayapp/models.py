@@ -64,7 +64,7 @@ class Employee(models.Model):
     address = models.TextField(blank=True, null=True)
 
     def save(self, *args, **kwargs):
-        # --- Auto-calc age ---
+        # --- Auto-calc age of the staff employee ---
         if self.dob:
             today = timezone.now().date()
             self.age = today.year - self.dob.year - (
@@ -92,7 +92,7 @@ class Employee(models.Model):
 
 
 # ================================================================
-# Profile Model (Links User ↔ Employee)
+# Profile Model (Links User to Employee)
 # ================================================================
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -108,6 +108,15 @@ class Profile(models.Model):
         if self.employee:
             return f"{self.employee.full_name} ({self.employee.role})"
         return self.user.username
+
+    @property
+    def role(self):
+        """
+        Returns the employee's role dynamically from the linked Employee record.
+        Defaults to 'employee' if no employee is linked.
+        """
+        return self.employee.role if self.employee else "employee"
+
 
 # ================================================================
 # Salary Advance Request Model
@@ -233,4 +242,4 @@ def create_user_profile(sender, instance, created, **kwargs):
     - HR/Admin can update role later based on department or position.
     """
     if created:
-        Profile.objects.create(user=instance, role="employee")
+        Profile.objects.create(user=instance)

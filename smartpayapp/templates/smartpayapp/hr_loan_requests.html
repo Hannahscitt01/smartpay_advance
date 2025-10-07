@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="dashboard-container">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <h2>HR</h2>
+    </div>
+    <nav class="sidebar-nav">
+      <ul>
+        <li><a href="{% url 'hr_home' %}">Dashboard</a></li>
+        <li><a href="{% url 'employee_list' %}">Employees</a></li>
+        <li><a href="{% url 'hr_departments' %}">Departments</a></li>
+        <li><a href="{% url 'payroll_payslips' %}">Payroll</a></li>
+        <li><a href="{% url 'hr_track_performance' %}">Performance</a></li>
+        <li><a class="active" href="{% url 'hr_loan_requests' %}">Loan Requests</a></li>
+        <li><a href="{% url 'hr_message_centre' %}">Messages</a></li>
+        <li><a href="{% url 'hr_reports' %}">Reports</a></li>
+        <li><a href="{% url 'hr_settings' %}">Settings</a></li>
+      </ul>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- Page Header -->
+    <header class="page-header">
+      <div class="page-header-left">
+        <h1><i class="fas fa-hand-holding-usd"></i> Loan Requests</h1>
+        <p class="breadcrumb">Home > Dashboard > Loan Requests</p>
+      </div>
+      <div class="page-header-right">
+        <button class="btn-primary"><i class="fas fa-download"></i> Export</button>
+        <button class="btn-help" title="Notifications">
+          <i class="fas fa-bell"></i>
+          <span class="notification-badge">2</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Key Metrics -->
+    <section class="metrics-section">
+      <div class="metric-card">
+        <h4>Pending Requests</h4>
+        <p>12</p>
+      </div>
+      <div class="metric-card">
+        <h4>On Hold</h4>
+        <p>3</p>
+      </div>
+      <div class="metric-card">
+        <h4>Approved (Finance)</h4>
+        <p>7</p>
+      </div>
+      <div class="metric-card">
+        <h4>Rejected (Finance)</h4>
+        <p>5</p>
+      </div>
+    </section>
+
+    <!-- Loan Requests Table -->
+    <section class="loan-requests">
+        <h2><i class="fas fa-list"></i> Employee Loan Requests</h2>
+        <table>
+            <thead>
+            <tr>
+                <th>Employee</th>
+                <th>Department</th>
+                <th>Loan Type</th>
+                <th>Amount</th>
+                <th>Date Requested</th>
+                <th>Status</th>
+                <th>HR Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>Jane Doe</td>
+                <td>HR</td>
+                <td>Emergency</td>
+                <td>$2,500</td>
+                <td>Sep 28, 2025</td>
+                <td><span class="status pending">Pending</span></td>
+                <td>
+                <button class="btn-hold">Hold</button>
+                <button class="btn-warning">Warning</button>
+                </td>
+            </tr>
+            <tr>
+                <td>John Smith</td>
+                <td>IT</td>
+                <td>Education</td>
+                <td>$5,000</td>
+                <td>Sep 25, 2025</td>
+                <td><span class="status approved">Approved</span></td>
+                <td>
+                <button class="btn-hold">Hold</button>
+                <button class="btn-warning">Warning</button>
+                </td>
+            </tr>
+            <tr>
+                <td>Alice Brown</td>
+                <td>Finance</td>
+                <td>Personal</td>
+                <td>$3,200</td>
+                <td>Sep 20, 2025</td>
+                <td><span class="status declined">Declined</span></td>
+                <td>
+                <button class="btn-hold">Hold</button>
+                <button class="btn-warning">Warning</button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+
+
+    <!-- HR Notes Section -->
+    <section class="hr-notes">
+      <h3><i class="fas fa-sticky-note"></i> Send Notes to Finance</h3>
+      <form class="notes-form">
+        <textarea placeholder="Write justification note..."></textarea>
+        <div class="note-actions">
+          <button type="submit" class="btn-secondary"><i class="fas fa-pause-circle"></i> Send Hold Note</button>
+          <button type="submit" class="btn-warning"><i class="fas fa-exclamation-circle"></i> Send Warning Note</button>
+        </div>
+      </form>
+    </section>
+  </main>
+</div>
+{% endblock %}

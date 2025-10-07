@@ -143,6 +143,9 @@ class ProfileUpdateForm(forms.ModelForm):
 # ================================================================
 # Loan Request Form
 # ================================================================
+# ================================================================
+# Loan Request Form (updated to support 'employee')
+# ================================================================
 class LoanRequestForm(forms.ModelForm):
     class Meta:
         model = LoanRequest
@@ -162,3 +165,26 @@ class LoanRequestForm(forms.ModelForm):
                 'placeholder': 'Optional: Enter reason for request'
             }),
         }
+
+    def __init__(self, *args, employee=None, **kwargs):
+        """
+        Allow passing an 'employee' argument when initializing the form.
+        Useful for dynamic validation or display limits.
+        """
+        super().__init__(*args, **kwargs)
+        self.employee = employee
+
+        # Optionally display context to the user
+        if employee:
+            # Example: dynamic help text based on employee salary
+            max_loan = employee.salary * 2 if employee.salary else 0
+            self.fields["amount"].help_text = f"Maximum allowed loan: KSh {max_loan:,.2f}"
+
+    def clean_amount(self):
+        """
+        Validate loan amount: cannot exceed twice the employee’s salary.
+        """
+        amount = self.cleaned_data.get("amount")
+        if self.employee and amount and amount > (self.employee.salary * 2):
+            raise forms.ValidationError("Requested amount exceeds your loan limit (2× salary).")
+        return amount

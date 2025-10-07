@@ -18,10 +18,15 @@ class EmployeeAdmin(admin.ModelAdmin):
     list_filter = ("department", "job_title", "role", "date_joined")
     ordering = ("staff_id",)
 
-    # ✅ Make role editable directly in the list view
+    list_display_links = ("staff_id", "full_name")
+
+    #  Make role editable in the list view
     list_editable = ("role",)
 
-    # ✅ Group fields in admin form
+    #  Make staff_id and age read-only but visible
+    readonly_fields = ("staff_id", "age")
+
+    #  Organize fields nicely
     fieldsets = (
         ("Personal Info", {
             "fields": ("full_name", "national_id", "dob", "age")
@@ -53,6 +58,7 @@ class ProfileAdmin(admin.ModelAdmin):
         "employee__department", 
         "employee__job_title"
     )
+    
     list_filter = ("employee__department", "employee__job_title")
     ordering = ("user",)
 
