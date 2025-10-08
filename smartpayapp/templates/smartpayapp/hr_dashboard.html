@@ -164,10 +164,10 @@
       </div>
 
       <div class="stat-card1">
-        <a href="{% url 'employee_today' %}">
-          <h3>Employees Today</h3>
-          <p>27/30</p>
-        </a>
+          <a href="{% url 'employee_today' %}">
+              <h3>Employees Today</h3>
+              <p>{{ employees_checked_in_today }}/{{ total_employees }}</p>
+          </a>
       </div>
 
       <div class="stat-card1">
@@ -255,7 +255,7 @@
     <!-- 1. Attendance Overview -->
     <section class="attendance-overview">
       <h2><i class="fas fa-user-check icon-blue"></i> Attendance Overview</h2>
-      <table>
+      <table id="attendanceTable">
         <thead>
           <tr>
             <th>Employee</th>
@@ -265,18 +265,14 @@
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>Jane Doe</td>
-            <td><span class="badge present">Present</span></td>
-            <td>8:45 AM</td>
-            <td>5:00 PM</td>
-          </tr>
-          <tr>
-            <td>John Smith</td>
-            <td><span class="badge absent">Absent</span></td>
-            <td>-</td>
-            <td>-</td>
-          </tr>
+          {% for emp in attendance_data %}
+            <tr data-emp-id="{{ emp.id }}" data-dept="{{ emp.department }}" data-emp-name="{{ emp.full_name }}">
+              <td>{{ emp.full_name }}</td>
+              <td><span class="badge status-{{ emp.status|lower|slugify }}">{{ emp.status }}</span></td>
+              <td>{{ emp.clock_in }}</td>
+              <td>{{ emp.clock_out }}</td>
+            </tr>
+          {% endfor %}
         </tbody>
       </table>
     </section>
@@ -288,23 +284,25 @@
         <div class="kpi-card">
           <i class="fas fa-users kpi-icon"></i>
           <h3>Total Employees</h3>
-          <p>120</p>
+          <p>{{ total_employees }}</p>
         </div>
         <div class="kpi-card">
           <i class="fas fa-file-invoice-dollar kpi-icon"></i>
-          <h3>Payroll (This Month)</h3>
-          <p>KSh 5,200,000</p>
+          <h3>Payroll ({{ current_month_name }} {{ current_year }})</h3>
+          <p>KSh {{ total_payroll|floatformat:0 }}</p>
         </div>
         <div class="kpi-card">
           <i class="fas fa-hand-holding-usd kpi-icon"></i>
-          <h3>Pending Advances</h3>
-          <p>8</p>
+          <h3>Pending Loans</h3>
+          <p>{{ pending_loans_count }}</p>
         </div>
+
         <div class="kpi-card">
           <i class="fas fa-university kpi-icon"></i>
           <h3>Approved Loans</h3>
-          <p>15</p>
+          <p>{{ approved_loans_count }}</p>
         </div>
+
       </div>
     </section>
 

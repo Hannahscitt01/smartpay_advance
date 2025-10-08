@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Employee Check-In | SmartPay{% endblock %}
+
+{% block content %}
+<main class="attendance-page">
+
+  <!-- HEADER -->
+  <header class="attendance-header">
+      <div class="header-left">
+        <h1>Employee Check-In & Check-Out</h1>
+        <p><span class="greetings">{{ greeting }}</span>! Please clock in when you arrive and clock out when leaving.</p>
+      </div>
+      <div class="header-right">
+          <div class="datetime">
+              <span id="liveDate">{{ current_date }}</span>
+              <span id="liveTime">{{ current_time }}</span>
+          </div>
+      </div>
+  </header>
+
+    <!-- SEARCH & FILTER CONTROLS -->
+    <section class="attendance-controls">
+    <!-- Search Bar -->
+    <div class="search-bar">
+        <input 
+        type="text" 
+        id="employeeSearch" 
+        placeholder="Search employee name or ID..." 
+        aria-label="Search employees"
+        >
+        <button><i class="fas fa-search"></i></button>
+    </div>
+
+    <!-- Filter Dropdown -->
+    <div class="filter-bar">
+        <select id="departmentFilter" aria-label="Filter by department">
+        <option value="all">All Departments</option>
+        {% comment %} Dynamically populate department options {% endcomment %}
+        {% for dept_code, dept_name in employees.model.DEPARTMENTS %}
+            <option value="{{ dept_name }}">{{ dept_name }}</option>
+        {% endfor %}
+        </select>
+    </div>
+    </section>
+
+  <!-- SHARED VIEW TOGGLE (works for both views) -->
+  <div class="view-toggle" role="tablist" aria-label="View toggle" style="justify-content:center; margin: 1.5rem 0;">
+    <button id="cardViewBtn" class="active" aria-pressed="true">Card View</button>
+    <button id="tableViewBtn" aria-pressed="false">Table View</button>
+  </div>
+
+  <!-- CARD VIEW -->
+  <section id="cardView" class="attendance-directory" aria-hidden="false">
+    {% for dept, emps in departments.items %}
+    <div class="department-block" data-dept="{{ dept }}">
+        <h2 class="department-title">{{ dept }} Department</h2>
+        <div class="employee-grid">
+          {% for emp in emps %}
+          <div class="employee-card" data-emp-id="{{ emp.staff_id }}" data-emp-name="{{ emp.full_name }}" data-dept="{{ emp.department }}">
+            <div class="employee-info">
+              <h3>{{ emp.full_name }}</h3>
+              <p><strong>ID:</strong> {{ emp.staff_id }}</p>
+              <p><strong>Job Title:</strong> {{ emp.job_title }}</p>
+              <p><strong>Email:</strong> {{ emp.email }}</p>
+              <p><strong>Department:</strong> {{ emp.department }}</p>
+              <p><strong>Status:</strong> 
+                <span class="status not-checked" data-late="0" data-needs-explanation="false">
+                  Not Checked In
+                </span>
+              </p>
+              <div class="attendance-actions">
+                <button class="btn-checkin" data-action="clock_in">Clock In</button>
+                <button class="btn-checkout" data-action="clock_out" disabled>Clock Out</button>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+    </div>
+    {% empty %}
+    <p>No employees found in the system.</p>
+    {% endfor %}
+  </section>
+
+  <!-- TABLE VIEW -->
+  <section id="tableView" class="attendance-table hidden" aria-hidden="true">
+    {% for dept, emps in departments.items %}
+    <div class="department-table-block" data-dept="{{ dept }}">
+      <h2 class="department-title">{{ dept }} Department</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>ID</th>
+            <th>Job Title</th>
+            <th>Email</th>
+            <th>Department</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for emp in emps %}
+          <tr data-emp-id="{{ emp.staff_id }}" data-emp-name="{{ emp.full_name }}" data-dept="{{ emp.department }}">
+            <td>{{ emp.full_name }}</td>
+            <td>{{ emp.staff_id }}</td>
+            <td>{{ emp.job_title }}</td>
+            <td>{{ emp.email }}</td>
+            <td>{{ emp.department }}</td>
+            <td class="status not-checked" data-late="0" data-needs-explanation="false">
+              Not Checked In
+            </td>
+            <td>
+              <button class="btn-checkin" data-action="clock_in">Clock In</button>
+              <button class="btn-checkout" data-action="clock_out" disabled>Clock Out</button>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% empty %}
+    <p style="text-align:center;">No departments or employees found.</p>
+    {% endfor %}
+  </section>
+
+</main>
+
+{% endblock %}

@@ -5,6 +5,7 @@ from django.dispatch import receiver
 from django.core.validators import MinValueValidator
 from django.utils import timezone
 
+from datetime import datetime, time
 
 # ================================================================
 # Employee Model (Created by HR)
@@ -243,3 +244,44 @@ def create_user_profile(sender, instance, created, **kwargs):
     """
     if created:
         Profile.objects.create(user=instance)
+
+
+# ================================================================
+# Attendance Model
+# ================================================================
+class Attendance(models.Model):
+    """
+    Tracks daily attendance for each employee.
+
+    - Records clock-in and clock-out times.
+    - Calculates total hours worked.
+    - Determines late arrival and whether an explanation is needed.
+    """
+
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='attendances')
+    date = models.DateField(default=timezone.now)
+    clock_in = models.TimeField(null=True, blank=True)
+    clock_out = models.TimeField(null=True, blank=True)
+    hours_worked = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
+    status = models.CharField(max_length=50, default="Not Checked In")  # Not Checked In, Checked In, Checked Out, Late
+    late_minutes = models.PositiveIntegerField(default=0)
+    needs_explanation = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = ('employee', 'date') 
+        ordering = ['-date']
+
+    # ------------------------------------------------------------
+    # Methods
+    # ------------------------------------------------------------
+    def calculate_hours(self):
+        """Calculate worked hours from clock_in and clock_out"""
+        if self.clock_in and self.clock_out:
+            datetime_in = datetime.combine(self.date, self.clock_in)
+            datetime_out = datetime.combine(self.date, self.clock_out)
+            worked = datetime_out - datetime_in
+            self.hours_worked = round(worked.total_seconds() / 3600, 2)
+            self.save()
+
+    def __str__(self):
+        return f"{self.employee.full_name} - {self.date} - {self.status}"

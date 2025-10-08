@@ -139,3 +139,44 @@ class SupportChatMessageAdmin(admin.ModelAdmin):
     search_fields = ("sender__username", "receiver__username", "message")
     list_filter = ("is_read", "timestamp")
     ordering = ("-timestamp",)
+
+
+# ================================================================
+# Attendance Model
+# ================================================================
+from .models import Attendance  # make sure this import is added
+
+@admin.register(Attendance)
+class AttendanceAdmin(admin.ModelAdmin):
+    list_display = (
+        "employee",
+        "date",
+        "clock_in",
+        "clock_out",
+        "hours_worked",
+        "status",
+        "late_minutes",
+        "needs_explanation",
+    )
+    search_fields = (
+        "employee__staff_id",
+        "employee__full_name",
+        "employee__department",
+        "employee__job_title",
+    )
+    list_filter = ("status", "needs_explanation", "date", "employee__department")
+    ordering = ("-date",)
+    list_display_links = ("employee", "date")
+    readonly_fields = ("hours_worked", "late_minutes", "status", "needs_explanation")
+
+    fieldsets = (
+        ("Employee & Date", {
+            "fields": ("employee", "date")
+        }),
+        ("Times", {
+            "fields": ("clock_in", "clock_out")
+        }),
+        ("Calculated Info", {
+            "fields": ("hours_worked", "status", "late_minutes", "needs_explanation")
+        }),
+    )

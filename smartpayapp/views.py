@@ -5,14 +5,19 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 
 from .forms import SignUpForm, SalaryAdvanceForm, EmployeeForm, ProfileUpdateForm, LoanRequestForm
-from .models import Profile, SalaryAdvanceRequest, Employee, LoanRequest, ChatMessage, SupportChatMessage
+from .models import Profile, SalaryAdvanceRequest, Employee, LoanRequest, ChatMessage, SupportChatMessage, Attendance
 from .decorators import admin_required
 from decimal import Decimal
 from django.db.models import Sum, Q, Max, Count
 from django.utils import timezone
 
-from collections import OrderedDict
+from collections import OrderedDict, defaultdict
 from django.http import JsonResponse
+
+from datetime import datetime, time
+from django.views.decorators.csrf import csrf_exempt
+
+
 
 
 # ================================================================
@@ -582,15 +587,41 @@ def hr_home(request):
         employee = None
 
     # Current date and time
-    current_date = timezone.localtime(timezone.now()).strftime("%b %d, %Y")
-    current_time = timezone.localtime(timezone.now()).strftime("%I:%M %p")
+    now = timezone.localtime(timezone.now())
+    current_date = now.strftime("%b %d, %Y")
+    current_time = now.strftime("%I:%M %p")
+    current_month = now.month
+    current_year = now.year
+    today = now.date()  # Today’s date for attendance
 
     # Dynamic employee and department counts
     total_employees = Employee.objects.count()
     total_departments = Employee.objects.values("department").distinct().count()
 
+    # Employees who checked in today
+    employees_checked_in_today = Attendance.objects.filter(
+        date=today,
+        clock_in__isnull=False
+    ).count()
+
+    # Fetch recent employees (added this month)
+    recent_employees = Employee.objects.filter(
+        date_joined__year=current_year,
+        date_joined__month=current_month,
+        date_joined__isnull=False
+    ).order_by('-date_joined')
+
     # Fetch recent loan requests only (latest 5)
     loan_requests = LoanRequest.objects.select_related("employee").order_by("-created_at")[:5]
+
+    # ------------------- New: Total Payroll for Current Month -------------------
+    total_payroll = Employee.objects.aggregate(
+        total=Sum('salary')
+    )['total'] or 0
+
+    # ------------------- New: Pending and Approved Loan Counts -------------------
+    pending_loans_count = LoanRequest.objects.filter(status="Pending").count()
+    approved_loans_count = LoanRequest.objects.filter(status="Approved").count()
 
     context = {
         "employee": employee,
@@ -598,10 +629,20 @@ def hr_home(request):
         "current_time": current_time,
         "total_employees": total_employees,
         "total_departments": total_departments,
+        "recent_employees": recent_employees,
+        "current_month_name": now.strftime("%B"),
+        "current_year": current_year,
         "loan_requests": loan_requests,
+        "employees_checked_in_today": employees_checked_in_today,  # existing
+        "total_payroll": total_payroll,  # existing new
+        "pending_loans_count": pending_loans_count,  # new
+        "approved_loans_count": approved_loans_count,  # new
     }
 
     return render(request, "smartpayapp/hr_dashboard.html", context)
+
+
+
 
 
 
@@ -677,3 +718,267 @@ def hr_appraissals(request):
 def hr_profile(request):
     """Placeholder view for hr profile (UI stub)."""
     return render(request, 'smartpayapp/hr_profile.html')
+
+
+# ================================================================
+# Employee Check-In & Check-Out View
+# ================================================================
+def checkin_checkout(request):
+    """ Employee Check-In & Check-Out """
+
+    now = timezone.localtime(timezone.now()) 
+
+    # ------------------------------------------------------------
+    # Format date and time
+    # ------------------------------------------------------------
+    current_date = now.strftime("%b %d, %Y") 
+    current_time = now.strftime("%I:%M %p")   
+
+    # ------------------------------------------------------------
+    # Dynamic greeting based on time
+    # ------------------------------------------------------------
+    hour = now.hour
+    if hour < 12:
+        greeting = "Good morning"
+    elif 12 <= hour < 18:
+        greeting = "Good afternoon"
+    else:
+        greeting = "Good evening"
+
+    # ------------------------------------------------------------
+    # Fetch all employees and group by department
+    # ------------------------------------------------------------
+    employees = Employee.objects.all().order_by("department", "full_name")
+    departments = defaultdict(list)
+
+    for emp in employees:
+        # Get today's attendance or create if not exists
+        attendance, created = Attendance.objects.get_or_create(
+            employee=emp,
+            date=now.date()
+        )
+
+        # --------------------------------------------------------
+        # Determine status for display
+        # --------------------------------------------------------
+        status_label = "Not Checked In"
+        if attendance.clock_in and not attendance.clock_out:
+            # Employee checked in but not yet checked out
+            if attendance.late_minutes > 0 and attendance.late_minutes <= 30:
+                status_label = f"Checked In (Late: {attendance.late_minutes} min, auto-deducted leave)"
+            elif attendance.late_minutes > 30:
+                status_label = "Checked In (Late – Explanation Required)"
+            else:
+                status_label = "Checked In"
+        elif attendance.clock_in and attendance.clock_out:
+            status_label = f"Checked Out ({attendance.hours_worked} hrs)"
+        else:
+            status_label = "Not Checked In"
+
+        # Attach status to employee object dynamically
+        emp.attendance_status = status_label
+        emp.attendance_record = attendance
+
+        # Group employees by department
+        departments[emp.department].append(emp)
+
+    # ------------------------------------------------------------
+    # Context for template
+    # ------------------------------------------------------------
+    context = {
+        "current_date": current_date,
+        "current_time": current_time,
+        "greeting": greeting,
+        "departments": dict(departments), 
+    }
+
+    return render(request, "smartpayapp/checkin_checkout.html", context)
+
+
+
+# ================================================================
+# Attendance Actions (Clock-In / Clock-Out)
+# ================================================================
+
+@csrf_exempt
+def attendance_action(request):
+    """
+    Handles AJAX Clock-In / Clock-Out requests.
+    
+    Updates the Attendance record for today:
+        - clock_in or clock_out time
+        - calculates hours_worked
+        - calculates late_minutes and flags if explanation is needed
+    Returns a JSON response for frontend updates.
+    """
+    if request.method == "POST":
+        staff_id = request.POST.get("staff_id")
+        action = request.POST.get("action")  # 'checkin' or 'checkout'
+
+        try:
+            employee = Employee.objects.get(staff_id=staff_id)
+        except Employee.DoesNotExist:
+            return JsonResponse({"status": "error", "message": "Employee not found"})
+
+        today = timezone.localtime(timezone.now()).date()
+        now_time = timezone.localtime(timezone.now()).time()
+
+        # --- Get or create today's attendance record ---
+        attendance, created = Attendance.objects.get_or_create(employee=employee, date=today)
+
+        # --- Organization working hours ---
+        weekday = today.weekday()  # Monday=0, Sunday=6
+        if weekday < 5:  # Monday-Friday
+            start_time = time(8, 0)
+            end_time = time(17, 0)
+        elif weekday == 5:  # Saturday
+            start_time = time(8, 0)
+            end_time = time(13, 0)
+        else:  # Sunday is non-working
+            return JsonResponse({"status": "error", "message": "Today is a non-working day"})
+
+        if action == "checkin":
+            attendance.clock_in = now_time
+
+            # --- Calculate lateness ---
+            late_delta = datetime.combine(today, now_time) - datetime.combine(today, start_time)
+            late_minutes = max(0, int(late_delta.total_seconds() / 60))
+            attendance.late_minutes = late_minutes
+
+            # --- Set status ---
+            if late_minutes > 30:
+                attendance.status = "Late - Needs Explanation"
+                attendance.needs_explanation = True
+            elif late_minutes > 0:
+                attendance.status = "Late (Within Limit)"
+            else:
+                attendance.status = "Checked In"
+
+            attendance.save()
+            return JsonResponse({
+                "status": "success",
+                "action": "checkin",
+                "attendance_status": attendance.status,
+                "late_minutes": attendance.late_minutes
+            })
+
+        elif action == "checkout":
+            if not attendance.clock_in:
+                return JsonResponse({"status": "error", "message": "Cannot check out without checking in"})
+
+            attendance.clock_out = now_time
+            attendance.calculate_hours()
+            attendance.status = "Checked Out"
+            attendance.save()
+            
+            return JsonResponse({
+                "status": "success",
+                "action": "checkout",
+                "hours_worked": attendance.hours_worked,
+                "attendance_status": attendance.status
+            })
+
+        else:
+            return JsonResponse({"status": "error", "message": "Invalid action"})
+    else:
+        return JsonResponse({"status": "error", "message": "Invalid request method"})
+
+
+# ================================================================
+# Attendance History View
+# ================================================================
+
+def attendance_history(request):
+    """
+    Displays historical attendance for all employees.
+    Can filter by month, week, or individual employee.
+    Shows worked hours, late arrivals, and early leaves.
+    Useful for HR reporting.
+    """
+    employees = Employee.objects.all().order_by("department", "full_name")
+    departments = defaultdict(list)
+
+    for emp in employees:
+        emp_attendance = emp.attendances.order_by("-date")  
+        departments[emp.department].append({
+            "employee": emp,
+            "attendance": emp_attendance
+        })
+
+    context = {
+        "departments": dict(departments)
+    }
+
+    return render(request, "smartpayapp/attendance_history.html", context)
+
+
+# ================================================================
+# Automatic Leave Deduction and Alerts
+# ================================================================
+def handle_leave_and_alert(attendance):
+    """
+    Handles automatic leave deductions if an employee is late within allowed limits.
+    Flags excessive lateness requiring explanation.
+    """
+    if attendance.late_minutes > 0 and attendance.late_minutes <= 30:
+       
+        leave_deduction = attendance.late_minutes / 480
+    
+        attendance.status += f" | Leave Deducted: {round(leave_deduction, 3)} days"
+    elif attendance.late_minutes > 30:
+        attendance.status += " | Action Required: Provide Explanation"
+        attendance.needs_explanation = True
+    
+    attendance.save()
+
+
+def attendance_overview(request):
+    today = timezone.localtime(timezone.now()).date()
+    employees = Employee.objects.all().order_by("department", "full_name")
+    
+    attendance_data = []
+    for emp in employees:
+        att, created = Attendance.objects.get_or_create(employee=emp, date=today)
+        status = "Not Checked In"
+        if att.clock_in and not att.clock_out:
+            status = "Checked In"
+        elif att.clock_out:
+            status = "Checked Out"
+        
+        attendance_data.append({
+            "id": emp.id,
+            "full_name": emp.full_name,
+            "staff_id": emp.staff_id,
+            "department": emp.department,
+            "status": status,
+            "clock_in": att.clock_in.strftime("%I:%M %p") if att.clock_in else "-",
+            "clock_out": att.clock_out.strftime("%I:%M %p") if att.clock_out else "-"
+        })
+
+    context = {
+        "attendance_data": attendance_data
+    }
+    return render(request, "smartpayapp/attendance_overview.html", context)
+
+
+def attendance_overview_data(request):
+    today = timezone.localtime(timezone.now()).date()
+    employees = Employee.objects.all()
+    data = []
+
+    for emp in employees:
+        att, _ = Attendance.objects.get_or_create(employee=emp, date=today)
+        status = "Not Checked In"
+        if att.clock_in and not att.clock_out:
+            status = "Checked In"
+        elif att.clock_out:
+            status = "Checked Out"
+
+        data.append({
+            "id": emp.id,
+            "full_name": emp.full_name,
+            "status": status,
+            "clock_in": att.clock_in.strftime("%I:%M %p") if att.clock_in else "-",
+            "clock_out": att.clock_out.strftime("%I:%M %p") if att.clock_out else "-"
+        })
+    return JsonResponse({"attendance_data": data})
