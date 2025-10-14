@@ -39,7 +39,12 @@ from .views import (
     employee_today,
     hr_settings,
     hr_appraissals,
-    hr_profile
+    hr_profile,
+    checkin_checkout,
+    attendance_action,
+    attendance_history,
+    reject_leave,
+    approve_leave
           
 )
 
@@ -75,7 +80,6 @@ urlpatterns = [
     path('hr/payroll/', payroll_payslips, name='payroll_payslips'),
     path('hr/track-performance/', hr_track_performance, name='hr_track_performance'),
  
-
     path('hr/attendance/', attendance_tracking, name='attendance_tracking'),
     path('hr/messages/', hr_message_centre, name='hr_message_centre'),
     path('hr/loan-requests/', hr_loan_requests, name='hr_loan_requests'),
@@ -87,14 +91,20 @@ urlpatterns = [
     path('hr/appraissals/', hr_appraissals, name='hr_appraissals'),
     path('hr/profile/', hr_profile, name='hr_profile'),
 
-
-
-
-
-
     path('finance/requests/', finance_salary_request, name='finance_salary_request'),
     path('finance/requests/<int:pk>/approve/', approve_salary_request, name='approve_salary_request'),
     path('finance/requests/<int:pk>/reject/', reject_salary_request, name='reject_salary_request'),
+
+
+    path('checkin_checkout/', checkin_checkout, name='checkin_checkout'),
+    path('attendance_action/', attendance_action, name='attendance_action'),
+    path('attendance_history/', attendance_history, name='attendance_history'),
+    path('leave/approve/<int:leave_id>/', approve_leave, name='approve_leave'),
+    path('leave/reject/<int:leave_id>/', reject_leave, name='reject_leave'),
+
+
+
+
 ]
 
 

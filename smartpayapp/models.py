@@ -5,6 +5,9 @@ from django.dispatch import receiver
 from django.core.validators import MinValueValidator
 from django.utils import timezone
 
+from datetime import datetime, time
+from django.db.models import Sum
+
 
 # ================================================================
 # Employee Model (Created by HR)
@@ -64,7 +67,7 @@ class Employee(models.Model):
     address = models.TextField(blank=True, null=True)
 
     def save(self, *args, **kwargs):
-        # --- Auto-calc age ---
+        # --- Auto-calc age of the staff employee ---
         if self.dob:
             today = timezone.now().date()
             self.age = today.year - self.dob.year - (
@@ -92,7 +95,7 @@ class Employee(models.Model):
 
 
 # ================================================================
-# Profile Model (Links User ↔ Employee)
+# Profile Model (Links User to Employee)
 # ================================================================
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -108,6 +111,15 @@ class Profile(models.Model):
         if self.employee:
             return f"{self.employee.full_name} ({self.employee.role})"
         return self.user.username
+
+    @property
+    def role(self):
+        """
+        Returns the employee's role dynamically from the linked Employee record.
+        Defaults to 'employee' if no employee is linked.
+        """
+        return self.employee.role if self.employee else "employee"
+
 
 # ================================================================
 # Salary Advance Request Model
@@ -233,4 +245,117 @@ def create_user_profile(sender, instance, created, **kwargs):
     - HR/Admin can update role later based on department or position.
     """
     if created:
-        Profile.objects.create(user=instance, role="employee")
+        Profile.objects.create(user=instance)
+
+
+# ================================================================
+# Attendance Model
+# ================================================================
+class Attendance(models.Model):
+    """
+    Tracks daily attendance for each employee.
+
+    - Records clock-in and clock-out times.
+    - Calculates total hours worked.
+    - Determines late arrival and whether an explanation is needed.
+    """
+
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='attendances')
+    date = models.DateField(default=timezone.now)
+    clock_in = models.TimeField(null=True, blank=True)
+    clock_out = models.TimeField(null=True, blank=True)
+    hours_worked = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
+    status = models.CharField(max_length=50, default="Not Checked In")  # Not Checked In, Checked In, Checked Out, Late
+    late_minutes = models.PositiveIntegerField(default=0)
+    needs_explanation = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = ('employee', 'date') 
+        ordering = ['-date']
+
+    # ------------------------------------------------------------
+    # Methods
+    # ------------------------------------------------------------
+    def calculate_hours(self):
+        """Calculate worked hours from clock_in and clock_out"""
+        if self.clock_in and self.clock_out:
+            datetime_in = datetime.combine(self.date, self.clock_in)
+            datetime_out = datetime.combine(self.date, self.clock_out)
+            worked = datetime_out - datetime_in
+            self.hours_worked = round(worked.total_seconds() / 3600, 2)
+            self.save()
+
+    def __str__(self):
+        return f"{self.employee.full_name} - {self.date} - {self.status}"
+
+
+# ================================================================
+# Leave Types
+# ================================================================
+class LeaveType(models.TextChoices):
+    REGULAR = "Regular", "Regular Leave"
+    OFF = "Off", "Off Day"
+    SICK = "Sick", "Sick Leave"
+
+# ================================================================
+# Employee Leave Balance
+# ================================================================
+class EmployeeLeaveBalance(models.Model):
+    """
+    Tracks the annual leave, off days, and sick leave usage for each employee.
+    """
+
+    employee = models.OneToOneField(Employee, on_delete=models.CASCADE, related_name="leave_balance")
+    regular_leave = models.IntegerField(default=21)  # 21 days per year
+    off_days = models.IntegerField(default=7)        # 7 off days per year
+    sick_leave_taken = models.IntegerField(default=0)  # Track total sick days taken
+
+    def deduct_leave(self, leave_type, days):
+        """Deduct leave days when redeemed."""
+        if leave_type == LeaveType.REGULAR:
+            self.regular_leave = max(self.regular_leave - days, 0)
+        elif leave_type == LeaveType.OFF:
+            self.off_days = max(self.off_days - days, 0)
+        elif leave_type == LeaveType.SICK:
+            self.sick_leave_taken += days
+        self.save()
+
+    def __str__(self):
+        return f"{self.employee.full_name} Leave Balance"
+
+# ================================================================
+# Leave Request Model
+# ================================================================
+class LeaveRequest(models.Model):
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    leave_type = models.CharField(max_length=10, choices=LeaveType.choices)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    reason = models.TextField(blank=True, null=True)
+    doctor_letter = models.FileField(upload_to="doctor_letters/", blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    STATUS_CHOICES = [
+        ("Pending", "Pending"),
+        ("Approved", "Approved"),
+        ("Rejected", "Rejected"),
+    ]
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="Pending")
+
+    @property
+    def total_days(self):
+        return (self.end_date - self.start_date).days + 1
+
+    def __str__(self):
+        return f"{self.employee.full_name} - {self.leave_type} ({self.total_days} days)"
+
+    
+
+# ================================================================
+# Signal: Auto-create leave balance for new employees
+# ================================================================
+@receiver(post_save, sender=Employee)
+def create_employee_leave_balance(sender, instance, created, **kwargs):
+    """Initialize leave balances when a new employee is added."""
+    if created:
+        EmployeeLeaveBalance.objects.create(employee=instance)

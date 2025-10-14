@@ -1,366 +1,425 @@
-// finance_requests_toggle.js
+// =========================
+// Finance Requests Toggle
+// =========================
 document.addEventListener("DOMContentLoaded", function () {
-    try {
-        const cardBtn = document.getElementById("reqCardViewBtn");
-        const tableBtn = document.getElementById("reqTableViewBtn");
-        const cardContainer = document.getElementById("requestCards");
-        const tableContainer = document.getElementById("requestTable");
+  try {
+    const cardBtn = document.getElementById("reqCardViewBtn");
+    const tableBtn = document.getElementById("reqTableViewBtn");
+    const cardContainer = document.getElementById("requestCards");
+    const tableContainer = document.getElementById("requestTable");
 
-        if (!cardBtn || !tableBtn || !cardContainer || !tableContainer) {
-            // Not on this page — do nothing
-            return;
-        }
+    if (!cardBtn || !tableBtn || !cardContainer || !tableContainer) return;
 
-        const saved = localStorage.getItem("finance_view") || "card";
+    const saved = localStorage.getItem("finance_view") || "card";
 
-        function showCard() {
-            cardContainer.style.display = "block";
-            tableContainer.style.display = "none";
-            cardBtn.classList.add("active");
-            tableBtn.classList.remove("active");
-            localStorage.setItem("finance_view", "card");
-            // accessibility
-            cardContainer.setAttribute("aria-hidden", "false");
-            tableContainer.setAttribute("aria-hidden", "true");
-        }
-
-        function showTable() {
-            cardContainer.style.display = "none";
-            tableContainer.style.display = "block";
-            tableBtn.classList.add("active");
-            cardBtn.classList.remove("active");
-            localStorage.setItem("finance_view", "table");
-            // accessibility
-            cardContainer.setAttribute("aria-hidden", "true");
-            tableContainer.setAttribute("aria-hidden", "false");
-        }
-
-        // apply saved preference
-        if (saved === "table") showTable();
-        else showCard();
-
-        cardBtn.addEventListener("click", showCard);
-        tableBtn.addEventListener("click", showTable);
-
-        // helpful debug log
-        // console.info("Finance requests toggle initialized. view:", localStorage.getItem("finance_view"));
-    } catch (err) {
-        // Fail silently but log for devs
-        console.error("finance_requests_toggle.js error:", err);
+    function showCard() {
+      cardContainer.style.display = "block";
+      tableContainer.style.display = "none";
+      cardBtn.classList.add("active");
+      tableBtn.classList.remove("active");
+      localStorage.setItem("finance_view", "card");
+      cardContainer.setAttribute("aria-hidden", "false");
+      tableContainer.setAttribute("aria-hidden", "true");
     }
+
+    function showTable() {
+      cardContainer.style.display = "none";
+      tableContainer.style.display = "block";
+      tableBtn.classList.add("active");
+      cardBtn.classList.remove("active");
+      localStorage.setItem("finance_view", "table");
+      cardContainer.setAttribute("aria-hidden", "true");
+      tableContainer.setAttribute("aria-hidden", "false");
+    }
+
+    saved === "table" ? showTable() : showCard();
+    cardBtn.addEventListener("click", showCard);
+    tableBtn.addEventListener("click", showTable);
+  } catch (err) {
+    console.error("finance_requests_toggle.js error:", err);
+  }
 });
 
-
+// =========================
+// Finance Requests AJAX
+// =========================
 document.addEventListener("DOMContentLoaded", () => {
-    document.querySelectorAll(".ajax-action").forEach(button => {
-        button.addEventListener("click", async function () {
-            const url = this.dataset.url;
-            const card = this.closest("[data-request-id]");
-            const badge = card.querySelector(".badge");
-            const actionRow = card.querySelector(".action-row");
+  document.querySelectorAll(".ajax-action").forEach(button => {
+    button.addEventListener("click", async function () {
+      const url = this.dataset.url;
+      const card = this.closest("[data-request-id]");
+      const badge = card?.querySelector(".badge");
+      const actionRow = card?.querySelector(".action-row");
 
-            try {
-                const response = await fetch(url, {
-                    method: "POST",
-                    headers: {
-                        "X-CSRFToken": getCookie("csrftoken"),
-                        "X-Requested-With": "XMLHttpRequest"
-                    }
-                });
-                const data = await response.json();
-
-                if (data.success) {
-                    // ✅ Update badge
-                    badge.textContent = data.status;
-                    badge.className = "badge status-" + data.status.toLowerCase();
-
-                    // ✅ Replace action buttons with "Processed"
-                    if (actionRow) {
-                        actionRow.innerHTML = `<p class="processed-text"><em>${data.status}</em></p>`;
-                    }
-                } else {
-                    alert(data.error || "Action failed.");
-                }
-            } catch (err) {
-                console.error("Error:", err);
-                alert("Network error. Try again.");
-            }
+      try {
+        const response = await fetch(url, {
+          method: "POST",
+          headers: {
+            "X-CSRFToken": getCookie("csrftoken"),
+            "X-Requested-With": "XMLHttpRequest"
+          }
         });
+        const data = await response.json();
+        if (data.success) {
+          badge.textContent = data.status;
+          badge.className = "badge status-" + data.status.toLowerCase();
+          if (actionRow) actionRow.innerHTML = `<p class="processed-text"><em>${data.status}</em></p>`;
+        } else {
+          alert(data.error || "Action failed.");
+        }
+      } catch (err) {
+        console.error("Error:", err);
+        alert("Network error. Try again.");
+      }
     });
+  });
 });
 
-// CSRF helper
 function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== "") {
-        const cookies = document.cookie.split(";");
-        for (let cookie of cookies) {
-            cookie = cookie.trim();
-            if (cookie.startsWith(name + "=")) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== "") {
+    document.cookie.split(";").forEach(cookie => {
+      cookie = cookie.trim();
+      if (cookie.startsWith(name + "=")) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+      }
+    });
+  }
+  return cookieValue;
 }
 
-
-// hr_dashboard.js
-
-function updateTime() {
+// =========================
+// HR Dashboard Clock
+// =========================
+(function () {
+  function updateTime() {
     const now = new Date();
     const options = { year: 'numeric', month: 'short', day: 'numeric' };
     const dateStr = now.toLocaleDateString(undefined, options);
     const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
-
     const dateElement = document.getElementById('current-date');
     const timeElement = document.getElementById('current-time');
+    if (dateElement) dateElement.textContent = dateStr;
+    if (timeElement) timeElement.textContent = timeStr;
+  }
+  updateTime();
+  setInterval(updateTime, 60000);
+})();
 
-    if(dateElement) dateElement.textContent = dateStr;
-    if(timeElement) timeElement.textContent = timeStr;
-}
-
-// Initial call
-updateTime();
-
-// Update every minute
-setInterval(updateTime, 60000);
-
-
-// Hr department js
+// =========================
+// HR Department
+// =========================
 document.addEventListener("DOMContentLoaded", function () {
-  // Toggle Card/Table view
   const toggleBtn = document.getElementById('deptToggleBtn');
   const cardView = document.getElementById('cardView');
   const tableView = document.getElementById('tableView');
 
   toggleBtn && toggleBtn.addEventListener('click', () => {
     const showingCards = !cardView.classList.contains('hidden');
-    if (showingCards) {
-      cardView.classList.add('hidden');
-      tableView.classList.remove('hidden');
-      toggleBtn.innerHTML = '<i class="fas fa-th-large"></i> Switch to Card View';
-    } else {
-      cardView.classList.remove('hidden');
-      tableView.classList.add('hidden');
-      toggleBtn.innerHTML = '<i class="fas fa-th-large"></i> Switch to Table View';
-    }
+    cardView.classList.toggle('hidden', showingCards);
+    tableView.classList.toggle('hidden', !showingCards);
+    toggleBtn.innerHTML = showingCards
+      ? '<i class="fas fa-th-large"></i> Switch to Card View'
+      : '<i class="fas fa-th-list"></i> Switch to Table View';
   });
 
-  // Add department placeholder
   const addBtn = document.getElementById('addDeptBtn');
-  addBtn && addBtn.addEventListener('click', () => {
-    // placeholder action for now (you'll hook the modal/form later)
-    alert('Add New Department — modal will open here (to be implemented).');
-  });
+  addBtn && addBtn.addEventListener('click', () => alert('Add New Department — modal will open here (to be implemented).'));
 
-  // When "View" clicked (either in card or table), reveal operations/staff/analytics
   function onViewClicked(deptName) {
-    // show sections
     const ops = document.getElementById('deptOperations');
     const staff = document.getElementById('deptStaff');
     const analytics = document.getElementById('deptAnalytics');
-
-    if (ops) ops.classList.remove('hidden');
-    if (staff) staff.classList.remove('hidden');
-    if (analytics) analytics.classList.remove('hidden');
-
-    // populate headings
-    const opsDeptName = document.getElementById('opsDeptName');
-    const staffDeptName = document.getElementById('staffDeptName');
-    const analyticsDeptName = document.getElementById('analyticsDeptName');
-
-    if (opsDeptName) opsDeptName.textContent = deptName;
-    if (staffDeptName) staffDeptName.textContent = deptName;
-    if (analyticsDeptName) analyticsDeptName.textContent = deptName;
-
-    // populate placeholder operations data (you will replace with real data via AJAX)
-    const opsProjects = document.getElementById('opsProjects');
-    const opsBudget = document.getElementById('opsBudget');
-    const opsKpis = document.getElementById('opsKpis');
-    const opsOpenPositions = document.getElementById('opsOpenPositions');
-
-    if (opsProjects) opsProjects.textContent = 'Project A, Project B';
-    if (opsBudget) opsBudget.textContent = 'KSh 1,200,000';
-    if (opsKpis) opsKpis.textContent = 'On-time payroll, < 2% variance';
-    if (opsOpenPositions) opsOpenPositions.textContent = '2';
-
-    // scroll to operations
-    setTimeout(() => {
-      ops && ops.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 120);
-
-    // init/update charts with demo data
+    [ops, staff, analytics].forEach(el => el && el.classList.remove('hidden'));
+    ['opsDeptName', 'staffDeptName', 'analyticsDeptName'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = deptName;
+    });
+    if (ops) setTimeout(() => ops.scrollIntoView({ behavior: 'smooth', block: 'start' }), 120);
     initCharts(deptName);
   }
 
-  // wire view buttons from both card & table
   document.querySelectorAll('.btn-view').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      // find dept name from nearest card or table row
+    btn.addEventListener('click', e => {
       const card = e.target.closest('.dept-card');
-      let deptName = null;
-      if (card) deptName = card.getAttribute('data-dept') || card.querySelector('h3').innerText;
-      else {
-        const row = e.target.closest('tr');
-        if (row) deptName = row.getAttribute('data-dept') || row.children[0].innerText;
-      }
-      if (!deptName) deptName = 'Department';
+      const row = e.target.closest('tr');
+      const deptName = card?.dataset.dept || card?.querySelector('h3')?.innerText || row?.dataset.dept || row?.children[0]?.innerText || 'Department';
       onViewClicked(deptName);
     });
   });
 
-  // ------------------- Charts (demo placeholders) -------------------
   function initCharts(deptName) {
-    // Staff Growth (line)
-    const sCtx = document.getElementById('staffGrowthChart');
-    if (sCtx) {
-      if (sCtx._chart) sCtx._chart.destroy();
-      sCtx._chart = new Chart(sCtx, {
-        type: 'line',
+    const chartConfigs = [
+      { id: 'staffGrowthChart', type: 'line', data: [20, 22, 24, 26, 28] },
+      { id: 'genderRatioChart', type: 'doughnut', data: [60, 40] },
+      { id: 'attritionChart', type: 'bar', data: [2, 3, 1.5, 2.8] },
+      { id: 'budgetChart', type: 'pie', data: [65, 35] }
+    ];
+    chartConfigs.forEach(({ id, type, data }) => {
+      const ctx = document.getElementById(id);
+      if (!ctx) return;
+      if (ctx._chart) ctx._chart.destroy();
+      ctx._chart = new Chart(ctx, {
+        type,
         data: {
-          labels: ['Mar', 'Apr', 'May', 'Jun', 'Jul'],
-          datasets: [{ label: `${deptName} - Staff`, data: [20, 22, 24, 26, 28], borderColor: '#0055aa', backgroundColor: 'rgba(0,85,170,0.06)', fill: true }]
+          labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+          datasets: [{ label: deptName, data, backgroundColor: ['#0055aa', '#08bd4a', '#ef4444', '#2563eb'] }]
         },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
       });
-    }
-
-    // Gender Ratio (doughnut)
-    const gCtx = document.getElementById('genderRatioChart');
-    if (gCtx) {
-      if (gCtx._chart) gCtx._chart.destroy();
-      gCtx._chart = new Chart(gCtx, {
-        type: 'doughnut',
-        data: { labels: ['Male','Female'], datasets: [{ data: [60,40], backgroundColor: ['#0055aa','#08bd4a'] }] },
-        options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:'bottom' } } }
-      });
-    }
-
-    // Attrition (bar)
-    const aCtx = document.getElementById('attritionChart');
-    if (aCtx) {
-      if (aCtx._chart) aCtx._chart.destroy();
-      aCtx._chart = new Chart(aCtx, {
-        type: 'bar',
-        data: { labels:['Jan','Feb','Mar','Apr'], datasets:[{ label:'Attrition %', data:[2,3,1.5,2.8], backgroundColor:'#ef4444' }] },
-        options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false } } }
-      });
-    }
-
-    // Budget (pie)
-    const bCtx = document.getElementById('budgetChart');
-    if (bCtx) {
-      if (bCtx._chart) bCtx._chart.destroy();
-      bCtx._chart = new Chart(bCtx, {
-        type:'pie',
-        data:{ labels:['Used','Remaining'], datasets:[{ data:[65,35], backgroundColor:['#2563eb','#cbd5e1'] }] },
-        options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:'bottom' } } }
-      });
-    }
+    });
   }
-
-  // Optional: pre-init charts (hidden until view clicked)
 });
 
-//toggle department analytics
+// =========================
+// Toggle Department Analytics
+// =========================
 document.addEventListener('DOMContentLoaded', function () {
-  // --- reference elements ---
   const toggleAnalyticsBtn = document.getElementById('toggleAnalyticsBtn');
   const analyticsSection = document.getElementById('deptAnalytics');
+  if (!toggleAnalyticsBtn || !analyticsSection) return;
 
-  // safety checks & helpful console warnings
-  if (!toggleAnalyticsBtn) {
-    console.warn('hr_departments.js: toggleAnalyticsBtn not found. Check the button id in the template.');
-    return;
-  }
-  if (!analyticsSection) {
-    console.warn('hr_departments.js: deptAnalytics section not found. Check the section id in the template.');
-    return;
-  }
-
-  // utility: render button text/icon according to visible state
   function updateAnalyticsButton() {
     const visible = !analyticsSection.classList.contains('hidden');
-    // keep icon + text, matching your fontawesome usage
     toggleAnalyticsBtn.innerHTML = visible
       ? '<i class="fas fa-chart-bar"></i>&nbsp; Hide Analytics'
       : '<i class="fas fa-chart-bar"></i>&nbsp; Show Analytics';
-    toggleAnalyticsBtn.setAttribute('aria-pressed', visible ? 'true' : 'false');
   }
 
-  // initial button label state
   updateAnalyticsButton();
-
-  // toggle on click
-  toggleAnalyticsBtn.addEventListener('click', function (e) {
+  toggleAnalyticsBtn.addEventListener('click', e => {
     e.preventDefault();
-    const isHidden = analyticsSection.classList.contains('hidden');
-
-    if (isHidden) {
-      analyticsSection.classList.remove('hidden');
-      // optional: smooth scroll to analytics
-      setTimeout(() => analyticsSection.scrollIntoView({ behavior: 'smooth', block: 'start' }), 120);
-    } else {
-      analyticsSection.classList.add('hidden');
-    }
+    analyticsSection.classList.toggle('hidden');
     updateAnalyticsButton();
   });
 });
 
-
+// =========================
+// Alerts Dismiss
+// =========================
 document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll(".alert-dismiss").forEach(btn => {
-    btn.addEventListener("click", (e) => {
-      e.target.closest("li").remove();
-    });
+    btn.addEventListener("click", e => e.target.closest("li").remove());
   });
 });
 
-
-//Payroll
-document.addEventListener("DOMContentLoaded", function() {
+// =========================
+// Payroll
+// =========================
+document.addEventListener("DOMContentLoaded", function () {
   const toggleBtn = document.getElementById("togglePayrollBtn");
   const previewSection = document.getElementById("payrollPreview");
+  if (toggleBtn) toggleBtn.addEventListener("click", () => previewSection.classList.toggle("hidden"));
 
-  toggleBtn.addEventListener("click", function() {
-    previewSection.classList.toggle("hidden");
+  const modal = document.getElementById('payslipModal');
+  const modalEmployeeName = document.getElementById('modalEmployeeName');
+  const modalGross = document.getElementById('modalGross');
+  const modalDeductions = document.getElementById('modalDeductions');
+  const modalNet = document.getElementById('modalNet');
+  const closeModal = document.querySelector('.modal .close');
+
+  document.querySelectorAll('.btn-view-payslip').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const row = btn.closest('tr');
+      modalEmployeeName.textContent = row.children[0].textContent;
+      modalGross.textContent = row.children[2].textContent;
+      modalDeductions.textContent = row.children[3].textContent;
+      modalNet.textContent = row.children[4].textContent;
+      modal.classList.remove('hidden');
+    });
   });
+  if (closeModal) closeModal.addEventListener('click', () => modal.classList.add('hidden'));
+
+  const searchInput = document.getElementById('searchPayroll');
+  if (searchInput) {
+    searchInput.addEventListener('keyup', () => {
+      const filter = searchInput.value.toLowerCase();
+      document.querySelectorAll('#payrollBody tr').forEach(tr => {
+        const name = tr.children[0].textContent.toLowerCase();
+        tr.style.display = name.includes(filter) ? '' : 'none';
+      });
+    });
+  }
 });
 
+// =========================
+// HR Settings Navigation
+// =========================
+function navigateToSection(select) {
+  const sectionId = select.value;
+  if (sectionId) {
+    const target = document.querySelector(sectionId);
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
 
-// ===== Modal Functionality =====
-const modal = document.getElementById('payslipModal');
-const modalEmployeeName = document.getElementById('modalEmployeeName');
-const modalGross = document.getElementById('modalGross');
-const modalDeductions = document.getElementById('modalDeductions');
-const modalNet = document.getElementById('modalNet');
-const modalBreakdown = document.getElementById('modalBreakdown');
+// =========================
+// Message Centre
+// =========================
+document.addEventListener('DOMContentLoaded', () => {
+  const tabs = document.querySelectorAll('.conversation-tabs .tab');
+  const conversations = document.querySelectorAll('.conversation');
+  const chatHeaderTitle = document.querySelector('.chat-header h3');
+  const chatBody = document.querySelector('.chat-body');
+  const chatInput = document.querySelector('.chat-footer input');
+  const sendBtn = document.querySelector('.chat-footer button');
 
-document.querySelectorAll('.btn-view-payslip').forEach(btn=>{
-  btn.addEventListener('click', ()=>{
-    const row = btn.closest('tr');
-    modalEmployeeName.textContent = row.children[0].textContent;
-    modalGross.textContent = row.children[2].textContent;
-    modalDeductions.textContent = row.children[3].textContent;
-    modalNet.textContent = row.children[4].textContent;
-    modal.classList.remove('hidden');
+  function nowTime() {
+    return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
+
+  function appendMessage({ text, type = 'sent', time = null }) {
+    if (!chatBody) return;
+    const wrapper = document.createElement('div');
+    wrapper.className = `message ${type}`;
+    wrapper.innerHTML = `<p>${text}</p><span class="time">${time || nowTime()}</span>`;
+    chatBody.appendChild(wrapper);
+    chatBody.scrollTop = chatBody.scrollHeight;
+  }
+
+  function sendMessage() {
+    const text = chatInput.value.trim();
+    if (!text) return;
+    appendMessage({ text, type: 'sent' });
+    chatInput.value = '';
+  }
+
+  sendBtn?.addEventListener('click', e => { e.preventDefault(); sendMessage(); });
+  chatInput?.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
   });
-});
 
-document.querySelector('.modal .close').addEventListener('click', ()=>{
-  modal.classList.add('hidden');
-});
-
-// ===== Search Filter =====
-const searchInput = document.getElementById('searchPayroll');
-searchInput.addEventListener('keyup', ()=>{
-  const filter = searchInput.value.toLowerCase();
-  document.querySelectorAll('#payrollBody tr').forEach(tr=>{
-    const name = tr.children[0].textContent.toLowerCase();
-    tr.style.display = name.includes(filter) ? '' : 'none';
+  tabs?.forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      const filter = tab.dataset.filter || tab.textContent.toLowerCase();
+      conversations.forEach(conv => {
+        const type = conv.dataset.type || '';
+        conv.style.display = (filter === 'all' || type === filter) ? '' : 'none';
+      });
+    });
   });
+
+  conversations?.forEach(item => {
+    item.addEventListener('click', () => {
+      conversations.forEach(c => c.classList.remove('active'));
+      item.classList.add('active');
+      const nameEl = item.querySelector('.details h4');
+      const snippetEl = item.querySelector('.details p');
+      const timeEl = item.querySelector('.time');
+      if (chatHeaderTitle && nameEl) chatHeaderTitle.textContent = nameEl.textContent.trim();
+      if (chatBody) {
+        chatBody.innerHTML = '';
+        appendMessage({ text: snippetEl?.textContent.trim() || '', type: 'received', time: timeEl?.textContent });
+      }
+    });
+  });
+
+  if (conversations.length) conversations[0].click();
 });
 
+// =========================
+// Attendance (Dynamic Search & Filter Integrated)
+// =========================
+document.addEventListener("DOMContentLoaded", () => {
+  const cardViewBtn = document.getElementById("cardViewBtn");
+  const tableViewBtn = document.getElementById("tableViewBtn");
+  const cardView = document.getElementById("cardView");
+  const tableView = document.getElementById("tableView");
+  const searchInput = document.getElementById("employeeSearch");
+  const deptSelect = document.getElementById("departmentFilter");
 
+  if (!cardView || !tableView || !cardViewBtn || !tableViewBtn || !searchInput || !deptSelect) return;
+
+  // View toggle
+  function showCardView() {
+    cardView.classList.remove("hidden");
+    tableView.classList.add("hidden");
+    cardViewBtn.classList.add("active");
+    tableViewBtn.classList.remove("active");
+  }
+
+  function showTableView() {
+    tableView.classList.remove("hidden");
+    cardView.classList.add("hidden");
+    tableViewBtn.classList.add("active");
+    cardViewBtn.classList.remove("active");
+  }
+
+  cardViewBtn.addEventListener("click", showCardView);
+  tableViewBtn.addEventListener("click", showTableView);
+
+  // Employee check-in/out status
+  function updateEmployeeState(empId, state) {
+    document.querySelectorAll(`[data-emp-id="${empId}"]`).forEach(el => {
+      const statusEl = el.querySelector(".status");
+      const checkinBtn = el.querySelector(".btn-checkin");
+      const checkoutBtn = el.querySelector(".btn-checkout");
+      if (!statusEl) return;
+
+      if (state === "checked-in") {
+        statusEl.textContent = "Checked In";
+        statusEl.style.color = "green";
+        checkinBtn && (checkinBtn.disabled = true);
+        checkoutBtn && (checkoutBtn.disabled = false);
+      } else if (state === "checked-out") {
+        statusEl.textContent = "Checked Out";
+        statusEl.style.color = "crimson";
+        checkoutBtn && (checkoutBtn.disabled = true);
+        checkinBtn && (checkinBtn.disabled = false);
+      } else {
+        statusEl.textContent = "Not Checked In";
+        statusEl.style.color = "";
+        checkinBtn && (checkinBtn.disabled = false);
+        checkoutBtn && (checkoutBtn.disabled = true);
+      }
+    });
+  }
+
+  document.addEventListener("click", e => {
+    const checkinBtn = e.target.closest(".btn-checkin");
+    const checkoutBtn = e.target.closest(".btn-checkout");
+    const parent = checkinBtn?.closest("[data-emp-id]") || checkoutBtn?.closest("[data-emp-id]");
+    if (!parent) return;
+    const empId = parent.getAttribute("data-emp-id");
+    if (checkinBtn) updateEmployeeState(empId, "checked-in");
+    if (checkoutBtn) updateEmployeeState(empId, "checked-out");
+  });
+
+  // Dynamic search & filter
+  function applyFilters() {
+    const query = searchInput.value.toLowerCase().trim();
+    const deptFilter = deptSelect.value;
+
+    // Card view
+    cardView.querySelectorAll(".employee-card").forEach(card => {
+      const name = (card.dataset.empName || "").toLowerCase();
+      const id = (card.dataset.empId || "").toLowerCase();
+      const dept = card.dataset.dept || "";
+
+      const matchesSearch = !query || name.includes(query) || id.includes(query);
+      const matchesDept = deptFilter === "all" || dept === deptFilter;
+
+      card.style.display = matchesSearch && matchesDept ? "" : "none";
+    });
+
+    // Table view
+    tableView.querySelectorAll("tr[data-emp-id]").forEach(row => {
+      const name = (row.dataset.empName || "").toLowerCase();
+      const id = (row.dataset.empId || "").toLowerCase();
+      const dept = row.dataset.dept || "";
+
+      const matchesSearch = !query || name.includes(query) || id.includes(query);
+      const matchesDept = deptFilter === "all" || dept === deptFilter;
+
+      row.style.display = matchesSearch && matchesDept ? "" : "none";
+    });
+  }
+
+  searchInput.addEventListener("input", applyFilters);
+  deptSelect.addEventListener("change", applyFilters);
+
+  // Initialize
+  showCardView();
+});

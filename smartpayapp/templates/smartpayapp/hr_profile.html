@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<div class="dashboard-container">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <h2>HR</h2>
+    </div>
+    <nav class="sidebar-nav">
+      <ul>
+        <li><a href="{% url 'hr_home' %}">Dashboard</a></li>
+        <li><a href="{% url 'employee_list' %}">Employees</a></li>
+        <li><a href="{% url 'hr_departments' %}">Departments</a></li>
+        <li><a href="{% url 'payroll_payslips' %}">Payroll</a></li>
+        <li><a href="{% url 'hr_track_performance' %}">Performance</a></li>
+        <li><a href="{% url 'hr_loan_requests' %}">Requests</a></li>
+        <li><a href="{% url 'hr_message_centre' %}">Messages</a></li>
+        <li><a href="{% url 'hr_reports' %}">Reports</a></li>
+        <li><a class="active" href="{% url 'hr_profile' %}">Profile</a></li>
+        <li><a href="{% url 'hr_settings' %}">Settings</a></li>
+      </ul>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- Page Header -->
+    <header class="page-header">
+        <div class="page-header-left">
+            <h1><i class="fas fa-user-circle"></i> My Profile</h1>
+            <p class="breadcrumb">Home > Dashboard > Profile</p>
+        </div>
+        <div class="page-header-right">
+            <a href="{% url 'login' %}" class="btn-logout">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        </div>
+
+    </header>
+
+    <!-- Profile Overview -->
+    <section class="profile-overview">
+        <!-- Left Profile Card -->
+        <div class="profile-card">
+            <img src="{% static 'img/profile/p2.png' %}" alt="Profile Picture" class="profile-pic">
+            <h2>Jane Doe</h2>
+            <p class="role">HR Manager</p>
+            <p class="dept"><i class="fas fa-building"></i> Human Resources Department</p>
+            
+            <div class="profile-actions">
+            <a href="{% url 'hr_departments' %}" class="btn-primary">
+                <i class="fas fa-edit"></i> Edit Profile
+            </a>
+            </div>
+        </div>
+
+        <!-- Right Details Panel -->
+        <div class="profile-details">
+            <h3><i class="fas fa-id-card"></i> Account Information</h3>
+            <ul>
+                <li><strong>Staff ID:</strong> HR1024</li>
+                <li><strong>Email:</strong> jane.doe@company.com</li>
+                <li><strong>Phone:</strong> +254 712 345 678</li>
+                <li><strong>Location:</strong> Nairobi, Kenya</li>
+            </ul>
+
+            <h3><i class="fas fa-briefcase"></i> Employment Details</h3>
+            <ul>
+                <li><strong>Date Joined:</strong> 12th March 2020</li>
+                <li><strong>Contract Type:</strong> Permanent</li>
+                <li><strong>Status:</strong> Active</li>
+            </ul>
+
+            <h3><i class="fas fa-cogs"></i> Preferences</h3>
+            <ul>
+                <li><strong>Notifications:</strong> Enabled</li>
+                <li><strong>Theme:</strong> Light Mode</li>
+            </ul>
+        </div>
+    </section>
+
+
+
+    <!-- Profile Details -->
+    <section class="profile-details">
+      <h3><i class="fas fa-id-card"></i> Personal Information</h3>
+      <ul>
+        <li><strong>Email:</strong> jane.doe@company.com</li>
+        <li><strong>Phone:</strong> +254 712 345 678</li>
+        <li><strong>Employee ID:</strong> HR1025</li>
+        <li><strong>Joined:</strong> Jan 15, 2021</li>
+      </ul>
+    </section>
+
+    <!-- Account Settings -->
+    <section class="account-settings">
+      <h3><i class="fas fa-cog"></i> Account Settings</h3>
+      <form>
+        <div class="form-group">
+          <label>Change Password</label>
+          <input type="password" placeholder="New Password">
+        </div>
+        <div class="form-group">
+          <label>Confirm Password</label>
+          <input type="password" placeholder="Confirm Password">
+        </div>
+        <div class="form-group checkbox">
+          <input type="checkbox" id="notifications" checked>
+          <label for="notifications">Enable Email Notifications</label>
+        </div>
+        <button type="submit" class="btn-primary"><i class="fas fa-save"></i> Save Changes</button>
+      </form>
+    </section>
+
+    <!-- Activity Log -->
+    <section class="profile-details">
+      <h3><i class="fas fa-history"></i> Recent Activity</h3>
+      <ul>
+        <li><strong>Today:</strong> Sent note to Finance about loan request</li>
+        <li><strong>Sept 30:</strong> Updated payroll for September</li>
+        <li><strong>Sept 25:</strong> Approved 2 leave requests</li>
+        <li><strong>Sept 20:</strong> Added new employee record</li>
+        <li><strong>Sept 15:</strong> Edited performance report for IT Dept</li>
+      </ul>
+    </section>
+
+    <!-- Security Section -->
+    <section class="profile-details">
+      <h3><i class="fas fa-shield-alt"></i> Security</h3>
+      <ul>
+        <li><strong>Last Login:</strong> Oct 2, 2025 - 09:42 AM</li>
+        <li><strong>Active Sessions:</strong> 2 (Web & Mobile)</li>
+        <li><strong>IP Address:</strong> 197.248.22.145</li>
+      </ul>
+      <button class="btn-logout"><i class="fas fa-sign-out-alt"></i> Log out from other devices</button>
+    </section>
+
+    <!-- Emergency Contact -->
+    <section class="profile-details">
+      <h3><i class="fas fa-phone-alt"></i> Emergency Contact</h3>
+      <ul>
+        <li><strong>Name:</strong> John Doe</li>
+        <li><strong>Relationship:</strong> Spouse</li>
+        <li><strong>Phone:</strong> +254 700 123 456</li>
+      </ul>
+    </section>
+
+  </main>
+</div>
+{% endblock %}
