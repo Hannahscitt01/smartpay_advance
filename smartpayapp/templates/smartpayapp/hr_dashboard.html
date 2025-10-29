@@ -332,67 +332,130 @@
       </table>
     </section>
 
-    <!-- 4. Leave Management --> 
-<!-- 4. Leave Management -->
-<section class="leave-requests">
-  <h2><i class="fas fa-calendar-alt icon-blue"></i> Leave Requests</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>Employee</th>
-        <th>Type</th>
-        <th>Duration</th>
-        <th>Status</th>
-        <th>HR Action</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for leave in leave_requests %}
-      <tr>
-        <td>{{ leave.employee.full_name }}</td>
-        <td>{{ leave.leave_type }}</td>
-        <td>{{ leave.total_days }} Day{% if leave.total_days > 1 %}s{% endif %}</td>
 
-        <!-- Status with color -->
-        <td>
-          {% if leave.status == "Approved" %}
-            <span class="status-approved1">Approved</span>
-          {% elif leave.status == "Rejected" %}
-            <span class="status-rejected1">Rejected</span>
-          {% else %}
-            <span class="status-pending1">Pending</span>
-          {% endif %}
-        </td>
+    <!-- Leave Management Quick Actions -->
+    <section class="quick-actions">
+      <h2><i class="fas fa-briefcase-medical icon-blue"></i> Leave Management</h2>
+      <div class="action-grid">
 
-        <!-- HR Action Buttons -->
-        <td>
-          {% if leave.status == "Pending" %}
-            <a href="{% url 'approve_leave' leave.id %}" class="btn-approve">
-              <i class="fas fa-check"></i> Approve
-            </a>
-            <a href="{% url 'reject_leave' leave.id %}" class="btn-reject">
-              <i class="fas fa-times"></i> Reject
-            </a>
-          {% elif leave.status == "Approved" %}
-            <button class="btn-approve" disabled><i class="fas fa-check"></i> Approved</button>
-          {% else %}
-            <button class="btn-reject" disabled><i class="fas fa-times"></i> Rejected</button>
-          {% endif %}
-        </td>
-      </tr>
-      {% empty %}
-      <tr>
-        <td colspan="5" style="text-align:center;">No leave requests found.</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-</section>
+        <!-- Leave Management -->
+        <a href="{% url 'hr_leave_management' %}" class="action-card">
+          <div class="action-icon"><i class="fas fa-calendar-check"></i></div>
+          <h3>Leave Management</h3>
+          <p>Manage annual leaves, sick offs, and off days</p>
+        </a>
 
 
-    <!-- 5. Sick Leaves & Off Management -->
+        <!-- Annual Leave Management -->
+        <a href="{% url 'hr_annual_leaves' %}" class="action-card">
+          <div class="action-icon"><i class="fas fa-suitcase-rolling"></i></div>
+          <h3>Annual Leave</h3>
+          <p>Manage employee annual leave requests</p>
+        </a>
+
+        <!-- Sick Leave Management -->
+        <a href="{% url 'hr_sick_leaves' %}" class="action-card">
+          <div class="action-icon"><i class="fas fa-notes-medical"></i></div>
+          <h3>Sick Leave</h3>
+          <p>Handle employee medical leave and approvals</p>
+        </a>
+
+        <!-- Off Day Management -->
+        <a href="{% url 'hr_leave_management' %}" class="action-card">
+          <div class="action-icon"><i class="fas fa-bed"></i></div>
+          <h3>Off Days</h3>
+          <p>Manage staff off days and short breaks</p>
+        </a>
+
+      </div>
+    </section>
+
+
+    <!-- 4. Leave Management Section -->
     <section class="leave-requests">
-      <h2><i class="fas fa-notes-medical icon-blue"></i> Sick Leaves & Off Management</h2>
+      <h2><i class="fas fa-calendar-alt icon-blue"></i> Leave Requests</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Employee</th>
+            <th>Type</th>
+            <th>Duration</th>
+            <th>Status</th>
+            <th>Processing State</th>
+            <th>Resumption Date</th>
+            <th>Action Date</th>
+            <th>HR Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for leave in leave_requests %}
+          <tr>
+            <td>{{ leave.employee.full_name }}</td>
+            <td>{{ leave.leave_type }}</td>
+            <td>{{ leave.total_days }} Day{% if leave.total_days > 1 %}s{% endif %}</td>
+
+            <!-- Approval Status -->
+            <td>
+              {% if leave.status == "Approved" %}
+                <span class="status-approved1">Approved</span>
+              {% elif leave.status == "Rejected" %}
+                <span class="status-rejected1">Rejected</span>
+              {% else %}
+                <span class="status-pending1">Pending</span>
+              {% endif %}
+            </td>
+
+            <!-- Processing State -->
+            <td>
+              {% if leave.status == "Pending" %}
+                <span class="status-processing">Processing</span>
+              {% elif leave.status == "Approved" %}
+                <span class="status-approved">Finalized</span>
+              {% elif leave.status == "Rejected" %}
+                <span class="status-rejected">Finalized</span>
+              {% endif %}
+            </td>
+
+            <!-- Resumption Date -->
+            <td>
+              {% if leave.resumption_date %}
+                {{ leave.resumption_date|date:"M d, Y" }}
+              {% else %}
+                -
+              {% endif %}
+            </td>
+
+            <!-- Action Date (Auto Time Stamp) -->
+            <td>
+              {% if leave.approved_at %}
+                {{ leave.approved_at|date:"M d, Y H:i A" }}
+              {% elif leave.rejected_at %}
+                {{ leave.rejected_at|date:"M d, Y H:i A" }}
+              {% else %}
+                -
+              {% endif %}
+            </td>
+
+            <!-- HR Action -->
+            <td class="hr_action">
+              <a href="{% url 'hr_leave_details' leave.id %}" class="btn-hold ">
+                <i class="fas fa-eye"></i> View
+              </a>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="8" style="text-align:center;">No leave requests found.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+
+
+    <!-- 5. Sick Leaves Section -->
+    <section class="leave-requests sick-leaves">
+      <h2><i class="fas fa-notes-medical icon-blue"></i> Sick Leaves</h2>
       <table>
         <thead>
           <tr>
@@ -404,50 +467,97 @@
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>Brian Otieno</td>
-            <td>Sick Leave</td>
-            <td>3 Days</td>
-            <td>Pending</td>
-            <td>
-              <button class="btn-approve"><i class="fas fa-check"></i> Approve</button>
-              <button class="btn-reject"><i class="fas fa-times"></i> Reject</button>
-            </td>
-          </tr>
-          <tr>
-            <td>Mary Wambui</td>
-            <td>Emergency Off</td>
-            <td>1 Day</td>
-            <td>Approved</td>
-            <td>
-              <button class="btn-approve" disabled><i class="fas fa-check"></i> Approved</button>
-            </td>
-          </tr>
-          <tr>
-            <td>James Mwangi</td>
-            <td>Sick Leave</td>
-            <td>2 Days</td>
-            <td>Rejected</td>
-            <td>
-              <button class="btn-reject" disabled><i class="fas fa-times"></i> Rejected</button>
-            </td>
-          </tr>
-          <tr>
-            <td>Faith Akinyi</td>
-            <td>Off Day</td>
-            <td>1 Day</td>
-            <td>Pending</td>
-            <td>
-              <button class="btn-approve"><i class="fas fa-check"></i> Approve</button>
-              <button class="btn-reject"><i class="fas fa-times"></i> Reject</button>
-            </td>
-          </tr>
+          {% for leave in leave_requests %}
+            {% if leave.leave_type == "Sick Leave" %}
+            <tr>
+              <td>{{ leave.employee.full_name }}</td>
+              <td>{{ leave.leave_type }}</td>
+              <td>{{ leave.total_days }} Day{% if leave.total_days > 1 %}s{% endif %}</td>
+
+              <!-- Status with color -->
+              <td>
+                {% if leave.status == "Approved" %}
+                  <span class="status-approved1">Approved</span>
+                {% elif leave.status == "Rejected" %}
+                  <span class="status-rejected1">Rejected</span>
+                {% else %}
+                  <span class="status-pending1">Pending</span>
+                {% endif %}
+              </td>
+
+              <!-- HR Action Buttons -->
+              <td class="hr_action">
+                <a href="{% url 'approve_leave' leave.id %}" class="hr_button approve">
+                  <i class="fas fa-check"></i> Approve
+                </a>
+                <a href="{% url 'reject_leave' leave.id %}" class="hr_button reject">
+                  <i class="fas fa-times"></i> Decline
+                </a>
+              </td>
+            </tr>
+            {% endif %}
+          {% empty %}
+            <tr>
+              <td colspan="5" style="text-align:center;">No sick leave requests found.</td>
+            </tr>
+          {% endfor %}
         </tbody>
       </table>
     </section>
 
+    <!-- 6.Off Days Section -->
+    <section class="leave-requests off-days">
+      <h2><i class="fas fa-calendar-alt icon-blue"></i> Off Days</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Employee</th>
+            <th>Type</th>
+            <th>Duration</th>
+            <th>Status</th>
+            <th>HR Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for leave in leave_requests %}
+            {% if leave.leave_type != "Sick Leave" %}
+            <tr>
+              <td>{{ leave.employee.full_name }}</td>
+              <td>{{ leave.leave_type }}</td>
+              <td>{{ leave.total_days }} Day{% if leave.total_days > 1 %}s{% endif %}</td>
 
-    <!-- 6. Announcements -->
+              <!-- Status with color -->
+              <td>
+                {% if leave.status == "Approved" %}
+                  <span class="status-approved1">Approved</span>
+                {% elif leave.status == "Rejected" %}
+                  <span class="status-rejected1">Rejected</span>
+                {% else %}
+                  <span class="status-pending1">Pending</span>
+                {% endif %}
+              </td>
+
+              <!-- HR Action Buttons -->
+              <td class="hr_action">
+                <a href="{% url 'approve_leave' leave.id %}" class="hr_button approve">
+                  <i class="fas fa-check"></i> Approve
+                </a>
+                <a href="{% url 'reject_leave' leave.id %}" class="hr_button reject">
+                  <i class="fas fa-times"></i> Decline
+                </a>
+              </td>
+            </tr>
+            {% endif %}
+          {% empty %}
+            <tr>
+              <td colspan="5" style="text-align:center;">No off day requests found.</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 7. Announcements -->
     <section class="announcements">
       <h2><i class="fas fa-bullhorn icon-blue"></i> HR Announcements</h2>
       <div class="announcement-card"><i class="fas fa-money-bill-wave icon-blue"></i> Payroll deadline is 5th October.</div>
@@ -455,7 +565,7 @@
       <div class="announcement-card"><i class="fas fa-clipboard-check icon-blue"></i> Submit performance reviews by Friday.</div>
     </section>
 
-    <!-- 7. Reports & Analytics -->
+    <!-- 8. Reports & Analytics -->
     <section class="reports-analytics">
       <h2><i class="fas fa-chart-pie icon-blue"></i> Analytics & Reports</h2>
       <div class="report-card"><i class="fas fa-venus-mars icon-blue"></i> Gender Distribution</div>

@@ -1,30 +1,267 @@
 {% extends "base.html" %}
 {% load static %}
-{% block title %}Smart Pay | Salary Requests{% endblock %}
+{% block title %}Smart Pay | Finance Dashboard{% endblock %}
 {% block content %}
 
 <div class="dashboard-container">
-  <!-- Sidebar Navigation (unchanged look) -->
+
+  <!-- Sidebar -->
   <aside class="sidebar">
     <div class="sidebar-header">
       <h2>Finance</h2>
     </div>
     <nav class="sidebar-nav">
       <ul>
-        <li><a href="{% url 'finance_salary_request' %}">Dashboard</a></li>
-        <li><a href="#">Reports</a></li>
-        <li><a href="#">Budgets</a></li>
-        <li><a href="#">Expenses</a></li>
-        <li><a href="#">Payroll</a></li>
-        <li><a href="#">Settings</a></li>
+        <li><a href="">Dashboard</a></li>
+        <li><a href="">Salary Payments</a></li>
+        <li><a href="">Loans & Advances</a></li>
+        <li><a href="">Expenses</a></li>
+        <li><a href="">Invoices</a></li>
+        <li><a href="">Reports</a></li>
+        <li><a href="">Budget</a></li>
+        <li><a href="">Settings</a></li>
       </ul>
     </nav>
   </aside>
 
+  <!-- Main Content -->
+  <main class="main-content">
 
+    <!-- Header -->
+    <header class="dashboard-header">
+      <div class="welcome-text">
+          {% if finance_user %}
+              <h1>Hi {{ finance_user.full_name }}</h1>
+              <p>Welcome back to the Finance Dashboard</p>
+              <small>
+                  Department: {{ finance_user.department }} |
+                  Staff ID: {{ finance_user.staff_id }} |
+                  Date: <span id="current-date">{{ current_date }}</span> |
+                  Time: <span id="current-time">{{ current_time }}</span>
+              </small>
+          {% else %}
+              <h1>Hi Finance Officer 👋</h1>
+              <p>Welcome back to the Finance Dashboard</p>
+              <small>
+                  Department: Finance |
+                  Staff ID: N/A |
+                  Date: <span id="current-date">{{ current_date }}</span> |
+                  Time: <span id="current-time">{{ current_time }}</span>
+              </small>
+          {% endif %}
+      </div>
+
+      <div class="header-right">
+        <div class="header-icons">
+          <div class="icon">
+            <i class="fas fa-bell"></i><span class="icon-badge">2</span>
+          </div>
+          <div class="icon">
+            <i class="fas fa-envelope"></i><span class="icon-badge">4</span>
+          </div>
+        </div>
+        <a href="" class="profile-avatar">
+          <i class="fas fa-user-circle"></i>
+        </a>
+      </div>
+    </header>
+
+    <!-- Search + Filter -->
+    <div class="search-filter-container">
+      <div class="search-bar">
+        <input type="text" placeholder="Search invoices, transactions, or employees...">
+        <button><i class="fas fa-search"></i></button>
+      </div>
+      <div class="filter-bar">
+        <select>
+          <option value="">Filter by...</option>
+          <option value="approved">Approved</option>
+          <option value="pending">Pending</option>
+          <option value="month">This Month</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <section class="quick-actions">
+      <h2>Quick Actions</h2>
+      <div class="action-grid">
+        <a href="" class="action-card">
+          <div class="action-icon"><i class="fas fa-wallet"></i></div>
+          <h3>Record Expense</h3>
+          <p>Log new company expenses</p>
+        </a>
+
+        <a href="" class="action-card">
+          <div class="action-icon"><i class="fas fa-file-invoice"></i></div>
+          <h3>Create Invoice</h3>
+          <p>Generate a new company invoice</p>
+        </a>
+
+        <a href="" class="action-card">
+          <div class="action-icon"><i class="fas fa-hand-holding-usd"></i></div>
+          <h3>Loan Approvals</h3>
+          <p>Approve or reject pending advances</p>
+        </a>
+
+        <a href="" class="action-card">
+          <div class="action-icon"><i class="fas fa-chart-bar"></i></div>
+          <h3>Financial Reports</h3>
+          <p>View income and expenditure analysis</p>
+        </a>
+      </div>
+    </section>
+
+    <!-- Financial KPIs -->
+    <section class="stats-overview">
+      <div class="stat-card1">
+        <h3>Total Payroll ({{ current_month_name }})</h3>
+        <p>KSh {{ total_payroll|floatformat:0 }}</p>
+      </div>
+      <div class="stat-card1">
+        <h3>Approved Loans</h3>
+        <p>{{ approved_loans_count }}</p>
+      </div>
+      <div class="stat-card1">
+        <h3>Pending Loan Requests</h3>
+        <p>{{ pending_loans_count }}</p>
+      </div>
+      <div class="stat-card1">
+        <h3>Total Expenses</h3>
+        <p>KSh {{ total_expenses|floatformat:0 }}</p>
+      </div>
+    </section>
+
+    <!-- Recent Transactions -->
+    <section class="recent-employees">
+      <h2>Recent Transactions</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Transaction ID</th>
+            <th>Description</th>
+            <th>Amount</th>
+            <th>Status</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for tx in recent_transactions %}
+          <tr>
+            <td>{{ tx.transaction_id }}</td>
+            <td>{{ tx.description }}</td>
+            <td>KSh {{ tx.amount|floatformat:2 }}</td>
+            <td>
+              <span class="status {% if tx.status == 'Completed' %}approved{% elif tx.status == 'Pending' %}pending{% else %}declined{% endif %}">
+                {{ tx.status }}
+              </span>
+            </td>
+            <td>{{ tx.date }}</td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="5" style="text-align:center;">No recent transactions found.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Budget Summary -->
+    <section class="budget-summary">
+      <h2><i class="fas fa-chart-pie icon-blue"></i> Budget Overview</h2>
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <i class="fas fa-wallet kpi-icon"></i>
+          <h3>Total Budget</h3>
+          <p>KSh {{ total_budget|floatformat:0 }}</p>
+        </div>
+        <div class="kpi-card">
+          <i class="fas fa-coins kpi-icon"></i>
+          <h3>Spent So Far</h3>
+          <p>KSh {{ spent_amount|floatformat:0 }}</p>
+        </div>
+        <div class="kpi-card">
+          <i class="fas fa-balance-scale kpi-icon"></i>
+          <h3>Remaining</h3>
+          <p>KSh {{ remaining_budget|floatformat:0 }}</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Expense Table -->
+    <section class="loan-requests">
+      <h2>Expense Records</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Category</th>
+            <th>Details</th>
+            <th>Amount</th>
+            <th>Status</th>
+            <th>Finance Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for expense in expenses %}
+          <tr>
+            <td>{{ expense.category }}</td>
+            <td>{{ expense.description }}</td>
+            <td>KSh {{ expense.amount|floatformat:2 }}</td>
+            <td>
+              <span class="status {% if expense.status == 'Approved' %}approved{% elif expense.status == 'Pending' %}pending{% else %}declined{% endif %}">
+                {{ expense.status }}
+              </span>
+            </td>
+            <td>
+              <a href="{% url 'finance_edit_expense' expense.id %}" class="btn-hold"><i class="fas fa-edit"></i> Edit</a>
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="5" style="text-align:center;">No expenses recorded.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Reports -->
+    <section class="reports-analytics">
+      <h2><i class="fas fa-file-alt icon-blue"></i> Reports & Analytics</h2>
+      <div class="report-card"><i class="fas fa-chart-line icon-blue"></i> Monthly Expenditure Trend</div>
+      <div class="report-card"><i class="fas fa-hand-holding-usd icon-blue"></i> Loan Disbursement Report</div>
+      <div class="report-card"><i class="fas fa-receipt icon-blue"></i> Payroll Summary Report</div>
+    </section>
+
+    <!-- Announcements -->
+    <section class="announcements">
+      <h2><i class="fas fa-bullhorn icon-blue"></i> Finance Announcements</h2>
+      <div class="announcement-card"><i class="fas fa-money-bill-wave icon-blue"></i> Payroll scheduled for {{ payroll_date }}</div>
+      <div class="announcement-card"><i class="fas fa-chart-bar icon-blue"></i> Q4 budget review due next week.</div>
+      <div class="announcement-card"><i class="fas fa-receipt icon-blue"></i> Ensure all invoices are submitted by month-end.</div>
+    </section>
+
+    <!-- Upcoming Deadlines -->
+    <section class="upcoming-events">
+      <h2><i class="fas fa-calendar-alt"></i> Upcoming Deadlines</h2>
+      <ul>
+        <li><span class="event-title">Payroll Submission</span> <span class="event-date">Oct 25, 2025</span></li>
+        <li><span class="event-title">Audit Preparation</span> <span class="event-date">Nov 5, 2025</span></li>
+        <li><span class="event-title">Quarterly Reports</span> <span class="event-date">Nov 30, 2025</span></li>
+      </ul>
+    </section>
+
+    <!-- Messaging Center -->
+    <section class="messaging-center">
+      <h2><i class="fas fa-comments"></i> Messaging Center</h2>
+      <div class="chat-box">
+        <div class="message received">Hi Finance, has payroll been processed?</div>
+        <div class="message sent">Yes, all departments are cleared for payout.</div>
+      </div>
+      <div class="chat-input">
+        <input type="text" placeholder="Type a message...">
+        <button><i class="fas fa-paper-plane"></i></button>
+      </div>
+    </section>
 
   </main>
 </div>
 
 {% endblock %}
-

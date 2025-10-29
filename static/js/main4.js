@@ -1,75 +1,76 @@
 // static/js/attendance.js
 document.addEventListener("DOMContentLoaded", () => {
-  // Elements
+  "use strict";
+
+  // ===============================
+  // ATTENDANCE CARD / TABLE TOGGLE
+  // ===============================
   const cardViewBtn = document.getElementById("cardViewBtn");
   const tableViewBtn = document.getElementById("tableViewBtn");
   const cardView = document.getElementById("cardView");
   const tableView = document.getElementById("tableView");
-  const searchInput = document.getElementById("employeeSearch");
-  const deptSelect = document.getElementById("departmentFilter");
 
-  // Safety checks
-  if (!cardView || !tableView || !cardViewBtn || !tableViewBtn) {
-    console.warn("attendance.js: required elements not found. Check template IDs.");
-    return;
+  if (cardView && tableView && cardViewBtn && tableViewBtn) {
+    const showCardView = () => {
+      cardView.classList.remove("hidden");
+      tableView.classList.add("hidden");
+      cardViewBtn.classList.add("active");
+      tableViewBtn.classList.remove("active");
+      cardView.setAttribute("aria-hidden", "false");
+      tableView.setAttribute("aria-hidden", "true");
+    };
+    const showTableView = () => {
+      tableView.classList.remove("hidden");
+      cardView.classList.add("hidden");
+      tableViewBtn.classList.add("active");
+      cardViewBtn.classList.remove("active");
+      tableView.setAttribute("aria-hidden", "false");
+      cardView.setAttribute("aria-hidden", "true");
+    };
+
+    cardViewBtn.addEventListener("click", showCardView);
+    tableViewBtn.addEventListener("click", showTableView);
+
+    cardViewBtn.addEventListener("keydown", (e) => { if (e.key === "Enter") showCardView(); });
+    tableViewBtn.addEventListener("keydown", (e) => { if (e.key === "Enter") showTableView(); });
+
+    // Initialize view
+    showCardView();
   }
 
-  // Toggle handlers
-  function showCardView() {
-    cardView.classList.remove("hidden");
-    tableView.classList.add("hidden");
-    cardViewBtn.classList.add("active");
-    tableViewBtn.classList.remove("active");
-    cardView.setAttribute("aria-hidden", "false");
-    tableView.setAttribute("aria-hidden", "true");
-  }
-  function showTableView() {
-    tableView.classList.remove("hidden");
-    cardView.classList.add("hidden");
-    tableViewBtn.classList.add("active");
-    cardViewBtn.classList.remove("active");
-    tableView.setAttribute("aria-hidden", "false");
-    cardView.setAttribute("aria-hidden", "true");
-  }
-
-  cardViewBtn.addEventListener("click", showCardView);
-  tableViewBtn.addEventListener("click", showTableView);
-
-  // Utility: update status & buttons across both views for an employee id
-  function updateEmployeeState(empId, state) {
-    // state: "checked-in" | "checked-out" | "not-checked-in"
+  // =========================================
+  // ATTENDANCE CHECK-IN / CHECK-OUT UPDATE
+  // =========================================
+  function updateEmployeeState(empId, label, color, hrs = 0) {
     const wrappers = document.querySelectorAll(`[data-emp-id="${empId}"]`);
-    wrappers.forEach(w => {
-      const statusEl = w.querySelector(".status");
-      const checkinBtn = w.querySelector(".btn-checkin");
-      const checkoutBtn = w.querySelector(".btn-checkout");
+    wrappers.forEach(el => {
+      const statusEl = el.querySelector(".status1") || el.querySelector(".status");
+      const checkinBtn = el.querySelector(".btn-checkin") || el.closest("tr")?.querySelector(".btn-checkin");
+      const checkoutBtn = el.querySelector(".btn-checkout") || el.closest("tr")?.querySelector(".btn-checkout");
+      const hoursEl = el.querySelector(".hours-worked") || el.closest("tr")?.querySelector(".hours-worked");
 
-      if (state === "checked-in") {
-        if (statusEl) {
-          statusEl.textContent = "Checked In";
-          statusEl.style.color = "green";
-        }
+      if (statusEl) {
+        statusEl.textContent = label;
+        statusEl.style.color = color || "";
+      }
+
+      if (hoursEl && hrs) {
+        hoursEl.textContent = `${hrs} hrs`;
+      }
+
+      if (label.toLowerCase().includes("checked in")) {
         if (checkinBtn) checkinBtn.disabled = true;
         if (checkoutBtn) checkoutBtn.disabled = false;
-      } else if (state === "checked-out") {
-        if (statusEl) {
-          statusEl.textContent = "Checked Out";
-          statusEl.style.color = "crimson";
-        }
+      } else if (label.toLowerCase().includes("checked out")) {
         if (checkoutBtn) checkoutBtn.disabled = true;
         if (checkinBtn) checkinBtn.disabled = false;
       } else {
-        if (statusEl) {
-          statusEl.textContent = "Not Checked In";
-          statusEl.style.color = "";
-        }
         if (checkinBtn) checkinBtn.disabled = false;
         if (checkoutBtn) checkoutBtn.disabled = true;
       }
     });
   }
 
-  // Event delegation for checkin/checkout clicks (works for table & cards)
   document.addEventListener("click", (e) => {
     const checkinBtn = e.target.closest(".btn-checkin");
     const checkoutBtn = e.target.closest(".btn-checkout");
@@ -79,7 +80,6 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!parent) return;
       const empId = parent.getAttribute("data-emp-id");
       updateEmployeeState(empId, "checked-in");
-      return;
     }
 
     if (checkoutBtn) {
@@ -87,47 +87,141 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!parent) return;
       const empId = parent.getAttribute("data-emp-id");
       updateEmployeeState(empId, "checked-out");
-      return;
     }
   });
 
-  // Filter (search + department) that affects both views
+  // ==============================
+  // FILTER / SEARCH FUNCTIONALITY
+  // ==============================
+  const searchInput = document.getElementById("employeeSearch");
+  const deptSelect = document.getElementById("departmentFilter");
+
   function applyFilters() {
     const q = (searchInput?.value || "").trim().toLowerCase();
     const dept = (deptSelect?.value || "all");
 
-    // Cards
     document.querySelectorAll(".employee-card[data-emp-id]").forEach(card => {
       const name = (card.getAttribute("data-emp-name") || "").toLowerCase();
       const id = (card.getAttribute("data-emp-id") || "").toLowerCase();
-      const cDept = (card.getAttribute("data-dept") || "");
-      const matchesQ = !q || name.includes(q) || id.includes(q);
-      const matchesDept = (dept === "all") || (cDept === dept);
-      card.style.display = (matchesQ && matchesDept) ? "" : "none";
+      const cDept = card.getAttribute("data-dept") || "";
+      const visible = (!q || name.includes(q) || id.includes(q)) && (dept === "all" || cDept === dept);
+      card.style.display = visible ? "" : "none";
     });
 
-    // Table rows
-    document.querySelectorAll('tr[data-emp-id]').forEach(row => {
+    document.querySelectorAll("tr[data-emp-id]").forEach(row => {
       const name = (row.getAttribute("data-emp-name") || "").toLowerCase();
       const id = (row.getAttribute("data-emp-id") || "").toLowerCase();
-      const rDept = (row.getAttribute("data-dept") || "");
-      const matchesQ = !q || name.includes(q) || id.includes(q);
-      const matchesDept = (dept === "all") || (rDept === dept);
-      row.style.display = (matchesQ && matchesDept) ? "" : "none";
+      const rDept = row.getAttribute("data-dept") || "";
+      const visible = (!q || name.includes(q) || id.includes(q)) && (dept === "all" || rDept === dept);
+      row.style.display = visible ? "" : "none";
     });
   }
 
-  if (searchInput) {
-    searchInput.addEventListener("input", applyFilters);
-  }
-  if (deptSelect) {
-    deptSelect.addEventListener("change", applyFilters);
+  if (searchInput) searchInput.addEventListener("input", applyFilters);
+  if (deptSelect) deptSelect.addEventListener("change", applyFilters);
+
+  // ==============================
+  // LEAVE DAYS CALCULATION
+  // ==============================
+  const startInput = document.getElementById("start_date");
+  const endInput = document.getElementById("end_date");
+  const totalDisplay = document.getElementById("total_days_display");
+  const resumeDisplay = document.getElementById("resumption_date_display");
+
+  function calculateDaysAndResumption() {
+    const start = new Date(startInput.value);
+    const end = new Date(endInput.value);
+
+    if (start && end && end >= start) {
+      let dayCount = 0;
+      let current = new Date(start);
+
+      while (current <= end) {
+        if (current.getDay() !== 0) dayCount++;
+        current.setDate(current.getDate() + 1);
+      }
+
+      totalDisplay.textContent = `${dayCount} Days`;
+
+      let resume = new Date(end);
+      resume.setDate(resume.getDate() + 1);
+      if (resume.getDay() === 0) resume.setDate(resume.getDate() + 1);
+
+      resumeDisplay.textContent = resume.toLocaleDateString("en-US", {
+        day: "numeric",
+        month: "short",
+        year: "numeric"
+      });
+    }
   }
 
-  // Initialize - ensure card view visible
-  showCardView();
+  startInput?.addEventListener("change", calculateDaysAndResumption);
+  endInput?.addEventListener("change", calculateDaysAndResumption);
 
-  // OPTIONAL: keyboard accessibility - Enter toggles views if focused
-  cardViewBtn.addEventListener("keydown", (e) => { if (e.key === "Enter") cardViewBtn.click(); });
-  tableViewBtn.addEventListener("keydown", (e) => { if (e.key === "Enter") tableViewBtn.click(); });
+  // ===============================
+  // PR HERO CAROUSEL
+  // ===============================
+  const heroSlides = document.querySelectorAll(".hero-slider .slide");
+  if (heroSlides.length) {
+    let currentHero = 0;
+    heroSlides[currentHero].classList.add("active");
+
+    setInterval(() => {
+      heroSlides[currentHero].classList.remove("active");
+      currentHero = (currentHero + 1) % heroSlides.length;
+      heroSlides[currentHero].classList.add("active");
+    }, 6000);
+  }
+
+  // ===============================
+  // PRODUCT SLIDER
+  // ===============================
+  const track = document.querySelector(".demo-track");
+  if (track) {
+    const productSlides = Array.from(track.children);
+    let index = 0;
+    const slideWidth = productSlides[0].offsetWidth + 16;
+
+    setInterval(() => {
+      index++;
+      if (index > productSlides.length - 3) index = 0;
+      track.style.transform = `translateX(-${index * slideWidth}px)`;
+    }, 3000);
+  }
+
+  // ===============================
+  // NAVBAR TOGGLE
+  // ===============================
+  const navToggle = document.getElementById("navToggle");
+  const navMenu = document.getElementById("navMenu");
+
+  if (navToggle && navMenu) {
+    navToggle.addEventListener("click", () => navMenu.classList.toggle("show"));
+
+    document.addEventListener("click", (e) => {
+      if (!navMenu.contains(e.target) && !navToggle.contains(e.target)) {
+        navMenu.classList.remove("show");
+      }
+    });
+  }
+
 });
+
+document.addEventListener("DOMContentLoaded", () => {
+  const navToggle = document.getElementById("nav-toggle");
+  const navLinks = document.getElementById("nav-links");
+
+  if (navToggle && navLinks) {
+    navToggle.addEventListener("click", () => {
+      navLinks.classList.toggle("show");
+    });
+
+    // Close menu when clicking outside
+    document.addEventListener("click", (e) => {
+      if (!navLinks.contains(e.target) && !navToggle.contains(e.target)) {
+        navLinks.classList.remove("show");
+      }
+    });
+  }
+});
+

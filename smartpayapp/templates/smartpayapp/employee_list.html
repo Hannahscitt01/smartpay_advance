@@ -2,8 +2,30 @@
 {% load static %}
 {% block content %}
 
+<div class="dashboard-container">
+  
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <h2>HR</h2>
+    </div>
+    <nav class="sidebar-nav">
+      <ul>
+        <li><a href="{% url 'hr_home' %}">Dashboard</a></li>
+        <li><a class="active" href="{% url 'employee_list' %}">Employees</a></li>
+        <li><a href="{% url 'hr_departments' %}">Departments</a></li>
+        <li><a href="{% url 'payroll_payslips' %}">Payroll</a></li>
+        <li><a href="{% url 'hr_track_performance' %}">Performance</a></li>
+        <li><a href="{% url 'hr_loan_requests' %}">Requests</a></li>
+        <li><a href="{% url 'hr_message_centre' %}">Messages</a></li>
+        <li><a href="{% url 'hr_reports' %}">Reports</a></li>
+        <li><a href="{% url 'hr_settings' %}">Settings</a></li>
+      </ul>
+    </nav>
+  </aside>
 
-
+  <!-- Main Content -->
+  <main class="main-content">
     <!-- ================================================================
         Employees Directory Page
     ================================================================ -->
@@ -20,7 +42,6 @@
             <button id="tableViewBtn">Table View</button>
         </div>
     </section>
-
 
     <!-- Grid (Cards) Layout -->
     <div id="employeeCards">
@@ -48,8 +69,6 @@
         </div>
         {% endfor %}
     </div>
-
-
 
     <!-- Table Layout -->
     <div id="employeeTable" style="display:none;">
@@ -93,7 +112,7 @@
         </div>
         {% endfor %}
     </div>
-
-
+  </main>
+</div>
 
 {% endblock %}

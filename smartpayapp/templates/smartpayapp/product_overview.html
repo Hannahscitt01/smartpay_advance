@@ -1,0 +1,333 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}SmartPay | Product Overview {% endblock %}
+{% block content %}
+
+
+<!--- Product Overview Page Starts here-->
+<!-- HERO SECTION -->
+<section class="sp-hero">
+  <div class="sp-hero-overlay"></div>
+
+  <!-- Background Video -->
+  <video autoplay muted loop playsinline class="sp-hero-video">
+    <source src="{% static 'videos/v1.mp4' %}" type="video/mp4">
+  </video>
+
+  <div class="sp-hero-content">
+    <h1 class="sp-hero-title">SmartPay Advance</h1>
+    <h2 class="sp-hero-subtitle">Your Unified Finance and HR System</h2>
+    <p class="sp-hero-description">
+      Digitize workflows, empower teams, and simplify operations across your entire organization.
+    </p>
+    <div class="sp-hero-buttons">
+      <a href="#demo" class="sp-btn-primary">Watch Demo</a>
+      <a href="#booking" class="sp-btn-secondary">Get Started</a>
+    </div>
+  </div>
+</section>
+
+
+<section class="sp-overview">
+  <div class="sp-overview-container">
+    <!-- Left: Product Visual -->
+    <div class="sp-overview-image">
+      <img src="{% static 'img/logo2.png' %}" alt="SmartPay Dashboard Overview">
+    </div>
+
+    <!-- Right: Product Details -->
+    <div class="sp-overview-content">
+      <h2 class="sp-overview-title">Digitizing Finance and HR Operations</h2>
+      <p class="sp-overview-description">
+        SmartPay Advance is a unified finance and HR platform designed to streamline everyday organizational processes. 
+        It helps startups, SMEs, and enterprises digitize employee management, payroll, salary advances, and finance operations 
+         while ensuring confidentiality, speed, and accuracy in every transaction.
+      </p>
+
+      <div class="sp-overview-features">
+        <div class="sp-feature-item">
+          <i class="fas fa-money-check-alt"></i>
+          <span>Salary & Advance Requests</span>
+        </div>
+        <div class="sp-feature-item">
+          <i class="fas fa-hand-holding-usd"></i>
+          <span>Internal Loan Management</span>
+        </div>
+        <div class="sp-feature-item">
+          <i class="fas fa-user-tie"></i>
+          <span>Employee & Department Management</span>
+        </div>
+        <div class="sp-feature-item">
+          <i class="fas fa-file-invoice-dollar"></i>
+          <span>Payroll Automation</span>
+        </div>
+        <div class="sp-feature-item">
+          <i class="fas fa-chart-line"></i>
+          <span>Performance Analytics</span>
+        </div>
+        <div class="sp-feature-item">
+          <i class="fas fa-chart-pie"></i>
+          <span>Data Reports & Insights</span>
+        </div>
+      </div>
+
+      <div class="sp-overview-buttons">
+        <a href="{% url 'booking' %}" class="sp-btn-primary">Request a Demo</a>
+        <a href="#contact" class="sp-btn-secondary">Contact Sales</a>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- Product Overview Page Starts here-->
+
+<!-- Value Proposition Section -->
+<section class="sp-value">
+  <div class="sp-value-container">
+    <h2 class="sp-value-title">Empowering Kenyan Businesses Through Digital Transformation</h2>
+    <h3 class="sp-value-subtitle">A localized HR and Finance solution built for Africa’s growing enterprises.</h3>
+
+    <p class="sp-value-description">
+      SmartPay Advance is designed to meet the unique needs of Kenyan organizations —from SMEs and startups to established institutions.
+      By digitizing HR and financial operations, SmartPay eliminates manual processes, reduces errors, and enhances transparency.
+      Whether managing payroll, tracking performance, or processing salary advances, SmartPay helps your business operate faster,
+      smarter, and more securely in today’s digital economy.
+    </p>
+
+    <div class="sp-value-grid">
+      <div class="sp-value-card">
+        <i class="fas fa-globe-africa sp-value-icon"></i>
+        <h4>Localized for Kenyan Workflows</h4>
+        <p>Tailored to match local HR structures, compliance, and payroll systems.</p>
+      </div>
+
+      <div class="sp-value-card">
+        <i class="fas fa-bolt sp-value-icon"></i>
+        <h4>Faster Financial Operations</h4>
+        <p>Automate salary advances, internal loans, and financial approvals effortlessly.</p>
+      </div>
+
+      <div class="sp-value-card">
+        <i class="fas fa-lock sp-value-icon"></i>
+        <h4>Secure & Transparent</h4>
+        <p>Built with confidentiality and data protection at its core for safer workflows.</p>
+      </div>
+
+      <div class="sp-value-card">
+        <i class="fas fa-chart-line sp-value-icon"></i>
+        <h4>Scalable for Growth</h4>
+        <p>From startups to enterprises, SmartPay grows as your business evolves.</p>
+      </div>
+    </div>
+
+    <div class="sp-value-buttons">
+      <a href="{% url 'booking' %}" class="sp-btn-primary">Schedule a Consultation</a>
+      <a href="#features" class="sp-btn-secondary">Explore Features</a>
+    </div>
+  </div>
+</section>
+
+
+<!-- SmartPay Product Video & Showcase -->
+<section class="spv-section">
+  <div class="spv-container">
+    <!-- Left: Text Block -->
+    <div class="spv-text">
+      <h2>See SmartPay in Action</h2>
+      <p>
+        Experience how SmartPay Advance simplifies HR and finance workflows through intelligent automation,
+        real-time data, and seamless integrations. Watch how it transforms day-to-day operations into a smooth digital experience.
+      </p>
+      <a href="#contact" class="sp-btn-primary">View Other Products</a>
+    </div>
+
+    <!-- Right: Main Video -->
+    <div class="spv-main-video">
+      <a href="https://www.youtube.com/watch?v=YOUR_VIDEO_ID" target="_blank" class="spv-video-link">
+        <img src="{% static 'img/pr/pr1.jpg' %}" alt="SmartPay Product Demo" class="spv-thumbnail">
+        <div class="spv-play-overlay">
+          <i class="fas fa-play"></i>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- Secondary Video Thumbnails -->
+  <div class="spv-gallery">
+    <a href="https://www.youtube.com/watch?v=SECOND_VIDEO_ID" target="_blank" class="spv-card">
+      <img src="{% static 'img/pr/pr2.jpg' %}" alt="SmartPay Payroll Overview">
+      <div class="spv-overlay"><i class="fas fa-play"></i></div>
+    </a>
+    <a href="https://www.youtube.com/watch?v=THIRD_VIDEO_ID" target="_blank" class="spv-card">
+      <img src="{% static 'img/pr/pr2.jpg' %}" alt="Employee Management Module">
+      <div class="spv-overlay"><i class="fas fa-play"></i></div>
+    </a>
+    <a href="https://www.youtube.com/watch?v=FOURTH_VIDEO_ID" target="_blank" class="spv-card">
+      <img src="{% static 'img/pr/pr2.jpg' %}" alt="Performance Analytics Dashboard">
+      <div class="spv-overlay"><i class="fas fa-play"></i></div>
+    </a>
+  </div>
+</section>
+
+<section class="sp-features-section">
+  <div class="sp-features-container">
+    <h2 class="sp-value-title">Why Choose SmartPay Advance?</h2>
+    <h3 class="sp-value-subtitle">Empowering African Businesses with Smarter HR and Finance Solutions</h3>
+    <p class="sp-section-subtitle">
+      SmartPay Advance is built to help businesses eliminate manual bottlenecks and embrace digital efficiency. From payroll automation to HR analytics, the platform centralizes your financial and workforce operations into one intelligent system.<br><br> Designed with the modern Kenyan organization in mind  whether an SME, startup, or enterprise  SmartPay ensures accuracy, compliance, and transparency at every stage. It’s not just software; it’s a smarter way to run your business.
+    </p>
+
+    <div class="sp-features-grid">
+      <div class="sp-feature-card">
+        <div class="sp-feature-icon">
+          <i class="fas fa-calculator"></i>
+        </div>
+        <h3 class="sp-feature-title">Automated Payroll</h3>
+        <p class="sp-feature-desc">
+          Save hours each month with automated salary processing, deductions, and payslip generation.
+        </p>
+      </div>
+
+      <div class="sp-feature-card">
+        <div class="sp-feature-icon">
+          <i class="fas fa-hand-holding-usd"></i>
+        </div>
+        <h3 class="sp-feature-title">Salary Advances</h3>
+        <p class="sp-feature-desc">
+          Empower employees with controlled access to earned salary advances without paperwork or delays.
+        </p>
+      </div>
+
+      <div class="sp-feature-card">
+        <div class="sp-feature-icon">
+          <i class="fas fa-chart-line"></i>
+        </div>
+        <h3 class="sp-feature-title">Smart Analytics</h3>
+        <p class="sp-feature-desc">
+          Visualize your financial health with detailed reports and analytics that simplify decision-making.
+        </p>
+      </div>
+
+      <div class="sp-feature-card">
+        <div class="sp-feature-icon">
+          <i class="fas fa-file-invoice-dollar"></i>
+        </div>
+        <h3 class="sp-feature-title">Tax & Compliance</h3>
+        <p class="sp-feature-desc">
+          Ensure accuracy in all statutory deductions and compliance filings with built-in Kenyan tax rules.
+        </p>
+      </div>
+
+      <div class="sp-feature-card">
+        <div class="sp-feature-icon">
+          <i class="fas fa-network-wired"></i>
+        </div>
+        <h3 class="sp-feature-title">System Integration</h3>
+        <p class="sp-feature-desc">
+          Seamlessly integrate with your existing HR tools, accounting software, and banking systems.
+        </p>
+      </div>
+
+      <div class="sp-feature-card">
+        <div class="sp-feature-icon">
+          <i class="fas fa-shield-alt"></i>
+        </div>
+        <h3 class="sp-feature-title">Enterprise Security</h3>
+        <p class="sp-feature-desc">
+          Your data is protected with encrypted transactions and multi-layered authentication for full confidentiality.
+        </p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- Related Products Section -->
+<section class="spr-related">
+  <div class="spr-container">
+    <h2 class="spr-title">Explore Our Other Products</h2>
+    <p class="spr-subtext">
+      Discover more of our intelligent business solutions designed to simplify operations, enhance collaboration, 
+      and scale with your organization.
+    </p>
+
+    <div class="spr-grid">
+      <!-- Card 1 -->
+      <div class="spr-card">
+        <img src="img/product-hrsuite.webp" alt="HR Suite" class="spr-card-img">
+        <div class="spr-card-content">
+          <h3>HR Suite</h3>
+          <p>Manage employee data, departments, and performance with ease through our all-in-one HR system.</p>
+          <a href="#" class="spr-btn">Learn More</a>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="spr-card">
+        <img src="img/product-payroll.webp" alt="Payroll System" class="spr-card-img">
+        <div class="spr-card-content">
+          <h3>Payroll System</h3>
+          <p>Automate salary calculations, track deductions, and ensure compliance with an efficient payroll engine.</p>
+          <a href="#" class="spr-btn">Learn More</a>
+        </div>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="spr-card">
+        <img src="img/product-analytics.webp" alt="Performance Analytics" class="spr-card-img">
+        <div class="spr-card-content">
+          <h3>Performance Analytics</h3>
+          <p>Gain insights into workforce organizational growth through real-time analytics dashboards.</p>
+          <a href="#" class="spr-btn">Learn More</a>
+        </div>
+      </div>
+
+      <!-- Card 4 -->
+      <div class="spr-card">
+        <img src="img/product-finance.webp" alt="Finance Suite" class="spr-card-img">
+        <div class="spr-card-content">
+          <h3>Finance Suite</h3>
+          <p>Digitize accounting workflows and manage transactions securely with our finance automation solution.</p>
+          <a href="#" class="spr-btn">Learn More</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section><section class="bottom-cta">
+  <div class="cta-inner">
+    <h2>Transform Your Finance & HR Operations Today</h2>
+    <p>Take control of your payroll, HR, and finance workflows with SmartPay. Streamline processes and empower your team.</p>
+    <div class="cta-buttons">
+      <a href="#" class="btn-primary">Book a Demo</a>
+      <a href="#" class="btn-secondary">Buy SmartPay Now</a>
+    </div>
+  </div>
+</section>
+
+<section class="contact-section">
+  <div class="contact-inner">
+    <h2>Get in Touch</h2>
+    <p>Have questions or want a custom solution? Fill out the form below and we’ll get back to you promptly.</p>
+
+    <form class="contact-form" action="#" method="POST">
+      {% csrf_token %}
+      <div class="form-group">
+        <input type="text" name="name" placeholder="Your Name" required>
+      </div>
+      <div class="form-group">
+        <input type="email" name="email" placeholder="Your Email" required>
+      </div>
+      <div class="form-group">
+        <input type="text" name="subject" placeholder="Subject" required>
+      </div>
+      <div class="form-group">
+        <textarea name="message" rows="5" placeholder="Your Message" required></textarea>
+      </div>
+      <button type="submit" class="btn-primary">Send Message</button>
+    </form>
+  </div>
+</section>
+
+
+
+
+{% endblock %}

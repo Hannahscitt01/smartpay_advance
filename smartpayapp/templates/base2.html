@@ -1,0 +1,142 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}smartpay_advance{% endblock %} </title>
+    <link rel="stylesheet"href="{% static 'css/style2.css' %}">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    
+
+
+
+</head>
+<body>
+    <!-- NAV SECTION -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <img src="{% static 'img/logo2.png' %}" alt="Company Logo" class="nav-logo">
+            <span class="nav-app-name">Advance Salary System</span>
+        </div>
+
+        <div class="nav-center" id="navMenu">
+            <a href="{% url 'home' %}">Home</a>
+            <a href="#about">About</a> 
+            <a href="#features">Features</a>
+            <a href="#pricing">Pricing</a>
+            <a href="#demo">Request Demo</a>
+            <a href="#features">My Portfolio</a>
+            <a href="#contact">Contact</a>
+
+            <!-- Buttons for mobile dropdown -->
+            <div class="nav-buttons-mobile">
+                <a href="#get-started" class="sp-btn-primary">Buy Product</a>
+                <a href="{% url 'index' %}" class="sp-btn-secondary">Get started</a>
+            </div>
+        </div>
+
+        <div class="nav-right">
+            <a href="#get-started" class="sp-btn-primary desktop-only">Buy Product</a>
+            <a href="{% url 'index' %}" class="sp-btn-secondary desktop-only">Get started</a>
+        </div>
+
+        <span class="nav-breadcrumb" id="navToggle">&#9776;</span>
+    </nav>
+
+
+
+
+    {% block content %}
+    {% endblock  %}
+
+    <!--Footer starts here-->
+    <footer class="footer">
+        <div class="footer-container">
+            
+            <!-- Company Info -->
+            <div class="footer-col">
+            <div class="footer-brand">
+                <img src="{% static 'img/logo2.png' %}" alt="Company Logo" class="footer-logo-img">
+                <h3 class="footer-logo">Smart Pay App</h3>
+            </div>
+            <p class="footer-motto">"Empowering staff with speed, privacy, and trust."</p>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="footer-col">
+            <h4>Quick Links</h4>
+            <ul class="footer-links">
+                <li><a href="#">Home</a></li>
+                <li><a href="#">About</a></li>
+                <li><a href="#">Contact</a></li>
+            </ul>
+            </div>
+
+            <!-- Contact Info -->
+            <div class="footer-col">
+            <h4>Finance Department</h4>
+            <p>Email: finance@smartpay.com</p>
+            <p>Phone: +254 (721) 123-4567</p>
+            <p>Office Hours: Mon–Fri, 9am–5pm</p>
+            </div>
+
+            <!-- Extra Column (Example: Resources) -->
+            <div class="footer-col">
+            <h4>Resources</h4>
+            <ul class="footer-links">
+                <li><a href="#">Help Center</a></li>
+                <li><a href="#">FAQs</a></li>
+                <li><a href="#">Terms & Privacy</a></li>
+            </ul>
+            </div>
+
+        </div>
+
+        <!-- Footer Bottom -->
+        <div class="footer-bottom">
+            <p>&copy; 2025 SmartPay. Designed and Developed by <b>Hannah Wambui</b> | All rights reserved.</p>
+        </div>
+    </footer>
+
+
+
+
+
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const gridBtn = document.getElementById("gridViewBtn");
+        const tableBtn = document.getElementById("tableViewBtn");
+        const cards = document.getElementById("employeeCards");
+        const table = document.getElementById("employeeTable");
+
+        gridBtn.addEventListener("click", function() {
+            cards.style.display = "block";
+            table.style.display = "none";
+            gridBtn.classList.add("active");
+            tableBtn.classList.remove("active");
+        });
+
+        tableBtn.addEventListener("click", function() {
+            cards.style.display = "none";
+            table.style.display = "block";
+            tableBtn.classList.add("active");
+            gridBtn.classList.remove("active");
+        });
+    });
+</script>
+
+
+<Script src="{% static 'js/main.js' %}"></script>
+<Script src="{% static 'js/main1.js' %}"></script>
+<Script src="{% static 'js/main2.js' %}"></script>
+<Script src="{% static 'js/main4.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</body>
+</html>

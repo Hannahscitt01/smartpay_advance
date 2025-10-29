@@ -50,80 +50,125 @@
     <button id="tableViewBtn" aria-pressed="false">Table View</button>
   </div>
 
-  <!-- CARD VIEW -->
-  <section id="cardView" class="attendance-directory" aria-hidden="false">
-    {% for dept, emps in departments.items %}
-    <div class="department-block" data-dept="{{ dept }}">
-        <h2 class="department-title">{{ dept }} Department</h2>
-        <div class="employee-grid">
-          {% for emp in emps %}
-          <div class="employee-card" data-emp-id="{{ emp.staff_id }}" data-emp-name="{{ emp.full_name }}" data-dept="{{ emp.department }}">
-            <div class="employee-info">
-              <h3>{{ emp.full_name }}</h3>
-              <p><strong>ID:</strong> {{ emp.staff_id }}</p>
-              <p><strong>Job Title:</strong> {{ emp.job_title }}</p>
-              <p><strong>Email:</strong> {{ emp.email }}</p>
-              <p><strong>Department:</strong> {{ emp.department }}</p>
-              <p><strong>Status:</strong> 
-                <span class="status not-checked" data-late="0" data-needs-explanation="false">
-                  Not Checked In
-                </span>
-              </p>
-              <div class="attendance-actions">
-                <button class="btn-checkin" data-action="clock_in">Clock In</button>
-                <button class="btn-checkout" data-action="clock_out" disabled>Clock Out</button>
-              </div>
-            </div>
-          </div>
-          {% endfor %}
-        </div>
-    </div>
-    {% empty %}
-    <p>No employees found in the system.</p>
-    {% endfor %}
-  </section>
+<!-- CARD VIEW -->
+<section id="cardView" class="attendance-directory" aria-hidden="false">
+  {% for dept, emps in departments.items %}
+  <div class="department-block" data-dept="{{ dept }}">
+    <h2 class="department-title">{{ dept }} Department</h2>
+    <div class="employee-grid">
+      {% for emp in emps %}
+      <div class="employee-card" 
+           data-emp-id="{{ emp.staff_id }}" 
+           data-emp-name="{{ emp.full_name }}" 
+           data-dept="{{ emp.department }}">
+        <div class="employee-info">
+          <h3>{{ emp.full_name }}</h3>
+          <p><strong>ID:</strong> {{ emp.staff_id }}</p>
+          <p><strong>Job Title:</strong> {{ emp.job_title }}</p>
+          <p><strong>Email:</strong> {{ emp.email }}</p>
+          <p><strong>Department:</strong> {{ emp.department }}</p>
+          <p><strong>Status:</strong>
+            <span class="status"
+                  data-late="{{ emp.attendance_record.late_minutes|default:0 }}"
+                  data-needs-explanation="{{ emp.attendance_record.needs_explanation|default_if_none:'false' }}"
+                  data-status="{{ emp.attendance_status|slugify }}">
+              {{ emp.attendance_status }}
+            </span>
+          </p>
 
-  <!-- TABLE VIEW -->
-  <section id="tableView" class="attendance-table hidden" aria-hidden="true">
-    {% for dept, emps in departments.items %}
-    <div class="department-table-block" data-dept="{{ dept }}">
-      <h2 class="department-title">{{ dept }} Department</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>ID</th>
-            <th>Job Title</th>
-            <th>Email</th>
-            <th>Department</th>
-            <th>Status</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for emp in emps %}
-          <tr data-emp-id="{{ emp.staff_id }}" data-emp-name="{{ emp.full_name }}" data-dept="{{ emp.department }}">
-            <td>{{ emp.full_name }}</td>
-            <td>{{ emp.staff_id }}</td>
-            <td>{{ emp.job_title }}</td>
-            <td>{{ emp.email }}</td>
-            <td>{{ emp.department }}</td>
-            <td class="status not-checked" data-late="0" data-needs-explanation="false">
-              Not Checked In
-            </td>
-            <td>
-              <button class="btn-checkin" data-action="clock_in">Clock In</button>
-              <button class="btn-checkout" data-action="clock_out" disabled>Clock Out</button>
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+          <p><strong>Hours Worked:</strong>
+            <span class="hours-worked"
+                  data-hours="{{ emp.attendance_record.hours_worked|default:0 }}">
+              {{ emp.attendance_record.hours_worked|default:0 }} hrs
+            </span>
+          </p>
+
+          <div class="attendance-actions">
+            <button class="btn-checkin"
+                    data-action="checkin"
+                    {% if emp.attendance_record.clock_in %}disabled{% endif %}>
+              Clock In
+            </button>
+
+            <button class="btn-checkout"
+                    data-action="checkout"
+                    {% if not emp.attendance_record.clock_in or emp.attendance_record.clock_out %}disabled{% endif %}>
+              Clock Out
+            </button>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
     </div>
-    {% empty %}
-    <p style="text-align:center;">No departments or employees found.</p>
-    {% endfor %}
-  </section>
+  </div>
+  {% empty %}
+  <p>No employees found in the system.</p>
+  {% endfor %}
+</section>
+
+<!-- TABLE VIEW -->
+<section id="tableView" class="attendance-table hidden" aria-hidden="true">
+  {% for dept, emps in departments.items %}
+  <div class="department-table-block" data-dept="{{ dept }}">
+    <h2 class="department-title">{{ dept }} Department</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>ID</th>
+          <th>Job Title</th>
+          <th>Email</th>
+          <th>Department</th>
+          <th>Status</th>
+          <th>Hours Worked</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for emp in emps %}
+        <tr data-emp-id="{{ emp.staff_id }}" 
+            data-emp-name="{{ emp.full_name }}" 
+            data-dept="{{ emp.department }}">
+          <td>{{ emp.full_name }}</td>
+          <td>{{ emp.staff_id }}</td>
+          <td>{{ emp.job_title }}</td>
+          <td>{{ emp.email }}</td>
+          <td>{{ emp.department }}</td>
+          <td class="status1"
+              data-late="{{ emp.attendance_record.late_minutes|default:0 }}"
+              data-needs-explanation="{{ emp.attendance_record.needs_explanation|default_if_none:'false' }}"
+              data-status="{{ emp.attendance_status|slugify }}">
+            {{ emp.attendance_status }}
+          </td>
+
+          <td class="hours-worked" data-hours="{{ emp.attendance_record.hours_worked|default:0 }}">
+            {{ emp.attendance_record.hours_worked|default:0 }} hrs
+          </td>
+
+          <td>
+            <button class="btn-checkin"
+                    data-action="checkin"
+                    {% if emp.attendance_record.clock_in %}disabled{% endif %}>
+              Clock In
+            </button>
+
+            <button class="btn-checkout"
+                    data-action="checkout"
+                    {% if not emp.attendance_record.clock_in or emp.attendance_record.clock_out %}disabled{% endif %}>
+              Clock Out
+            </button>
+          </td>
+
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% empty %}
+  <p style="text-alig1n:center;">No departments or employees found.</p>
+  {% endfor %}
+</section>
+
 
 </main>
 
