@@ -4,21 +4,22 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 
-from .forms import SignUpForm, SalaryAdvanceForm, EmployeeForm, ProfileUpdateForm, LoanRequestForm
-from .models import Profile, SalaryAdvanceRequest, Employee, LoanRequest, ChatMessage, SupportChatMessage, Attendance
+from .forms import SignUpForm, SalaryAdvanceForm, EmployeeForm, ProfileUpdateForm, LoanRequestForm, LeaveRequestForm
+from .models import Profile, SalaryAdvanceRequest, Employee, LoanRequest, ChatMessage, SupportChatMessage, Attendance, LeaveRequest, EmployeeLeaveBalance
 from .decorators import admin_required
 from decimal import Decimal
-from django.db.models import Sum, Q, Max, Count
+from django.db.models import Sum, Q, Max, Count, Case, When, Value, IntegerField
 from django.utils import timezone
 
 from collections import OrderedDict, defaultdict
 from django.http import JsonResponse
 
-from datetime import datetime, time
+from datetime import datetime, time, date, timedelta
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
 
-
-
+from django.core.paginator import Paginator
+import json
 
 # ================================================================
 # 1. Landing & Static Pages
@@ -83,7 +84,7 @@ def login_view(request):
         user = authenticate(request, username=staffid, password=password)
         if user:
             login(request, user)
-            # ✅ Call the helper here
+            #  Call the helper here
             return redirect_after_login(request)
         else:
             messages.error(request, "Invalid Staff ID or password")
@@ -107,14 +108,213 @@ def redirect_after_login(request):
     elif role == "hr":
         return redirect("hr_home")
     else:
-        return redirect("home")  # employee dashboard
+        return redirect("employee_dashboard")  # employee dashboard
 
 
 
 
 # ================================================================
 # 3. Employee Dashboard & Profile Management
-# ================================================================
+# ===============================================================
+@login_required
+def employee_payslip(request):
+    """payroll page"""
+    return render(request, 'smartpayapp/employee_payslip.html')
+
+@login_required
+def employee_atttendance(request):
+    """employee_atttendance page"""
+    return render(request, 'smartpayapp/employee_atttendance.html')
+
+
+@login_required
+def employee_dashboard(request):
+    try:
+        employee = request.user.profile.employee
+    except AttributeError:
+        return render(request, "smartpayapp/employee_dashboard.html", {
+            "error": "No employee record linked to this account."
+        })
+
+    today = timezone.localdate()
+    start_of_week = today - timedelta(days=today.weekday())
+    start_of_month = today.replace(day=1)
+    start_of_year = today.replace(month=1, day=1)
+
+    # ------------------ Fetch records ------------------
+    weekly_records = Attendance.objects.filter(employee=employee, date__gte=start_of_week, date__lte=today)
+    monthly_records = Attendance.objects.filter(employee=employee, date__gte=start_of_month, date__lte=today)
+    yearly_records = Attendance.objects.filter(employee=employee, date__gte=start_of_year, date__lte=today)
+
+    # ------------------ Today's Attendance ------------------
+    today_attendance = Attendance.objects.filter(employee=employee, date=today).first()
+    hours_worked_today = today_attendance.hours_worked if today_attendance and today_attendance.hours_worked else 0
+    today_target_percent = round((hours_worked_today / 8) * 100) if hours_worked_today else 0
+
+    # Determine today's check-in/check-out status
+    if today_attendance:
+        if today_attendance.clock_in and not today_attendance.clock_out:
+            check_status = "checked_in"  # Already checked in, not checked out
+            check_text = "Checked In"
+        elif today_attendance.clock_in and today_attendance.clock_out:
+            check_status = "checked_out"  # Already checked out
+            check_text = "Checked Out"
+        else:
+            check_status = "not_checked"
+            check_text = "Check In"
+    else:
+        check_status = "not_checked"
+        check_text = "Check In"
+
+
+
+    # ------------------ Weekly Data ------------------
+    weekly_data = []
+    for i in range(6):
+        day = start_of_week + timedelta(days=i)
+        att = weekly_records.filter(date=day).first()
+        weekly_data.append({
+            'day': day.strftime("%a"),
+            'clock_in': att.clock_in.strftime("%I:%M %p") if att and att.clock_in else "—",
+            'clock_out': att.clock_out.strftime("%I:%M %p") if att and att.clock_out else "—",
+            'hours': f"{att.hours_worked}h" if att and att.hours_worked else "—",
+            'status': att.status if att and att.status else "No Record"
+        })
+
+    # ------------------ Monthly Table ------------------
+    monthly_table = []
+    week_start = start_of_month
+    week_number = 1
+    while week_start <= today:
+        week_end = week_start + timedelta(days=6)
+        week_attendances = monthly_records.filter(date__range=[week_start, week_end])
+        total_hours = sum(a.hours_worked or 0 for a in week_attendances)
+        total_late = sum(a.late_minutes or 0 for a in week_attendances)
+        days_present = week_attendances.filter(clock_in__isnull=False).count()
+        average_attendance = round((days_present / 6) * 100, 2) if days_present else 0
+
+        if week_attendances.exists() and total_hours > 0:
+            if total_late <= 60:
+                performance = "Excellent"
+            elif total_late <= 180:
+                performance = "Good"
+            else:
+                performance = "Average"
+        else:
+            performance = "No Record"
+            total_hours = total_late = average_attendance = 0
+
+        monthly_table.append({
+            'week': f"Week {week_number}",
+            'total_hours': f"{total_hours}h",
+            'late': f"{total_late}m",
+            'average': f"{average_attendance}%",
+            'performance': performance
+        })
+        week_start = week_end + timedelta(days=1)
+        week_number += 1
+
+    # ------------------ Yearly Summary ------------------
+    months = []
+    for month in range(1, 13):
+        month_start = start_of_year.replace(month=month, day=1)
+        last_day = (month_start.replace(month=month % 12 + 1, day=1) - timedelta(days=1)) if month != 12 else month_start.replace(month=12, day=31)
+        month_attendances = yearly_records.filter(date__range=[month_start, last_day])
+        total_hours = sum(a.hours_worked or 0 for a in month_attendances)
+        total_late = sum(a.late_minutes or 0 for a in month_attendances)
+        days_present = month_attendances.filter(clock_in__isnull=False).count()
+        average_attendance = round((days_present / 26) * 100, 2) if days_present else 0
+
+        if month_attendances.exists() and total_hours > 0:
+            if total_late <= 200:
+                performance = "Excellent"
+            elif total_late <= 500:
+                performance = "Good"
+            else:
+                performance = "Average"
+        else:
+            performance = "No Record"
+
+        months.append({
+            'month': month_start.strftime("%B"),
+            'total_hours': f"{total_hours}h",
+            'total_late': f"{total_late}m",
+            'average': f"{average_attendance}%",
+            'performance': performance
+        })
+
+    yearly_summary = {
+        "total_hours": round(sum(r.hours_worked or 0 for r in yearly_records), 2),
+        "days_present": yearly_records.filter(clock_in__isnull=False).count(),
+        "total_late": sum(r.late_minutes or 0 for r in yearly_records),
+        "days_absent": yearly_records.filter(clock_in__isnull=True).count(),
+        "months": months
+    }
+
+    # ------------------ Monthly Summary ------------------
+    weeks_tracked = sum(1 for row in monthly_table if row['performance'] != "No Record")
+    total_hours_month = sum(float(row['total_hours'][:-1]) for row in monthly_table)
+    total_late_month = sum(float(row['late'][:-1]) for row in monthly_table)
+    avg_weekly_attendance = round(
+        sum(float(row['average'][:-1]) for row in monthly_table if row['performance'] != "No Record") / weeks_tracked, 2
+    ) if weeks_tracked else 0
+    early_leaves = sum(1 for a in monthly_records if a.clock_out and a.clock_out < timezone.datetime.combine(a.date, timezone.datetime.min.time()))
+
+    if weeks_tracked == 0:
+        monthly_performance = "No Record"
+        monthly_message = "You have not clocked any attendance this month."
+    elif total_late_month <= 60:
+        monthly_performance = "Excellent"
+        monthly_message = "Great job this month! Your punctuality and consistency are impressive."
+    elif total_late_month <= 180:
+        monthly_performance = "Good"
+        monthly_message = "Good work this month, but there is room for improvement in punctuality."
+    else:
+        monthly_performance = "Average"
+        monthly_message = "You’ve had multiple late check-ins this month. Please improve your punctuality."
+
+    monthly_summary = {
+        "total_hours": total_hours_month,
+        "total_late": total_late_month,
+        "weeks_tracked": weeks_tracked,
+        "average_attendance": avg_weekly_attendance,
+        "early_leaves": early_leaves,
+        "performance_rating": monthly_performance,
+        "performance_message": monthly_message
+    }
+
+    # Daily target hours
+    DAILY_TARGET_HOURS = 8
+
+    # Calculate progress percentage
+    today_target_percent = round((hours_worked_today / DAILY_TARGET_HOURS) * 100) if hours_worked_today else 0
+    today_target_percent = min(today_target_percent, 100)  # Cap at 100%
+
+    # Calculate stroke offset for the progress circle
+    # Circle circumference = 2 * π * r
+    radius = 35
+    circumference = 2 * 3.1416 * radius
+    stroke_dashoffset = circumference * (1 - today_target_percent / 100)
+
+
+    return render(request, "smartpayapp/employee_dashboard.html", {
+        "employee": employee,
+        "weekly_data": weekly_data,
+        "monthly_table": monthly_table,
+        "monthly_summary": monthly_summary,
+        "yearly_summary": yearly_summary,
+        "yearly_records": yearly_records,
+        "today_attendance": today_attendance,        
+        "hours_worked_today": hours_worked_today,    
+        "today_target_percent": today_target_percent,
+        "check_status": check_status,     
+        "check_text": check_text,
+        "progress_circumference": circumference,
+        "progress_offset": stroke_dashoffset
+
+    })
+
+
 @login_required
 def home(request):
     """
@@ -189,6 +389,69 @@ def update_profile(request):
         form = ProfileUpdateForm(instance=profile)
 
     return render(request, "smartpayapp/update_profile.html", {"form": form})
+
+@login_required
+def employee_leave_management(request):
+    employee = request.user.profile.employee
+
+    # Helper to calculate used days
+    def calculate_used_days(leaves):
+        total = 0
+        for leave in leaves:
+            current = leave.start_date
+            while current <= leave.end_date:
+                if current.weekday() != 6:
+                    total += 1
+                current += timedelta(days=1)
+        return total
+
+    # ---------------- Annual Leave ----------------
+    annual_leaves = LeaveRequest.objects.filter(employee=employee, leave_type="Annual Leave").order_by('-created_at')
+    annual_used = calculate_used_days(annual_leaves.filter(status="Approved"))
+    annual_entitled = 21
+    annual_remaining = max(annual_entitled - annual_used, 0)
+    if annual_remaining <= 5:
+        annual_status_class = "low-balance"
+    elif annual_remaining <= 10:
+        annual_status_class = "medium-balance"
+    else:
+        annual_status_class = "healthy-balance"
+
+    # ---------------- Pagination for Annual Leave ----------------
+    annual_paginator = Paginator(annual_leaves, 10)  # 10 items per page
+    annual_page_number = request.GET.get('annual_page') or 1
+    annual_page = annual_paginator.get_page(annual_page_number)
+
+    # Repeat similarly for sick, off, compassionate leaves
+    sick_leaves = LeaveRequest.objects.filter(employee=employee, leave_type="Sick Leave").order_by('-created_at')
+    sick_paginator = Paginator(sick_leaves, 10)
+    sick_page_number = request.GET.get('sick_page') or 1
+    sick_page = sick_paginator.get_page(sick_page_number)
+
+    off_leaves = LeaveRequest.objects.filter(employee=employee, leave_type="Off Day").order_by('-created_at')
+    off_paginator = Paginator(off_leaves, 10)
+    off_page_number = request.GET.get('off_page') or 1
+    off_page = off_paginator.get_page(off_page_number)
+
+    compassionate_leaves = LeaveRequest.objects.filter(employee=employee, leave_type="Compassionate").order_by('-created_at')
+    compassionate_paginator = Paginator(compassionate_leaves, 10)
+    compassionate_page_number = request.GET.get('compassionate_page') or 1
+    compassionate_page = compassionate_paginator.get_page(compassionate_page_number)
+
+    # ---------------- Context ----------------
+    context = {
+        "annual_entitled": annual_entitled,
+        "annual_used": annual_used,
+        "annual_remaining": annual_remaining,
+        "annual_status_class": annual_status_class,
+        "annual_page": annual_page,
+        "sick_page": sick_page,
+        "off_page": off_page,
+        "compassionate_page": compassionate_page,
+    }
+
+    return render(request, "smartpayapp/employee_leave_management.html", context)
+
 
 
 # ================================================================
@@ -325,6 +588,28 @@ def employee_list(request):
     return render(request, "smartpayapp/employee_list.html", context)
 
 
+@login_required
+def employee_leave_application(request):
+    employee = request.user.profile.employee  # auto fetch logged-in employee
+
+    if request.method == 'POST':
+        form = LeaveRequestForm(request.POST, request.FILES, employee=employee)
+        if form.is_valid():
+            leave = form.save(commit=False)
+            leave.employee = employee  # assign employee automatically
+            leave.save()
+            messages.success(request, 'Leave request submitted successfully!')
+            return redirect('leave_dashboard')
+    else:
+        form = LeaveRequestForm(employee=employee)
+
+    context = {
+        'employee': employee,
+        'form': form
+    }
+    return render(request, 'smartpayapp/employee_leave_application.html', context)
+
+
 # ================================================================
 # 7. Admin Views
 # ================================================================
@@ -338,14 +623,27 @@ def admin_dashboard(request):
 # 8. Finance Views
 # ================================================================
 
+
 @login_required
 def finance(request):
-    """Finance landing page/dashboard with dynamic KPI counts."""
+    """Finance landing page/dashboard with dynamic KPI counts and finance officer details."""
+    # Count pending salary requests
     pending_requests_count = SalaryAdvanceRequest.objects.filter(status="Pending").count()
+
+    # Get the finance officer's profile and linked employee info
+    profile = Profile.objects.filter(user=request.user).select_related("employee").first()
+    finance_user = None
+    if profile and profile.employee:
+        finance_user = profile.employee
+
     context = {
         "pending_salary_requests": pending_requests_count,
+        "finance_user": finance_user,
+        "current_date": timezone.now().strftime("%B %d, %Y"),
+        "current_time": timezone.now().strftime("%I:%M %p"),
     }
     return render(request, "smartpayapp/finance.html", context)
+
 
 
 @login_required
@@ -580,49 +878,46 @@ def support_query(request):
 def hr_home(request):
     """HR landing page/dashboard."""
 
-    # Logged-in employee
+    # --- Existing code untouched ---
     try:
         employee = Employee.objects.get(email=request.user.email)
     except Employee.DoesNotExist:
         employee = None
 
-    # Current date and time
     now = timezone.localtime(timezone.now())
     current_date = now.strftime("%b %d, %Y")
     current_time = now.strftime("%I:%M %p")
     current_month = now.month
     current_year = now.year
-    today = now.date()  # Today’s date for attendance
+    today = now.date()
 
-    # Dynamic employee and department counts
     total_employees = Employee.objects.count()
     total_departments = Employee.objects.values("department").distinct().count()
 
-    # Employees who checked in today
     employees_checked_in_today = Attendance.objects.filter(
         date=today,
         clock_in__isnull=False
     ).count()
 
-    # Fetch recent employees (added this month)
     recent_employees = Employee.objects.filter(
         date_joined__year=current_year,
         date_joined__month=current_month,
         date_joined__isnull=False
     ).order_by('-date_joined')
 
-    # Fetch recent loan requests only (latest 5)
     loan_requests = LoanRequest.objects.select_related("employee").order_by("-created_at")[:5]
 
-    # ------------------- New: Total Payroll for Current Month -------------------
-    total_payroll = Employee.objects.aggregate(
-        total=Sum('salary')
-    )['total'] or 0
+    total_payroll = Employee.objects.aggregate(total=Sum('salary'))['total'] or 0
 
-    # ------------------- New: Pending and Approved Loan Counts -------------------
     pending_loans_count = LoanRequest.objects.filter(status="Pending").count()
     approved_loans_count = LoanRequest.objects.filter(status="Approved").count()
 
+    # ------------------- New: Fetch Leave Requests -------------------
+    leave_requests = LeaveRequest.objects.select_related("employee").order_by("-start_date")
+
+
+
+    # ------------------- Context -------------------
     context = {
         "employee": employee,
         "current_date": current_date,
@@ -633,18 +928,14 @@ def hr_home(request):
         "current_month_name": now.strftime("%B"),
         "current_year": current_year,
         "loan_requests": loan_requests,
-        "employees_checked_in_today": employees_checked_in_today,  # existing
-        "total_payroll": total_payroll,  # existing new
-        "pending_loans_count": pending_loans_count,  # new
-        "approved_loans_count": approved_loans_count,  # new
+        "employees_checked_in_today": employees_checked_in_today,
+        "total_payroll": total_payroll,
+        "pending_loans_count": pending_loans_count,
+        "approved_loans_count": approved_loans_count,
+        "leave_requests": leave_requests,  
     }
 
     return render(request, "smartpayapp/hr_dashboard.html", context)
-
-
-
-
-
 
 
 @login_required
@@ -720,22 +1011,315 @@ def hr_profile(request):
     return render(request, 'smartpayapp/hr_profile.html')
 
 
+@login_required
+def approve_leave(request, leave_id):
+    """
+    Approve a leave request:
+    - HR can specify partial approval by setting leave.start_date and leave.end_date
+    - System dynamically calculates total approved days and sets approved_at
+    - Resumption date is next working day after leave ends (skip Sundays)
+    """
+    leave = get_object_or_404(LeaveRequest, id=leave_id)
+    employee = leave.employee
+
+    if leave.status != "Pending":
+        messages.warning(request, "Leave already processed.")
+        return redirect("hr_home")
+
+    # Calculate approved leave days dynamically
+    if leave.end_date < leave.start_date:
+        messages.error(request, "End date cannot be before start date.")
+        return redirect("hr_home")
+
+    approved_days = (leave.end_date - leave.start_date).days + 1
+    leave.total_days = approved_days
+    leave.status = "Approved"
+    leave.approved_at = timezone.now()
+
+    # Calculate resumption date
+    resumption_date = leave.end_date + timedelta(days=1)
+    if resumption_date.weekday() == 6:  # Sunday
+        resumption_date += timedelta(days=1)  # Skip to Monday
+    leave.resumption_date = resumption_date
+
+    # Clear rejected fields if any
+    leave.rejected_at = None
+
+    leave.save()
+
+    # Deduct leave balance only for approved days
+    leave_balance, _ = EmployeeLeaveBalance.objects.get_or_create(employee=employee)
+    try:
+        leave_balance.deduct_leave(leave.leave_type, leave.total_days)
+    except Exception:
+        pass  # handle LeaveType mismatch if necessary
+
+    messages.success(request, f"{employee.full_name}'s leave approved ({approved_days} days).")
+    return redirect("hr_home")
+
+
+@login_required
+def reject_leave(request, leave_id):
+    """
+    Reject a leave request:
+    - Status = 'Rejected'
+    - System sets rejected_at timestamp
+    - HR cannot modify this timestamp
+    """
+    leave = get_object_or_404(LeaveRequest, id=leave_id)
+
+    if leave.status != "Pending":
+        messages.warning(request, "Leave already processed.")
+        return redirect("hr_home")
+
+    leave.status = "Rejected"
+    leave.rejected_at = timezone.now()
+
+    # Clear approved fields if any
+    leave.approved_at = None
+    leave.resumption_date = None
+    leave.total_days = 0
+
+    leave.save()
+
+    messages.success(request, f"{leave.employee.full_name}'s leave rejected.")
+    return redirect("hr_home")
+
+
+
+@csrf_exempt
+@login_required
+def update_leave_status(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        leave_id = data.get("leave_id")
+        action = data.get("action")
+
+        leave = get_object_or_404(LeaveRequest, id=leave_id)
+        now = timezone.now()
+
+        if action == "approve":
+            leave.status = "Approved"
+            leave.approved_at = now
+            leave.resumption_date = leave.end_date + timedelta(days=1)
+        elif action == "reject":
+            leave.status = "Rejected"
+            leave.rejected_at = now
+        leave.save()
+
+        return JsonResponse({
+            "success": True,
+            "status": leave.status,
+            "resumption_date": leave.resumption_date.strftime("%b %d, %Y") if leave.resumption_date else None,
+            "action_time": now.strftime("%b %d, %Y %I:%M %p"),
+        })
+
+    return JsonResponse({"success": False}, status=400)
+
+
+@login_required
+def hr_leave_details(request, leave_id):
+    leave = get_object_or_404(LeaveRequest, id=leave_id)
+
+    if request.method == "POST":
+        action = request.POST.get("action")
+
+        if action == "approve":
+            leave.status = "Approved"
+            leave.approval_date = timezone.now().date()
+            leave.save()
+        elif action == "reject":
+            leave.status = "Rejected"
+            leave.approval_date = timezone.now().date()
+            leave.save()
+
+        return redirect("annual_leave_detail", leave_id=leave.id)
+
+    return render(request, "smartpayapp/hr_leave_detail.html", {"leave": leave})
+
+
+def hr_leave_management(request):
+    """
+    Display all leave requests dynamically with search, filter,
+    and proper ordering by status (Pending → Approved → Rejected).
+    """
+
+    search_query = request.GET.get("search", "").strip()
+    status_filter = request.GET.get("status", "").strip()
+
+    # Base queryset
+    leaves = LeaveRequest.objects.select_related('employee').all()
+
+    # Apply search
+    if search_query:
+        leaves = leaves.filter(
+            Q(employee__full_name__icontains=search_query) |
+            Q(employee__staff_id__icontains=search_query) |
+            Q(leave_type__icontains=search_query)
+        )
+
+    # Apply status filter
+    if status_filter:
+        leaves = leaves.filter(status=status_filter)
+
+    # Annotate for status ordering
+    status_order = Case(
+        When(status="Pending", then=Value(0)),
+        When(status="Approved", then=Value(1)),
+        When(status="Rejected", then=Value(2)),
+        default=Value(3),
+        output_field=IntegerField(),
+    )
+
+    # Split by leave type and order
+    annual_leaves = leaves.filter(leave_type="Annual Leave") \
+                          .annotate(status_order=status_order) \
+                          .order_by("status_order", "-created_at")
+
+    sick_leaves = leaves.filter(leave_type="Sick Leave") \
+                        .annotate(status_order=status_order) \
+                        .order_by("status_order", "-created_at")
+
+    off_days = leaves.filter(leave_type="Off Day") \
+                     .annotate(status_order=status_order) \
+                     .order_by("status_order", "-created_at")
+
+    context = {
+        "annual_leaves": annual_leaves,
+        "sick_leaves": sick_leaves,
+        "off_days": off_days,
+        "search_query": search_query,
+        "status_filter": status_filter,
+    }
+
+    return render(request, "smartpayapp/hr_leave_management.html", context)
+
+
+
+
+def update_annual_leave(request, leave_id):
+    """HR can approve or reject annual leave"""
+    leave = get_object_or_404(LeaveRequest, id=leave_id)
+
+    if request.method == "POST":
+        action = request.POST.get("action")
+
+        if action == "approve":
+            leave.status = "Approved"
+            leave.approved_at = timezone.now()
+            leave.rejected_at = None
+
+            # Calculate resumption date (skip Sundays)
+            resumption = leave.end_date + timedelta(days=1)
+            while resumption.weekday() == 6:
+                resumption += timedelta(days=1)
+            leave.resumption_date = resumption
+
+            leave.save()
+            messages.success(request, f" {leave.employee.full_name}'s annual leave has been approved.")
+
+        elif action == "reject":
+            leave.status = "Rejected"
+            leave.rejected_at = timezone.now()
+            leave.approved_at = None
+            leave.resumption_date = None
+            leave.save()
+            messages.error(request, f" {leave.employee.full_name}'s annual leave has been rejected.")
+
+        return redirect("hr_annual_leaves")
+
+    return redirect("hr_annual_leaves")
+
+@login_required
+def hr_sick_leaves(request):
+    search_query = request.GET.get('search', '')
+    status_filter = request.GET.get('status', '')
+
+    sick_leaves = LeaveRequest.objects.filter(leave_type='Sick Leave')
+
+    if search_query:
+        sick_leaves = sick_leaves.filter(
+            Q(employee__first_name__icontains=search_query) |
+            Q(employee__last_name__icontains=search_query) |
+            Q(employee__staff_id__icontains=search_query)
+        )
+
+    if status_filter:
+        sick_leaves = sick_leaves.filter(status=status_filter)
+
+    context = {
+        'sick_leaves': sick_leaves,
+        'search_query': search_query,
+        'status_filter': status_filter,
+    }
+    return render(request, 'smartpayapp/hr_sick_leaves.html', context)
+
+
+@login_required
+def hr_annual_leaves(request):
+    search_query = request.GET.get("search", "")
+    status_filter = request.GET.get("status", "")
+
+    annual_leaves = LeaveRequest.objects.filter(leave_type="Annual Leave")
+
+    if search_query:
+        annual_leaves = annual_leaves.filter(employee__full_name__icontains=search_query)
+
+    if status_filter:
+        annual_leaves = annual_leaves.filter(status=status_filter)
+
+    context = {
+        "annual_leaves": annual_leaves,
+        "search_query": search_query,
+        "status_filter": status_filter,
+    }
+    return render(request, "smartpayapp/hr_annual_leaves.html", context)
+
+
+@login_required
+def hr_off_days(request):
+    search_query = request.GET.get("search", "")
+    status_filter = request.GET.get("status", "")
+
+    # Filter only Off Days
+    off_days = LeaveRequest.objects.filter(leave_type="Off Day")
+
+    if search_query:
+        off_days = off_days.filter(
+            Q(employee__first_name__icontains=search_query)
+            | Q(employee__last_name__icontains=search_query)
+            | Q(employee__staff_id__icontains=search_query)
+        )
+
+    if status_filter:
+        off_days = off_days.filter(status=status_filter)
+
+    context = {
+        "off_days": off_days,
+        "search_query": search_query,
+        "status_filter": status_filter,
+    }
+    return render(request, "smartpayapp/hr_off_days.html", context)
+
+
+
 # ================================================================
 # Employee Check-In & Check-Out View
 # ================================================================
+
 def checkin_checkout(request):
-    """ Employee Check-In & Check-Out """
+    """ Employee Check-In & Check-Out Dashboard """
 
-    now = timezone.localtime(timezone.now()) 
-
-    # ------------------------------------------------------------
-    # Format date and time
-    # ------------------------------------------------------------
-    current_date = now.strftime("%b %d, %Y") 
-    current_time = now.strftime("%I:%M %p")   
+    now = timezone.localtime(timezone.now())
 
     # ------------------------------------------------------------
-    # Dynamic greeting based on time
+    # Date & Time formatting
+    # ------------------------------------------------------------
+    current_date = now.strftime("%b %d, %Y")
+    current_time = now.strftime("%I:%M %p")
+
+    # ------------------------------------------------------------
+    # Dynamic greeting based on time of day
     # ------------------------------------------------------------
     hour = now.hour
     if hour < 12:
@@ -746,142 +1330,195 @@ def checkin_checkout(request):
         greeting = "Good evening"
 
     # ------------------------------------------------------------
-    # Fetch all employees and group by department
+    # Fetch employees grouped by department with today's attendance
     # ------------------------------------------------------------
     employees = Employee.objects.all().order_by("department", "full_name")
     departments = defaultdict(list)
+    today = now.date()
 
     for emp in employees:
-        # Get today's attendance or create if not exists
-        attendance, created = Attendance.objects.get_or_create(
+        # Get today’s attendance record (create if doesn’t exist)
+        attendance, _ = Attendance.objects.get_or_create(
             employee=emp,
-            date=now.date()
+            date=today,
+            defaults={"status": "Not Checked In"}
         )
 
-        # --------------------------------------------------------
-        # Determine status for display
-        # --------------------------------------------------------
-        status_label = "Not Checked In"
+        # Determine display status
         if attendance.clock_in and not attendance.clock_out:
-            # Employee checked in but not yet checked out
-            if attendance.late_minutes > 0 and attendance.late_minutes <= 30:
-                status_label = f"Checked In (Late: {attendance.late_minutes} min, auto-deducted leave)"
-            elif attendance.late_minutes > 30:
+            if attendance.late_minutes > 30:
                 status_label = "Checked In (Late – Explanation Required)"
+            elif 0 < attendance.late_minutes <= 30:
+                status_label = f"Checked In (Late: {attendance.late_minutes} min)"
             else:
                 status_label = "Checked In"
         elif attendance.clock_in and attendance.clock_out:
-            status_label = f"Checked Out ({attendance.hours_worked} hrs)"
+            status_label = f"Checked Out ({attendance.hours_worked or 0} hrs)"
         else:
             status_label = "Not Checked In"
 
-        # Attach status to employee object dynamically
+        # Attach fields for table rendering
         emp.attendance_status = status_label
         emp.attendance_record = attendance
+        emp.hours_worked = attendance.hours_worked or 0
 
-        # Group employees by department
+        # Group by department
         departments[emp.department].append(emp)
 
+        for emp in employees:
+            attendance = Attendance.objects.filter(employee=emp, date=today).first()
+            if attendance:
+                emp.attendance_status = attendance.status or "Not Checked In"
+                emp.attendance_record = attendance
+            else:
+                emp.attendance_status = "Not Checked In"
+                emp.attendance_record = None
+
+
     # ------------------------------------------------------------
-    # Context for template
+    # Render template
     # ------------------------------------------------------------
     context = {
         "current_date": current_date,
         "current_time": current_time,
         "greeting": greeting,
-        "departments": dict(departments), 
+        "departments": dict(departments),
+        "emps": employees, 
     }
 
     return render(request, "smartpayapp/checkin_checkout.html", context)
-
 
 
 # ================================================================
 # Attendance Actions (Clock-In / Clock-Out)
 # ================================================================
 
+
 @csrf_exempt
 def attendance_action(request):
     """
-    Handles AJAX Clock-In / Clock-Out requests.
-    
-    Updates the Attendance record for today:
-        - clock_in or clock_out time
-        - calculates hours_worked
-        - calculates late_minutes and flags if explanation is needed
-    Returns a JSON response for frontend updates.
+    Handles AJAX Clock-In / Clock-Out actions and updates Attendance records.
+
+    Features:
+    - Determines lateness and early departures.
+    - Updates 'status', 'late_minutes', 'needs_explanation', and 'hours_worked'.
+    - Returns a JSON response for frontend dynamic table updates.
     """
-    if request.method == "POST":
-        staff_id = request.POST.get("staff_id")
-        action = request.POST.get("action")  # 'checkin' or 'checkout'
 
-        try:
-            employee = Employee.objects.get(staff_id=staff_id)
-        except Employee.DoesNotExist:
-            return JsonResponse({"status": "error", "message": "Employee not found"})
-
-        today = timezone.localtime(timezone.now()).date()
-        now_time = timezone.localtime(timezone.now()).time()
-
-        # --- Get or create today's attendance record ---
-        attendance, created = Attendance.objects.get_or_create(employee=employee, date=today)
-
-        # --- Organization working hours ---
-        weekday = today.weekday()  # Monday=0, Sunday=6
-        if weekday < 5:  # Monday-Friday
-            start_time = time(8, 0)
-            end_time = time(17, 0)
-        elif weekday == 5:  # Saturday
-            start_time = time(8, 0)
-            end_time = time(13, 0)
-        else:  # Sunday is non-working
-            return JsonResponse({"status": "error", "message": "Today is a non-working day"})
-
-        if action == "checkin":
-            attendance.clock_in = now_time
-
-            # --- Calculate lateness ---
-            late_delta = datetime.combine(today, now_time) - datetime.combine(today, start_time)
-            late_minutes = max(0, int(late_delta.total_seconds() / 60))
-            attendance.late_minutes = late_minutes
-
-            # --- Set status ---
-            if late_minutes > 30:
-                attendance.status = "Late - Needs Explanation"
-                attendance.needs_explanation = True
-            elif late_minutes > 0:
-                attendance.status = "Late (Within Limit)"
-            else:
-                attendance.status = "Checked In"
-
-            attendance.save()
-            return JsonResponse({
-                "status": "success",
-                "action": "checkin",
-                "attendance_status": attendance.status,
-                "late_minutes": attendance.late_minutes
-            })
-
-        elif action == "checkout":
-            if not attendance.clock_in:
-                return JsonResponse({"status": "error", "message": "Cannot check out without checking in"})
-
-            attendance.clock_out = now_time
-            attendance.calculate_hours()
-            attendance.status = "Checked Out"
-            attendance.save()
-            
-            return JsonResponse({
-                "status": "success",
-                "action": "checkout",
-                "hours_worked": attendance.hours_worked,
-                "attendance_status": attendance.status
-            })
-
-        else:
-            return JsonResponse({"status": "error", "message": "Invalid action"})
-    else:
+    # -------------------------------
+    # Validate request
+    # -------------------------------
+    if request.method != "POST":
         return JsonResponse({"status": "error", "message": "Invalid request method"})
+
+    staff_id = request.POST.get("staff_id")
+    action = request.POST.get("action")
+
+    # -------------------------------
+    # Validate employee existence
+    # -------------------------------
+    try:
+        employee = Employee.objects.get(staff_id=staff_id)
+    except Employee.DoesNotExist:
+        return JsonResponse({"status": "error", "message": "Employee not found"})
+
+    # -------------------------------
+    # Setup base time references
+    # -------------------------------
+    now = timezone.localtime(timezone.now())
+    today = now.date()
+    now_time = now.time()
+
+    # Working hours setup
+    weekday = today.weekday()  # Monday = 0, Sunday = 6
+    if weekday < 5:  # Monday–Friday
+        start_time = time(8, 0)
+        end_time = time(17, 0)
+    elif weekday == 5:  # Saturday
+        start_time = time(8, 0)
+        end_time = time(13, 0)
+    else:
+        return JsonResponse({"status": "error", "message": "Non-working day"})
+
+    # -------------------------------
+    # Get or create attendance record
+    # -------------------------------
+    attendance, _ = Attendance.objects.get_or_create(employee=employee, date=today)
+
+    # -------------------------------
+    # CLOCK-IN HANDLING
+    # -------------------------------
+    if action == "checkin":
+        if attendance.clock_in:
+            return JsonResponse({"status": "error", "message": "Already checked in today"})
+
+        attendance.clock_in = now_time
+
+        # Determine lateness
+        if now_time > start_time:
+            diff = datetime.combine(today, now_time) - datetime.combine(today, start_time)
+            late_minutes = diff.seconds // 60
+            attendance.late_minutes = late_minutes
+            attendance.status = "Late Check-In"
+            # Require explanation if > 30 min late
+            attendance.needs_explanation = late_minutes > 30
+        else:
+            attendance.late_minutes = 0
+            attendance.status = "Checked In"
+            attendance.needs_explanation = False
+
+        attendance.save()
+
+        return JsonResponse({
+            "status": "success",
+            "action": "checkin",
+            "attendance_status": attendance.status,
+            "late_minutes": attendance.late_minutes,
+            "needs_explanation": attendance.needs_explanation,
+        })
+
+    # -------------------------------
+    # CLOCK-OUT HANDLING
+    # -------------------------------
+    elif action == "checkout":
+        if not attendance.clock_in:
+            return JsonResponse({"status": "error", "message": "Cannot check out before checking in"})
+        if attendance.clock_out:
+            return JsonResponse({"status": "error", "message": "Already checked out today"})
+
+        attendance.clock_out = now_time
+
+        # Calculate total hours worked
+        datetime_in = datetime.combine(today, attendance.clock_in)
+        datetime_out = datetime.combine(today, now_time)
+        worked = datetime_out - datetime_in
+        worked_hours = round(worked.total_seconds() / 3600, 2)
+        attendance.hours_worked = worked_hours
+
+        # Determine early leave
+        if now_time < end_time:
+            attendance.status = "Left Early"
+            attendance.needs_explanation = True
+        else:
+            attendance.status = "Checked Out"
+            attendance.needs_explanation = False
+
+        attendance.save()
+
+        return JsonResponse({
+            "status": "success",
+            "action": "checkout",
+            "attendance_status": attendance.status,
+            "hours_worked": attendance.hours_worked,
+            "needs_explanation": attendance.needs_explanation,
+        })
+
+    # -------------------------------
+    # INVALID ACTION
+    # -------------------------------
+    else:
+        return JsonResponse({"status": "error", "message": "Invalid action"})
+
 
 
 # ================================================================
@@ -913,23 +1550,68 @@ def attendance_history(request):
 
 
 # ================================================================
-# Automatic Leave Deduction and Alerts
+# Unified Daily Attendance Evaluation Function
 # ================================================================
-def handle_leave_and_alert(attendance):
+
+def evaluate_attendance(attendance, start_time, end_time):
     """
-    Handles automatic leave deductions if an employee is late within allowed limits.
-    Flags excessive lateness requiring explanation.
+    Evaluates both lateness (clock-in) and early departure (clock-out).
+    Dynamically computes hours worked and flags HR explanation when needed.
     """
-    if attendance.late_minutes > 0 and attendance.late_minutes <= 30:
-       
-        leave_deduction = attendance.late_minutes / 480
-    
-        attendance.status += f" | Leave Deducted: {round(leave_deduction, 3)} days"
-    elif attendance.late_minutes > 30:
-        attendance.status += " | Action Required: Provide Explanation"
+
+    today = attendance.date
+    clock_in = attendance.clock_in
+    clock_out = attendance.clock_out
+
+    # 1. CLOCK-IN EVALUATION
+    if clock_in:
+        # Calculate lateness in minutes
+        late_delta = datetime.combine(today, clock_in) - datetime.combine(today, start_time)
+        late_minutes = max(0, int(late_delta.total_seconds() / 60))
+        attendance.late_minutes = late_minutes
+
+        # Apply logic based on lateness severity
+        if late_minutes == 0:
+            attendance.status = "Checked In on Time"
+            attendance.needs_explanation = False
+        elif late_minutes <= 30:
+            attendance.status = f"Late by {late_minutes} min (Within Limit)"
+            attendance.needs_explanation = False
+            # Optional leave deduction (1 workday = 480 minutes)
+            leave_deduction = late_minutes / 480
+            attendance.status += f" | Leave Deducted: {round(leave_deduction, 3)} days"
+        else:
+            attendance.status = f"Late by {late_minutes} min (Requires Explanation)"
+            attendance.needs_explanation = True
+    else:
+        attendance.status = "No Clock-In Recorded"
         attendance.needs_explanation = True
-    
+        attendance.save()
+        return  # Can't proceed further without clock-in
+
+    # 2. CLOCK-OUT EVALUATION
+    if clock_out:
+        # Calculate worked hours
+        worked_duration = datetime.combine(today, clock_out) - datetime.combine(today, clock_in)
+        worked_hours = round(worked_duration.total_seconds() / 3600, 2)
+        attendance.hours_worked = worked_hours
+
+        # Determine early leave
+        early_delta = datetime.combine(today, end_time) - datetime.combine(today, clock_out)
+        early_minutes = max(0, int(early_delta.total_seconds() / 60))
+
+        if early_minutes > 0:
+            attendance.status += f" | Left Early by {early_minutes} min (Requires Explanation)"
+            attendance.needs_explanation = True
+        else:
+            attendance.status += f" | Completed Full Day"
+
+    else:
+        attendance.status += " | No Clock-Out Recorded"
+
     attendance.save()
+
+
 
 
 def attendance_overview(request):
@@ -982,3 +1664,79 @@ def attendance_overview_data(request):
             "clock_out": att.clock_out.strftime("%I:%M %p") if att.clock_out else "-"
         })
     return JsonResponse({"attendance_data": data})
+
+
+
+def attendance_page(request):
+    employees = Employee.objects.all()
+    today = date.today()
+    departments = {}
+
+    for emp in employees:
+        # Get today’s attendance record if exists
+        attendance = Attendance.objects.filter(employee=emp, date=today).first()
+        emp.attendance_status = (
+            attendance.status if attendance else "Not Checked In"
+        )
+        emp.clock_in = attendance.clock_in if attendance else None
+        emp.clock_out = attendance.clock_out if attendance else None
+        emp.hours_worked = attendance.hours_worked if attendance else 0
+        emp.late_minutes = attendance.late_minutes if attendance else 0
+        emp.needs_explanation = attendance.needs_explanation if attendance else False
+
+        departments.setdefault(emp.department, []).append(emp)
+
+    return render(request, "attendance.html", {
+        "departments": departments,
+        "current_date": timezone.localdate(),
+        "current_time": timezone.localtime().strftime("%H:%M"),
+        "greeting": "Welcome Back",
+    })
+
+
+@csrf_exempt  
+def update_attendance(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            emp_id = data.get("emp_id")
+            state = data.get("state")
+
+            employee = Employee.objects.get(staff_id=emp_id)
+
+            # Create or update today’s attendance
+            today = datetime.date.today()
+            attendance, created = Attendance.objects.get_or_create(
+                employee=employee,
+                date=today,
+                defaults={"status": state}
+            )
+
+            if not created:
+                attendance.status = state
+                attendance.save()
+
+            return JsonResponse({"success": True, "message": f"{employee.full_name} {state}"})
+        except Exception as e:
+            return JsonResponse({"success": False, "error": str(e)}, status=500)
+
+    return JsonResponse({"success": False, "error": "Invalid method"}, status=400)
+
+
+# ================================================================
+# 12. PR Views
+# ================================================================
+def pr(request):
+    return render(request, 'smartpayapp/pr_page.html')
+
+def booking(request):
+    return render(request, 'smartpayapp/booking.html')
+
+def personal_profile(request):
+    return render(request, 'smartpayapp/personal_profile.html')
+
+def product_overview(request):
+    return render(request, 'smartpayapp/product_overview.html')
+
+def buy_product(request):
+    return render(request, 'smartpayapp/buy_product.html')

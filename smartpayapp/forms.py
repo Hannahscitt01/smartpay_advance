@@ -1,9 +1,10 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
-from .models import SalaryAdvanceRequest, Employee, Profile, LoanRequest
+from .models import SalaryAdvanceRequest, Employee, Profile, LoanRequest, LeaveRequest
 from django.core.exceptions import ValidationError
 from django.db import transaction
+
 
 
 # ================================================================
@@ -188,3 +189,32 @@ class LoanRequestForm(forms.ModelForm):
         if self.employee and amount and amount > (self.employee.salary * 2):
             raise forms.ValidationError("Requested amount exceeds your loan limit (2× salary).")
         return amount
+
+
+class LeaveRequestForm(forms.ModelForm):
+    class Meta:
+        model = LeaveRequest
+        fields = ['leave_type', 'start_date', 'end_date', 'doctor_letter']
+        widgets = {
+            'leave_type': forms.Select(attrs={
+                'id': 'leaveType',
+                'required': True
+            }),
+            'start_date': forms.DateInput(attrs={
+                'type': 'date',
+                'id': 'startDate',
+                'required': True
+            }),
+            'end_date': forms.DateInput(attrs={
+                'type': 'date',
+                'id': 'endDate',
+                'required': True
+            }),
+            'doctor_letter': forms.FileInput(attrs={
+                'id': 'doctorLetter',
+            }),
+        }
+
+    def __init__(self, *args, **kwargs):
+        self.employee = kwargs.pop('employee', None)
+        super().__init__(*args, **kwargs)

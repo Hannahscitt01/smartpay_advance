@@ -6,6 +6,9 @@ from .models import (
     LoanRequest,
     ChatMessage,
     SupportChatMessage,
+    EmployeeLeaveBalance, 
+    LeaveRequest,
+    LeaveType
 )
 
 # ================================================================
@@ -180,3 +183,46 @@ class AttendanceAdmin(admin.ModelAdmin):
             "fields": ("hours_worked", "status", "late_minutes", "needs_explanation")
         }),
     )
+
+
+
+# ================================================================
+# Leave Management
+# ================================================================
+@admin.register(EmployeeLeaveBalance)
+class EmployeeLeaveBalanceAdmin(admin.ModelAdmin):
+    list_display = ("employee", "regular_leave", "off_days", "sick_leave_taken")
+    search_fields = ("employee__staff_id", "employee__full_name", "employee__department")
+    list_filter = ("employee__department",)
+    ordering = ("employee__staff_id",)
+    readonly_fields = ("sick_leave_taken",)  # only admin can adjust regular/off if needed
+
+    fieldsets = (
+        ("Employee", {
+            "fields": ("employee",)
+        }),
+        ("Leave Balances", {
+            "fields": ("regular_leave", "off_days", "sick_leave_taken")
+        }),
+    )
+
+
+
+@admin.register(LeaveRequest)
+class LeaveRequestAdmin(admin.ModelAdmin):
+    list_display = (
+        "employee",
+        "leave_type",
+        "start_date",
+        "end_date",
+        "total_days",
+        "status",
+        "approved_at",
+        "rejected_at",
+        "doctor_letter",
+    )
+
+    readonly_fields = ("approved_at", "rejected_at", "total_days", "resumption_date")
+    list_filter = ("status", "leave_type", "start_date")
+    search_fields = ("employee__full_name", "employee__staff_id")
+    ordering = ("-created_at",)

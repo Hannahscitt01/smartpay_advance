@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Employee Dashboard | Employee Leave Management{% endblock title %}
+
+{% block content %}
+<div class="dashboard-container">
+    <!-- Sidebar  -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>Employee</h2>
+        </div>
+
+        <nav class="sidebar-nav">
+            <ul>
+                <!-- Dashboard -->
+                <li><a href="{% url 'employee_dashboard' %}"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li><br><br>
+             
+             
+
+                <!-- HR Department Section -->
+             
+                <li>
+                    <a href="{% url 'employee_dashboard' %}"><i class="fas fa-users-cog"></i> HR Department</a>
+                </li>
+                <li><a href="#"><i class="fas fa-user"></i> My Profile</a></li>
+                <li><a href="#"><i class="fas fa-calendar-check"></i> Attendance</a></li>
+                <li><a href="#"><i class="fas fa-plane-departure"></i> Leave Requests</a></li>
+                <li><a href="#"><i class="fas fa-clipboard-list"></i> Appraisals</a></li>
+                <li><a href="#"><i class="fas fa-comments"></i> Chat with HR</a></li>
+                <br><br>
+             
+                <!-- Finance Department Section -->
+                
+                <li>
+                    <a href="{% url 'home' %}"><i class="fas fa-coins"></i> Finance Department</a>
+                </li>
+                <li><a href="#"><i class="fas fa-wallet"></i> Payslips</a></li>
+                <li><a href="#"><i class="fas fa-briefcase"></i> My Benefits</a></li>
+                <li><a href="{% url 'request_form' %}"><i class="fas fa-money-check-alt"></i> Salary Advance</a></li>
+                <li><a href="{% url 'internal_loan' %}"><i class="fas fa-file-invoice-dollar"></i> Loan Requests</a></li>
+            </ul>
+
+            <!-- Bottom Links -->
+            <div class="sidebar-bottom">
+                <ul>
+                    <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
+                    <li><a href="#" class="logout-link"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                </ul>
+            </div>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <!-- HEADER -->
+        <header class="payslip-header">
+            <div class="payslip-header-left">
+                <h1>My Payslips</h1>
+                <p><span class="payslip-greetings">{{ greeting }}</span>! View or download your payslips for the current year.</p>
+            </div>
+            <div class="payslip-header-right">
+                <div class="payslip-datetime">
+                    <span id="liveDate">{{ current_date }}</span>
+                    <span id="liveTime">{{ current_time }}</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- SEARCH & FILTER CONTROLS -->
+        <section class="payslip-controls">
+            <!-- Search Bar -->
+            <div class="payslip-search-bar">
+                <input 
+                    type="text" 
+                    id="payslipSearch" 
+                    placeholder="Search payslip by month or title..." 
+                    aria-label="Search payslips"
+                >
+                <button><i class="fas fa-search"></i></button>
+            </div>
+
+            <!-- Filter Dropdown -->
+            <div class="payslip-filter-bar">
+                <select id="yearFilter" aria-label="Filter by year">
+                    <option value="all">All Years</option>
+                    {% for year in available_years %}
+                    <option value="{{ year }}">{{ year }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </section>
+
+        <!-- VIEW TOGGLE -->
+        <div class="payslip-view-toggle" role="tablist" aria-label="View toggle" style="justify-content:center; margin: 1.5rem 0;">
+            <button id="payslipCardViewBtn" class="active" aria-pressed="true">Card View</button>
+            <button id="payslipTableViewBtn" aria-pressed="false">Table View</button>
+        </div>
+
+        <!-- CARD VIEW -->
+        <section id="payslipCardView" class="payslip-card-directory" aria-hidden="false">
+            {% for payslip in payslips %}
+            <div class="payslip-card" data-month="{{ payslip.month }}" data-year="{{ payslip.year }}">
+                <div class="payslip-info">
+                    <h3>{{ payslip.month }} {{ payslip.year }}</h3>
+                    <p><strong>Employee:</strong> {{ employee.full_name }}</p>
+                    <p><strong>Position:</strong> {{ employee.job_title }}</p>
+                    <p><strong>Department:</strong> {{ employee.department }}</p>
+                    <p><strong>Status:</strong>
+                        <span class="payslip-status {% if payslip.is_paid %}payslip-paid{% else %}payslip-pending{% endif %}">
+                            {% if payslip.is_paid %}Paid{% else %}Pending{% endif %}
+                        </span>
+                    </p>
+                    <div class="payslip-actions">
+                        <a href="{{ payslip.download_url }}" class="payslip-btn-download" target="_blank">Download</a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <p>No payslips available for this year.</p>
+            {% endfor %}
+        </section>
+
+        <!-- TABLE VIEW -->
+        <section id="payslipTableView" class="payslip-table hidden" aria-hidden="true">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Month</th>
+                        <th>Year</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for payslip in payslips %}
+                    <tr data-month="{{ payslip.month }}" data-year="{{ payslip.year }}">
+                        <td>{{ payslip.month }}</td>
+                        <td>{{ payslip.year }}</td>
+                        <td>
+                            <span class="payslip-status {% if payslip.is_paid %}payslip-paid{% else %}payslip-pending{% endif %}">
+                                {% if payslip.is_paid %}Paid{% else %}Pending{% endif %}
+                            </span>
+                        </td>
+                        <td>
+                            <a href="{{ payslip.download_url }}" class="payslip-btn-download" target="_blank">Download</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" style="text-align:center;">No payslips available.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+
+    </main>
+
+</div>    
+{% endblock content %}
+

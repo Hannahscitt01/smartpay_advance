@@ -45,3 +45,4 @@ sendBtn.addEventListener('click', () => {
     chatBody.scrollTop = chatBody.scrollHeight;
   }
 });
+

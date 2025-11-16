@@ -6,6 +6,9 @@ from django.core.validators import MinValueValidator
 from django.utils import timezone
 
 from datetime import datetime, time
+from django.db.models import Sum
+from datetime import timedelta
+from django.db.models.signals import post_save
 
 # ================================================================
 # Employee Model (Created by HR)
@@ -285,3 +288,138 @@ class Attendance(models.Model):
 
     def __str__(self):
         return f"{self.employee.full_name} - {self.date} - {self.status}"
+
+
+# ================================================================
+# Leave Types
+# ================================================================
+class LeaveType(models.TextChoices):
+    REGULAR = "Regular", "Regular Leave"
+    OFF = "Off", "Off Day"
+    SICK = "Sick", "Sick Leave"
+
+# ================================================================
+# Employee Leave Balance
+# ================================================================
+class EmployeeLeaveBalance(models.Model):
+    """
+    Tracks the annual leave, off days, and sick leave usage for each employee.
+    """
+
+    employee = models.OneToOneField(Employee, on_delete=models.CASCADE, related_name="leave_balance")
+    regular_leave = models.IntegerField(default=21)  # 21 days per year
+    off_days = models.IntegerField(default=7)        # 7 off days per year
+    sick_leave_taken = models.IntegerField(default=0)  # Track total sick days taken
+
+    def deduct_leave(self, leave_type, days):
+        """Deduct leave days when redeemed."""
+        if leave_type == LeaveType.REGULAR:
+            self.regular_leave = max(self.regular_leave - days, 0)
+        elif leave_type == LeaveType.OFF:
+            self.off_days = max(self.off_days - days, 0)
+        elif leave_type == LeaveType.SICK:
+            self.sick_leave_taken += days
+        self.save()
+
+    def __str__(self):
+        return f"{self.employee.full_name} Leave Balance"
+
+# ================================================================
+# Leave Request Model
+# ================================================================
+class LeaveRequest(models.Model):
+    # -----------------------------
+    # Leave Status Choices
+    # -----------------------------
+    STATUS_CHOICES = [
+        ("Pending", "Pending"),
+        ("Approved", "Approved"),
+        ("Rejected", "Rejected"),
+    ]
+
+    # -----------------------------
+    # Leave Type Choices (restricted to three types)
+    # -----------------------------
+    LEAVE_TYPE_CHOICES = [
+        ("Sick Leave", "Sick Leave"),
+        ("Off Day", "Off Day"),
+        ("Annual Leave", "Annual Leave"),
+    ]
+
+    employee = models.ForeignKey("Employee", on_delete=models.CASCADE)
+    leave_type = models.CharField(max_length=20, choices=LEAVE_TYPE_CHOICES, default="Annual Leave")
+    start_date = models.DateField()
+    end_date = models.DateField()
+    total_days = models.IntegerField(null=True, blank=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="Pending")
+
+    # -----------------------------
+    # Audit fields (system-generated, not editable)
+    # -----------------------------
+    approved_at = models.DateTimeField(null=True, blank=True, editable=False)
+    rejected_at = models.DateTimeField(null=True, blank=True, editable=False)
+    
+    resumption_date = models.DateField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    doctor_letter = models.FileField(upload_to='doctor_letters/', null=True, blank=True)
+
+    # -----------------------------
+    # Calculate leave days excluding Sundays
+    # -----------------------------
+    def calculate_leave_days(self):
+        if not self.start_date or not self.end_date:
+            return 0
+
+        day_count = 0
+        current_day = self.start_date
+        while current_day <= self.end_date:
+            if current_day.weekday() != 6:  # Skip Sunday
+                day_count += 1
+            current_day += timedelta(days=1)
+        return day_count
+
+    # -----------------------------
+    # Override save for business rules
+    # -----------------------------
+    def save(self, *args, **kwargs):
+        now = timezone.now()
+        total_days = self.calculate_leave_days()
+
+        if self.status == "Approved":
+            if not self.approved_at:
+                self.approved_at = now
+            self.rejected_at = None
+            self.total_days = total_days
+
+            # Calculate next working resumption date
+            resumption = self.end_date + timedelta(days=1)
+            while resumption.weekday() == 6:  # Skip Sunday
+                resumption += timedelta(days=1)
+            self.resumption_date = resumption
+
+        elif self.status == "Rejected":
+            if not self.rejected_at:
+                self.rejected_at = now
+            self.approved_at = None
+            self.resumption_date = None
+            self.total_days = 0
+
+        elif self.status == "Pending":
+            self.approved_at = None
+            self.rejected_at = None
+            self.resumption_date = None
+            self.total_days = total_days
+
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.employee.full_name} - {self.leave_type} ({self.status})"
+
+
+# ================================================================
+# Signal: Create employee leave balance on registration
+# ================================================================
+@receiver(post_save, sender=Employee)
+def create_employee_leave_balance(sender, instance, created, **kwargs):
+    if created:
+        EmployeeLeaveBalance.objects.create(employee=instance)

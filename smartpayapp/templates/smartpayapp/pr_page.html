@@ -1,0 +1,334 @@
+{% extends "base2.html" %}
+{% load static %}
+{% block title %}SmartPay | Finance & HR Management Platform{% endblock %}
+{% block content %}
+
+<!-- HERO SECTION -->
+<section class="hero-slider">
+  <div class="slide active">
+    <img src="{% static 'img/pr/pr1.jpg' %}" alt="SmartPay HR & Finance" class="slide-img">
+    <div class="hero-content">
+      <h1>Digitizing Finance & HR Operations for the Modern Workplace</h1>
+      <p>SmartPay Salary Advance System — streamline requests, approvals, and staff operations securely.</p>
+      <div class="hero-cta">
+        <a href="{% url 'booking' %}" class="btn-primary">Book a Demo</a>
+        <a href="#" class="btn-secondary">Buy Product</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide">
+    <img src="{% static 'img/pr/pr2.jpg' %}" alt="Payroll Automation" class="slide-img">
+    <div class="hero-content">
+      <h1>Transform Your Payroll Experience</h1>
+      <p>Automate staff advances, approvals, and reporting with a single click.</p>
+      <div class="hero-cta">
+        <a href="{% url 'booking' %}" class="btn-primary">Book a Demo</a>
+        <a href="#" class="btn-secondary">Buy Product</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide">
+    <img src="{% static 'img/pr/pr3.jpg' %}" alt="HR Automation" class="slide-img">
+    <div class="hero-content">
+      <h1>Empower Your HR with Smart Automation</h1>
+      <p>Faster decisions, transparent processes, and improved productivity across your teams.</p>
+      <div class="hero-cta">
+        <a href="{% url 'booking' %}" class="btn-primary">Book a Demo</a>
+        <a href="#" class="btn-secondary">Buy Product</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRODUCT OVERVIEW SECTION -->
+<section class="product-overview">
+  <div class="overview-container">
+    <div class="overview-image">
+      <img src="{% static 'img/logo2.png' %}" alt="SmartPay Platform Interface">
+    </div>
+
+    <div class="overview-text">
+      <h2>SmartPay Salary Advance System</h2>
+      <p>
+        SmartPay Advance System is an integrated finance and HR management platform that helps organizations digitize and streamline their daily operations. Designed for startups, SMEs, and growing companies, it enables faster, more efficient, and accurate handling of finance workflows, HR processes, and internal communications.
+        <br><br>The system automates HR functions such as employee and department management, payroll processing, performance analytics, and recruitment. It also ensures confidentiality in operations like salary advances, payslip access, and internal loan requests, eliminating the need for manual paperwork.
+        <br><br>With built-in real-time analytics, SmartPay provides valuable insights into financial and workforce performance, empowering organizations to make data-driven decisions while enhancing productivity and transparency.
+      </p>
+
+      <div class="overview-features">
+        <div class="feature-item"><i class="fas fa-users-cog"></i> Employee & Department Management</div>
+        <div class="feature-item"><i class="fas fa-file-invoice-dollar"></i> Payroll & Salary Processing</div>
+        <div class="feature-item"><i class="fas fa-hand-holding-usd"></i> Salary Advance & Internal Loan Requests</div>
+        <div class="feature-item"><i class="fas fa-briefcase"></i> Recruitment & Onboarding</div>
+        <div class="feature-item"><i class="fas fa-chart-line"></i> Performance & Productivity Analytics</div>
+        <div class="feature-item"><i class="fas fa-envelope-open-text"></i> Confidential Digital Communication</div>
+        <div class="feature-item"><i class="fas fa-database"></i> Real-Time Finance & HR Data Insights</div>
+      </div>
+
+
+      <a href="{% url 'product_overview' %}" class="btn-primary">Learn More</a>
+    </div>
+  </div>
+</section>
+
+
+<section class="features-highlight" id="features">
+  <div class="features-container">
+    <h2 class="section-title">Key Features</h2>
+    <p class="section-subtitle">
+      Explore SmartPay’s powerful capabilities designed to streamline HR and Finance operations for modern organizations.
+    </p>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <i class="fas fa-money-bill-wave"></i>
+        <h3>Salary Advance Management</h3>
+        <p>Request, approve, and disburse salary advances instantly with complete transparency.</p>
+      </div>
+
+      <div class="feature-card">
+        <i class="fas fa-hand-holding-usd"></i>
+        <h3>Internal Loans & Repayments</h3>
+        <p>Simplify internal staff lending operations with automated repayment schedules.</p>
+      </div>
+
+      <div class="feature-card">
+        <i class="fas fa-clock"></i>
+        <h3>Attendance & Leave Tracking</h3>
+        <p>Digitize attendance and leave management with intelligent logs and approvals.</p>
+      </div>
+
+      <div class="feature-card">
+        <i class="fas fa-chart-line"></i>
+        <h3>Appraisals & Analytics</h3>
+        <p>Evaluate staff performance through data-driven appraisals and visual HR metrics.</p>
+      </div>
+
+      <div class="feature-card">
+        <i class="fas fa-comments"></i>
+        <h3>Finance-HR Messaging</h3>
+        <p>Enable secure and structured communication between staff and departments.</p>
+      </div>
+
+      <div class="feature-card">
+        <i class="fas fa-building"></i>
+        <h3>Departmental Management</h3>
+        <p>Manage multiple departments and their financial operations efficiently.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="why-smartpay">
+  <div class="why-container">
+    <h2 class="section-title">Why Organizations Love SmartPay</h2>
+    <p class="section-subtitle">
+      Discover why companies are switching to SmartPay — the modern solution for managing Finance and HR seamlessly.
+    </p>
+
+    <div class="why-grid">
+      <div class="why-card">
+        <i class="fas fa-stopwatch"></i>
+        <h3>Reduce Manual Work by 70%</h3>
+        <p>Automate complex HR and finance workflows — from salary advances to performance tracking — with minimal effort.</p>
+      </div>
+
+      <div class="why-card">
+        <i class="fas fa-lock"></i>
+        <h3>Secure, Role-Based Access</h3>
+        <p>Maintain complete control with smart access levels ensuring confidentiality and data integrity across departments.</p>
+      </div>
+
+      <div class="why-card">
+        <i class="fas fa-chart-pie"></i>
+        <h3>Real-Time Financial Insights</h3>
+        <p>Gain instant visibility into financial operations through insightful analytics and real-time reports.</p>
+      </div>
+
+      <div class="why-card">
+        <i class="fas fa-handshake"></i>
+        <h3>Tailored for Growing Businesses</h3>
+        <p>Scale effortlessly with tools designed for startups, SMEs, and established organizations alike.</p>
+      </div>
+    </div>
+
+    <div class="why-testimonial">
+      <p class="testimonial-quote">
+        “SmartPay helped our HR team process over 100+ salary advances monthly with zero errors — our finance workflow has never been smoother.”
+      </p>
+      <span class="testimonial-author">— HR Lead, TechCore Solutions</span>
+    </div>
+  </div>
+</section>
+
+<section class="video-section">
+  <div class="video-container">
+    <!-- Left text content -->
+    <div class="video-text">
+      <h2>See SmartPay in Action</h2>
+      <h4>Streamline HR & Finance Like Never Before</h4>
+      <p>Watch a quick demo of SmartPay’s dashboard and features. Discover how our platform simplifies salary advances, attendance, and internal loans with a few clicks.</p>
+      <a href="{% url 'booking' %}" class="sp-btn-primary">Book a Demo</a>
+    </div>
+
+    <!-- Right image with play button -->
+    <div class="video-image">
+      <a href="https://www.youtube.com/watch?v=YOUR_VIDEO_ID" target="_blank" class="play-button">
+        <img src="{% static 'img/h1.jpg' %}" alt="SmartPay Demo Video">
+        <span class="play-icon">&#9658;</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+
+<section class="product-demo">
+  <div class="demo-container">
+    <h2 class="section-title">Product in Action</h2>
+    <p class="section-subtitle">
+      Experience SmartPay dashboards, requests, and analytics — see how HR and finance get simplified.
+    </p>
+
+    <div class="demo-carousel">
+      <div class="demo-track">
+        <div class="demo-slide"><img src="img/dashboard1.webp" alt="SmartPay Dashboard"></div>
+        <div class="demo-slide"><img src="img/dashboard2.webp" alt="Advance Request Form"></div>
+        <div class="demo-slide"><img src="img/dashboard3.webp" alt="Analytics Dashboard"></div>
+        <div class="demo-slide"><img src="img/dashboard4.webp" alt="Leave Management Interface"></div>
+        <div class="demo-slide"><img src="img/dashboard5.webp" alt="Finance Messaging"></div>
+        <div class="demo-slide"><img src="img/dashboard6.webp" alt="Department Overview"></div>
+      </div>
+    </div>
+
+    <a href="#" class="demo-btn">Request a Live Demo</a>
+  </div>
+</section>
+
+<section class="custom-solutions">
+  <div class="custom-container">
+    <div class="custom-text">
+      <h2>Need a Custom Software Solution?</h2>
+      <p>
+        Our development team can tailor systems for HR, finance, logistics, or operations to suit your exact workflow — beyond SmartPay.
+      </p>
+      <a href="#" class="sp-btn-primary">Talk to Us About Your Project</a>
+    </div>
+    <div class="custom-image">
+      <img src="{% static 'img/logo4.png' %}" alt="Custom Software Solutions">
+    </div>
+  </div>
+</section>
+
+<section class="pr-pricing">
+  <div class="pr-pricing-container">
+    <h2 class="pr-pricing-title">Choose the Plan That Fits Your Needs</h2>
+    <p class="pr-pricing-subtitle">Transparent pricing in KES with everything you need to grow your organization.</p>
+
+    <div class="pr-pricing-cards">
+
+      <!-- Basic Plan -->
+      <div class="pr-pricing-card">
+        <h3 class="pr-plan-name">Basic</h3>
+        <p class="pr-plan-price">KES 3,500<span>/month</span></p>
+        <ul class="pr-plan-features">
+          <li><i class="fas fa-check-circle"></i> Core finance management</li>
+          <li><i class="fas fa-check-circle"></i> Payroll for up to 5 employees</li>
+          <li><i class="fas fa-check-circle"></i> Email support</li>
+          <li><i class="fas fa-check-circle"></i> Access to reports dashboard</li>
+        </ul>
+        <a href="#get-started" class="pr-btn-primary">Get Started</a>
+      </div>
+
+      <!-- Pro Plan -->
+      <div class="pr-pricing-card pr-card-highlight">
+        <h3 class="pr-plan-name">Pro</h3>
+        <p class="pr-plan-price">KES 9,500<span>/month</span></p>
+        <ul class="pr-plan-features">
+          <li><i class="fas fa-check-circle"></i> Advanced analytics & automation</li>
+          <li><i class="fas fa-check-circle"></i> Payroll for up to 20 employees</li>
+          <li><i class="fas fa-check-circle"></i> Priority support</li>
+          <li><i class="fas fa-check-circle"></i> Integration with HR modules</li>
+        </ul>
+        <a href="#get-started" class="pr-btn-primary">Get Started</a>
+      </div>
+
+      <!-- Enterprise Plan -->
+      <div class="pr-pricing-card">
+        <h3 class="pr-plan-name">Enterprise</h3>
+        <p class="pr-plan-price">Custom</p>
+        <ul class="pr-plan-features">
+          <li><i class="fas fa-check-circle"></i> Unlimited users & employees</li>
+          <li><i class="fas fa-check-circle"></i> Dedicated account manager</li>
+          <li><i class="fas fa-check-circle"></i> Custom integrations & reporting</li>
+          <li><i class="fas fa-check-circle"></i> Full HR & finance suite</li>
+        </ul>
+        <a href="#contact-sales" class="pr-btn-secondary">Contact Sales</a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+
+<section class="founder-spotlight">
+  <div class="founder-container">
+    <div class="founder-image">
+      <img src="{% static 'img/hannah.jpeg' %}" alt="Founder Photo">
+    </div>
+    <div class="founder-text">
+      <h2>Meet the Creator</h2>
+      <p>
+        SmartPay Salary Advance System was created by <strong>Engineer Hannah</strong>, a dedicated software developer with a passion for building software solutions that solve real-world problems. Her mission is to empower organizations to transition to smarter, digital-first operations simplifying complex processes and giving teams the tools they need to thrive.
+      </p>
+      <a href="https://www.linkedin.com/in/hannah-wambui-625266386/" target="_blank" class="sp-btn-primary">
+        Connect with Eng. Hannah
+      </a>
+      <a href="{% url 'personal_profile' %}" target="_blank" class="sp-btn-secondary">
+        View my Portfolio
+      </a>
+    </div>
+  </div>
+</section>
+
+
+<section class="bottom-cta">
+  <div class="cta-inner">
+    <h2>Transform Your Finance & HR Operations Today</h2>
+    <p>Take control of your payroll, HR, and finance workflows with SmartPay. Streamline processes and empower your team.</p>
+    <div class="cta-buttons">
+      <a href="#" class="btn-primary">Book a Demo</a>
+      <a href="#" class="btn-secondary">Buy SmartPay Now</a>
+    </div>
+  </div>
+</section>
+
+<section class="contact-section">
+  <div class="contact-inner">
+    <h2>Get in Touch</h2>
+    <p>Have questions or want a custom solution? Fill out the form below and we’ll get back to you promptly.</p>
+
+    <form class="contact-form" action="#" method="POST">
+      {% csrf_token %}
+      <div class="form-group">
+        <input type="text" name="name" placeholder="Your Name" required>
+      </div>
+      <div class="form-group">
+        <input type="email" name="email" placeholder="Your Email" required>
+      </div>
+      <div class="form-group">
+        <input type="text" name="subject" placeholder="Subject" required>
+      </div>
+      <div class="form-group">
+        <textarea name="message" rows="5" placeholder="Your Message" required></textarea>
+      </div>
+      <button type="submit" class="btn-primary">Send Message</button>
+    </form>
+  </div>
+</section>
+
+
+{% endblock %}

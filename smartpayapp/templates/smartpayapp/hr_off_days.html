@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} SmartPay Advance | Off Days {% endblock title %}
+{% block content %}
+<div class="dashboard-container">
+
+  <!-- ========================= -->
+  <!-- Sidebar -->
+  <!-- ========================= -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <h2>HR</h2>
+    </div>
+    <nav class="sidebar-nav">
+      <ul>
+        <li><a href="{% url 'hr_home' %}">Dashboard</a></li>
+        <li><a href="{% url 'employee_list' %}">Employees</a></li>
+        <li><a href="{% url 'hr_departments' %}">Departments</a></li>
+        <li><a href="{% url 'payroll_payslips' %}">Payroll</a></li>
+        <li><a href="{% url 'hr_track_performance' %}">Performance</a></li>
+        <li><a href="{% url 'hr_loan_requests' %}">Requests</a></li>
+        <li><a href="{% url 'hr_leave_management' %}">Annual Leaves</a></li>
+        <li><a href="{% url 'hr_sick_leaves' %}">Sick Leaves</a></li>
+        <li class="active"><a href="{% url 'hr_off_days' %}">Off Days</a></li>
+        <li><a href="{% url 'hr_reports' %}">Reports</a></li>
+        <li><a href="{% url 'hr_settings' %}">Settings</a></li>
+      </ul>
+    </nav>
+  </aside>
+
+  <!-- ========================= -->
+  <!-- Main Content -->
+  <!-- ========================= -->
+  <main class="main-content">
+
+    <!-- Header -->
+    <header class="dashboard-header">
+      <div>
+        <h1>Off Days Management</h1>
+        <p>Monitor and manage all employee off day requests efficiently.</p>
+      </div>
+      <div class="header-icons">
+        <div class="icon"><i class="fas fa-envelope"></i><span class="icon-badge">3</span></div>
+        <div class="icon"><i class="fas fa-bell"></i><span class="icon-badge">5</span></div>
+        <a href="{% url 'hr_profile' %}" class="profile-avatar"><i class="fas fa-user"></i></a>
+      </div>
+    </header>
+
+    <!-- Search & Filter -->
+    <form method="get" class="search-filter-container">
+      <div class="search-bar">
+        <input 
+          type="text" 
+          name="search" 
+          placeholder="Search employee, ID or off day type..." 
+          value="{{ search_query }}">
+        <button type="submit"><i class="fas fa-search"></i></button>
+      </div>
+
+      <div class="filter-bar">
+        <select name="status" onchange="this.form.submit()">
+          <option value="">All</option>
+          <option value="Pending" {% if status_filter == "Pending" %}selected{% endif %}>Pending</option>
+          <option value="Approved" {% if status_filter == "Approved" %}selected{% endif %}>Approved</option>
+          <option value="Rejected" {% if status_filter == "Rejected" %}selected{% endif %}>Rejected</option>
+        </select>
+      </div>
+    </form>
+
+    <!-- ========================= -->
+    <!-- Off Day Requests -->
+    <!-- ========================= -->
+    <section class="leave-section">
+      <h2><i class="fas fa-calendar-day icon-blue"></i> Off Day Requests</h2>
+      {% if off_days %}
+      <table class="leave-table">
+        <thead>
+          <tr>
+            <th>Employee</th>
+            <th>Leave Type</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Total Days</th>
+            <th>Status</th>
+            <th>Resumption Date</th>
+            <th>HR Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for leave in off_days %}
+          <tr>
+            <td>{{ leave.employee.full_name }}</td>
+            <td>{{ leave.leave_type }}</td>
+            <td>{{ leave.start_date|date:"d M, Y" }}</td>
+            <td>{{ leave.end_date|date:"d M, Y" }}</td>
+            <td>{{ leave.total_days }}</td>
+            <td class="status {{ leave.status|lower }}">{{ leave.status }}</td>
+            <td>{{ leave.resumption_date|date:"d M, Y"|default:"-" }}</td>
+            <td class="hr_action">
+              <a href="{% url 'hr_leave_details' leave.id %}" class="btn-hold">
+                <i class="fas fa-eye"></i> View
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p class="no-data">No off day requests found.</p>
+      {% endif %}
+    </section>
+
+  </main>
+</div>
+{% endblock %}

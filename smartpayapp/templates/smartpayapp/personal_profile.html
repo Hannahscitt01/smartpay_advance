@@ -1,0 +1,340 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Personal Portfolio | Hannah Wambui {% endblock %}
+{% block content %}
+
+<!-- HERO SECTION -->
+<section class="hero hero-alt">
+  <img src="{% static 'img/hannah.jpeg' %}" alt="Hannah Wambui Portrait" class="hero-bg-image">
+
+  <!-- Left Text Content -->
+  <div class="hero-text">
+    <h1 class="fade-in">Hi, I’m Hannah Wambui</h1>
+    <h2 class="fade-in delay-1">Electrical Engineer & Software Developer</h2>
+    <p class="fade-in delay-2">I craft intelligent software solutions and electrical systems that simplify workflows and deliver measurable impact.</p>
+    <div class="hero-buttons fade-in delay-3">
+      <a href="#portfolio" class="btn-primary">View Portfolio</a>
+      <a href="#contact" class="btn-secondary">Hire Me</a>
+    </div>
+  </div>
+</section>
+
+
+<!-- ABOUT ME / WHO I AM SECTION -->
+<section class="about-me">
+  <div class="about-me-container">
+    <!-- Text Content -->
+    <div class="about-me-text">
+      <h2 class="about-me-title">Who I Am</h2>
+      <p class="about-me-description">
+        I’m Hannah Wambui, an Electrical Engineer with a strong foundation in power systems and a deep passion for technology-driven innovation. My journey into software development began with a desire to bridge the gap between hardware and code  transforming complex engineering challenges into intelligent, automated solutions.<br><br>
+
+        As a Full Stack Software Engineer, I specialize in designing and building robust web applications using HTML, CSS, JavaScript, Django, SQL, and PostgreSQL. My projects focus on crafting high-performance systems that are not only efficient and scalable but also meaningful in solving real-world problems.<br><br>
+
+        Currently pursuing my studies at SCITT Technologies, I’m continuously expanding my skills in backend architecture, data-driven systems, and API integrations. My goal is to merge my engineering precision with software intelligence  developing technology that powers innovation across both digital and physical domains
+      </p>
+      <a href="https://www.linkedin.com/in/hannah-wambui" target="_blank" class="about-me-btn">
+        View My LinkedIn
+      </a>
+    </div>
+
+    <!-- Portrait Image -->
+    <div class="about-me-image">
+      <img src="{% static 'img/hannah.jpeg' %}" alt="Hannah Wambui Portrait" class="portrait-img">
+    </div>
+  </div>
+</section>
+
+
+<!-- SKILLS & EXPERTISE SECTION -->
+<section class="skills">
+  <div class="skills-inner">
+    <h2 class="skills-title">Skills & Expertise</h2>
+    <p class="skills-subtitle">
+      I bring together a balance of technical precision and collaborative creativity. My expertise spans software development, system design, and analytical problem solving skills refined through both engineering and hands-on coding experience. <br><br>From writing clean, efficient code to communicating ideas across teams, I aim to build intelligent solutions that are as practical as they are impactful.
+    </p>
+
+    <div class="skills-grid">
+        <!-- Technical Skills -->
+      <div class="skill-card">
+        <div class="skill-header">
+            <h3>Technical Skills</h3>
+        </div>
+        <div class="skill-body">
+            <span class="skill-pill"><i class="fab fa-python"></i> Python</span>
+            <span class="skill-pill"><i class="fab fa-js-square"></i> JavaScript</span>
+            <span class="skill-pill"><i class="fab fa-figma"></i> Figma</span>
+            <span class="skill-pill"><i class="fas fa-database"></i> SQL</span>
+            <span class="skill-pill"><i class="fab fa-html5"></i> HTML</span>
+            <span class="skill-pill"><i class="fab fa-css3-alt"></i> CSS</span>
+            <span class="skill-pill"><i class="fas fa-plug"></i> APIs</span>
+            <span class="skill-pill"><i class="fab fa-django"></i> Django</span>
+        </div>
+      </div>
+
+      <!-- Soft Skills -->
+      <div class="skill-card">
+        <div class="skill-header">
+          <h3>Soft Skills</h3>
+        </div>
+        <div class="skill-body">
+          <span class="skill-pill">Problem Solving</span>
+          <span class="skill-pill">Communication</span>
+          <span class="skill-pill">Teamwork</span>
+          <span class="skill-pill">Critical Thinking</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PORTFOLIO / PROJECTS SECTION -->
+<section class="portfolio">
+  <div class="portfolio-container">
+    <h2 class="section-title">Portfolio Projects</h2>
+    <p class="skills-subtitle">
+    Each project reflects my commitment to crafting solutions that are both functional and thoughtfully engineered. From fintech platforms to personal experiments and hackathon builds, these works demonstrate my ability to merge creativity, precision, and problem-solving into impactful digital experiences.</p>
+
+    <div class="portfolio-grid">
+      <!-- Project Card -->
+      <div class="portfolio-card">
+        <div class="portfolio-card-image">
+          <img src="{% static 'img/pp1.png' %}" alt="SmartPay Project Screenshot">
+        </div>
+        <div class="portfolio-card-content">
+          <h3>SmartPay Salary Advance System</h3>
+          <p>Django-based fintech solution streamlining HR and salary advances for modern organizations.</p>
+          <div class="portfolio-tech">
+            <span class="tech">Django</span>
+            <span class="tech">Python</span>
+            <span class="tech">JS</span>
+            <span class="tech">PostgreSQL</span>
+          </div>
+          <a href="#" class="btn-primary">Live Demo</a>
+        </div>
+      </div>
+
+      <div class="portfolio-card">
+        <div class="portfolio-card-image">
+          <img src="{% static 'img/pp1.png' %}" alt="Personal Web App Screenshot">
+        </div>
+        <div class="portfolio-card-content">
+          <h3>Personal Web Apps</h3>
+          <p><br>A collection of personal projects exploring modern web technologies and interactive design.</p>
+          <div class="portfolio-tech">
+            <span class="tech">React</span>
+            <span class="tech">Django</span>
+            <span class="tech">Python</span>
+          </div>
+          <a href="#" class="btn-primary">Live Demo</a>
+        </div>
+      </div>
+
+
+      <div class="portfolio-card">
+        <div class="portfolio-card-image">
+          <img src="{% static 'img/pp1.png' %}" alt="Personal Web App Screenshot">
+        </div>
+        <div class="portfolio-card-content">
+          <h3>Personal Web Apps</h3>
+          <p><br>A collection of personal projects exploring modern web technologies and interactive design.</p>
+          <div class="portfolio-tech">
+            <span class="tech">React</span>
+            <span class="tech">Django</span>
+            <span class="tech">Python</span>
+          </div>
+          <a href="#" class="btn-primary">Live Demo</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="experience-timeline">
+  <div class="timeline-container">
+    <h2 class="section-title">Experience & Roles</h2>
+    
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-content">
+          <h3>Software Developer</h3>
+          <span class="duration">Dec 2024 – Present</span>
+          <p class="company">SCITT Technologie.</p>
+          <ul>
+            <li>Built Django-based fintech platform.</li>
+            <li>Optimized API response times by 50%.</li>
+            <li>Implemented new features with cross-team collaboration.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-content">
+          <h3>Electrical Systems</h3>
+          <span class="duration">Jun 2024 – Present</span>
+          <p class="company">Power Systems</p>
+          <ul>
+            <li>Designed electrical layouts for IoT devices.</li>
+            <li>Implemented workflow automation solutions.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- More items here -->
+    </div>
+  </div>
+</section>
+
+
+<section class="testimonials">
+  <div class="testimonials-container">
+    <h2 class="section-title">What People Say</h2>
+
+    <div class="testimonial-carousel">
+      <!-- Testimonial 1 -->
+      <div class="testimonial-card">
+        <p class="testimonial-quote">
+          "Hannah’s technical expertise is exceptional. Her ability to simplify complex software problems and deliver reliable solutions is outstanding."
+        </p>
+        <div class="testimonial-author">
+          <img src="{% static 'img/mentor1.jpg' %}" alt="Mentor Photo" class="author-img">
+          <div>
+            <h4>Peter Odour</h4>
+            <span>Founder, SCITT Technologies</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Testimonial 2 -->
+      <div class="testimonial-card">
+        <p class="testimonial-quote">
+          "Hannah’s work on our fintech platform was game-changing. Her insights improved both the workflow and overall efficiency of our system."
+        </p>
+        <div class="testimonial-author">
+          <img src="{% static 'img/client1.jpg' %}" alt="Client Photo" class="author-img">
+          <div>
+            <h4>Rebecca Awour</h4>
+            <span>ICT Head, Railways Kenya</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Testimonial 3 -->
+      <div class="testimonial-card">
+        <p class="testimonial-quote">
+          "A truly professional engineer and developer. Collaborating with Hannah was seamless and productive."
+        </p>
+        <div class="testimonial-author">
+          <img src="{% static 'img/mentor2.jpg' %}" alt="Mentor Photo" class="author-img">
+          <div>
+            <h4>Dr James Owour</h4>
+            <span>Chemical Engineeer</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- CALL-TO-ACTION / HIRE ME SECTION -->
+<section class="bottom-cta">
+  <div class="cta-container">
+    <h2 class="cta-title">Let’s Build Something Together</h2>
+    <p class="cta-subtext">I’m open to freelance, collaborations, and full-time opportunities.</p>
+    <div class="cta-buttons">
+      <a href="#contact" class="btn-primary">Hire Me</a>
+      <a href="{% static 'docs/Hannah_Wambui_Resume.pdf' %}" target="_blank" class="btn-secondary">Download Resume</a>
+    </div>
+  </div>
+</section>
+
+
+<!-- SCITT TECHNOLOGIES EXPERIENCE SECTION -->
+<section class="scitt-experience">
+  <div class="scitt-container">
+    <!-- Text content -->
+    <div class="scitt-text">
+      <h2 class="scitt-title">My Journey at SCITT Technologies</h2>
+      <p class="scitt-description">
+        I’m proud to be a student at SCITT Technologies, where I’ve deepened my expertise in software development and fintech innovation. Through mentorship from industry professionals, immersive hands-on projects, and real-world problem-solving experiences, I’ve developed a strong foundation in building scalable, user-focused applications.<br><br> This journey has equipped me with both the technical proficiency and the professional mindset needed to create impactful digital solutions that drive real value.
+      </p>
+    </div>
+
+    <!-- Optional image or logo -->
+    <div class="scitt-image">
+      <img src="{% static 'img/scitt.png' %}" alt="SCITT Technologies Logo" class="scitt-logo">
+    </div>
+  </div>
+</section>
+
+
+<!-- ELECTRICAL ENGINEERING PORTFOLIO SECTION -->
+<section class="engineering-section">
+  <div class="engineering-container">
+    <h2 class="engineering-title">Engineering Foundations</h2>
+    <p class="engineering-description">
+      While advancing my career in electrical engineering, I’ve also expanded into the world of software development. My engineering background continues to shape how I approach technology blending precision, analytical thinking, and system reliability with the creativity of code.<br><br> This intersection between hardware and software enables me to design intelligent solutions that are both technically sound and practically impactful.
+    </p>
+
+    <div class="engineering-grid">
+      <!-- Card 1 -->
+      <a href="#circuit-automation" class="engineering-card">
+        <img src="{% static 'img/electrical/e1.jpg' %}" alt="Circuit and Automation Design" class="engineering-img">
+        <h4>Circuit & Automation Design</h4>
+        <p>Built and simulated control systems using MATLAB and Proteus.</p>
+      </a>
+
+      <!-- Card 2 -->
+      <a href="#renewable-energy" class="engineering-card">
+        <img src="{% static 'img/electrical/e3.jpg' %}" alt="Renewable Energy Projects" class="engineering-img">
+        <h4>Renewable Energy Projects</h4>
+        <p>Worked on small-scale solar power solutions.</p>
+      </a>
+
+      <!-- Card 3 -->
+      <a href="#instrumentation-control" class="engineering-card">
+        <img src="{% static 'img/electrical/e4.jpg' %}" alt="Instrumentation and Control" class="engineering-img">
+        <h4>Instrumentation & Control</h4>
+        <p>Designed embedded monitoring systems using Arduino.</p>
+      </a>
+    </div>
+
+    <div class="engineering-cta">
+      <a href="#gallery" class="sp-btn-primary">View Project Gallery</a>
+    </div>
+  </div>
+</section>
+
+
+<!-- WHERE ENGINEERING MEETS CODE SECTION -->
+<section class="bridge-section">
+  <div class="bridge-container">
+    <div class="bridge-content">
+      <h2 class="bridge-title">Bridging Hardware and Software</h2>
+      <p class="bridge-description">
+        My dual background in electrical engineering and software development empowers me to create solutions that bridge the gap between physical systems and digital intelligence.<br><br> I believe the future of innovation lies in this convergence where code drives machines, data informs decisions, and technology seamlessly integrates with the real world..
+      </p>
+      <a href="#approach" class="sp-btn-primary">Learn More About My Approach</a>
+    </div>
+
+    <!-- Optional Visual / Graphic -->
+    <div class="bridge-graphic">
+      <img src="{% static 'img/electrical/e2.jpg' %}" alt="Bridge between Hardware and Software">
+    </div>
+  </div>
+</section>
+
+
+
+
+
+
+
+
+
+
+{% endblock %}

@@ -3,242 +3,312 @@
 {% block title  %}smartpayapp | Homepage{% endblock  %}
 {% block content %}
 
-    <!--HEADER SECTION-->
-    <section class="welcome-header">
-        <div class="welcome-content">
-            <div class="welcome-text">
-                <h2>Welcome, {{ user.first_name }} {{ user.last_name }}!</h2>
-                <p>Here’s your salary advance and loan overview at a glance.</p>
-                <br>
-                <p>Your Staff ID: <strong>{{ user.username }}</strong></p>
-            </div>
-            <div class="profile-pic">
-                <img src="{{ profile.profile_picture.url }}" alt="Profile Picture">
-                <br>
-                <a href="{% url 'update_profile' %}" class="btn-edit">Change Picture</a>
-            </div>
+<div class="dashboard-container">
+    <!-- Sidebar  -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>Employee</h2>
         </div>
-    </section>
 
-    <!--QUICK GLANCE SECTION-->   
-    <section class="quick-actions">
-        <div class="container">
-            
-            <!--Request Salary Card-->
-            <a href="{% url 'request_form' %}" class="action-card">
-            <div class="action-icon">
-                <img src="{% static 'img/icons/l1.png' %}" alt="Salary Advance">
-            </div>
-            <h3>Request Salary Advance</h3>
-            <p>Submit your salary advance request securely.</p>
-            </a>
+        <nav class="sidebar-nav">
+            <ul>
+                <!-- Dashboard -->
+                <li><a href="{% url 'employee_dashboard' %}"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li><br><br>
              
-            <!--Internal Loan Card-->
-            <a href="{% url 'internal_loan' %}" class="action-card">
-            <div class="action-icon">
-                <img src="{% static 'img/icons/l2.png' %}" alt="Internal Loan">
-            </div>
-            <h3>Request Internal Loan</h3>
-            <p>Apply for organizational loans easily.</p>
-            </a>
+             
 
-            <!--Message Finance Card-->
-            <a href="{% url 'message_finance' %}" class="action-card">
-            <div class="action-icon">
-                <img src="{% static 'img/icons/l3.png' %}" alt="Message Finance">
-            </div>
-            <h3>Message Finance Office</h3>
-            <p>Send private messages directly to finance.</p>
-            </a>
+                <!-- HR Department Section -->
+             
+                <li>
+                    <a href="{% url 'employee_dashboard' %}"><i class="fas fa-users-cog"></i> HR Department</a>
+                </li>
+                <li><a href="#"><i class="fas fa-user"></i> My Profile</a></li>
+                <li><a href="#"><i class="fas fa-calendar-check"></i> Attendance</a></li>
+                <li><a href="#"><i class="fas fa-plane-departure"></i> Leave Requests</a></li>
+                <li><a href="#"><i class="fas fa-clipboard-list"></i> Appraisals</a></li>
+                <li><a href="#"><i class="fas fa-comments"></i> Chat with HR</a></li>
+                <br><br>
+             
+                <!-- Finance Department Section -->
+                
+                <li>
+                    <a href="{% url 'home' %}"><i class="fas fa-coins"></i> Finance Department</a>
+                </li>
+                <li><a href="#"><i class="fas fa-wallet"></i> Payslips</a></li>
+                <li><a href="#"><i class="fas fa-briefcase"></i> My Benefits</a></li>
+                <li><a href="{% url 'request_form' %}"><i class="fas fa-money-check-alt"></i> Salary Advance</a></li>
+                <li><a href="{% url 'internal_loan' %}"><i class="fas fa-file-invoice-dollar"></i> Loan Requests</a></li>
+            </ul>
 
-            <!--Support Query Card-->
-            <a href="{% url 'support_query' %}" class="action-card">
-            <div class="action-icon">
-                <img src="{% static 'img/icons/l1.png' %}" alt="Support Query">
+            <!-- Bottom Links -->
+            <div class="sidebar-bottom">
+                <ul>
+                    <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
+                    <li><a href="#" class="logout-link"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                </ul>
             </div>
-            <h3>Submit Support Query</h3>
-            <p>Report issues or ask questions securely.</p>
-            </a>
+        </nav>
+    </aside>
 
-        </div>
-    </section>
-    
-    <!--FINACIAL OVERVIEW-->
-    <section class="financial-overview">
-        <div class="overview-container">  
-            <!--Current Salary Card-->
-            <div class="overview-card">
-                <div class="icon">
-                    <img src="{% static 'img/icons/l2.png' %}" alt="Salary Icon">
+    <main class="main-content">
+
+        <!--HEADER SECTION-->
+
+        <section class="welcome-header">
+            <div class="welcome-text">
+                <h1>Welcome, {{ user.first_name }} {{ user.last_name }}!</h1>
+                <p>Here’s your salary advance and loan overview at a glance.</p>
+                <small>
+                    Staff ID: <strong>{{ user.username }}</strong> |
+                    Date: <span id="current-date">{{ current_date }}</span> |
+                    Time: <span id="current-time">{{ current_time }}</span>
+                </small>
+            </div>
+
+            <div class="header-right">
+                <!-- Messages and Notifications (optional if you want them) -->
+                <div class="header-icons">
+                    <div class="icon" title="Messages">
+                        <i class="fas fa-envelope"></i>
+                        <span class="icon-badge">2</span>
+                    </div>
+                    <div class="icon" title="Notifications">
+                        <i class="fas fa-bell"></i>
+                        <span class="icon-badge">4</span>
+                    </div>
                 </div>
-                <h2>{{ current_salary }}</h2>
-                <p>Current Salary</p>
-            </div>
 
-            <!-- Overview Card -->
-            <div class="overview-card">
-                <div class="icon">
-                    <img src="{% static 'img/icons/l2.png' %}" alt="Outstanding Loans Icon">
+                <!-- Profile Avatar -->
+                <a href="{% url 'update_profile' %}" class="profile-avatar" title="My Profile">
+                    <img src="{{ profile.profile_picture.url }}" alt="Profile Picture">
+                </a>
+            </div>
+        </section>
+
+
+        <!--QUICK GLANCE SECTION-->   
+        <section class="quick-actions">
+            <div class="container">
+                
+                <!--Request Salary Card-->
+                <a href="{% url 'request_form' %}" class="action-card">
+                <div class="action-icon">
+                    <img src="{% static 'img/icons/l1.png' %}" alt="Salary Advance">
                 </div>
-                <!-- Display dynamic outstanding loan balance -->
-                <h2>KSh {{ active_loans|floatformat:2 }}</h2>
-                <p>Outstanding Loans</p>
-            </div>
-
-            <!--Advance salary Eligibility Card-->
-            <div class="overview-card">
-                <div class="icon">
-                    <img src="{% static 'img/icons/l2.png' %}" alt="Eligibility Icon">
+                <h3>Request Salary Advance</h3>
+                <p>Submit your salary advance request securely.</p>
+                </a>
+                
+                <!--Internal Loan Card-->
+                <a href="{% url 'internal_loan' %}" class="action-card">
+                <div class="action-icon">
+                    <img src="{% static 'img/icons/l2.png' %}" alt="Internal Loan">
                 </div>
-                <h2>{{ advance_eligibility }}</h2>
-                <p>Advance Eligibility</p>
+                <h3>Request Internal Loan</h3>
+                <p>Apply for organizational loans easily.</p>
+                </a>
+
+                <!--Message Finance Card-->
+                <a href="{% url 'message_finance' %}" class="action-card">
+                <div class="action-icon">
+                    <img src="{% static 'img/icons/l3.png' %}" alt="Message Finance">
+                </div>
+                <h3>Message Finance Office</h3>
+                <p>Send private messages directly to finance.</p>
+                </a>
+
+                <!--Support Query Card-->
+                <a href="{% url 'support_query' %}" class="action-card">
+                <div class="action-icon">
+                    <img src="{% static 'img/icons/l1.png' %}" alt="Support Query">
+                </div>
+                <h3>Submit Support Query</h3>
+                <p>Report issues or ask questions securely.</p>
+                </a>
+
             </div>
-        </div>
-    </section>
-    <br><br><br>
+        </section>
 
-    <!-- ================================================================
-        Salary Advance History
-    ================================================================ -->
-    <section class="loan-history">
-        <h2>Salary Advance History</h2>
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                    <th>Date Requested</th>
-                    <th>Amount (KSh)</th>
-                    <th>Remaining Salary (KSh)</th>
-                    <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% if salary_advances %}
-                    {% for advance in salary_advances %}
-                    <tr>
-                        <td data-label="Date Requested">{{ advance.date_requested|date:"Y-m-d" }}</td>
-                        <td data-label="Amount (KSh)">KSh {{ advance.amount|floatformat:2 }}</td>
-                        <td data-label="Remaining Salary (KSh)">
-                        {% if advance.remaining_salary %}
-                            KSh {{ advance.remaining_salary|floatformat:2 }}
-                        {% else %}
-                            N/A
-                        {% endif %}
-                        </td>
-                        <td data-label="Status">
-                        <span class="status {{ advance.status|lower }}">{{ advance.status }}</span>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                    {% else %}
-                    <tr>
-                        <td colspan="4" style="text-align:center;">No salary advances found</td>
-                    </tr>
-                    {% endif %}
-                </tbody>
-            </table>
-        </div>
-    </section>
+        
+        <!--FINANCIAL OVERVIEW-->
+        <section class="finance_overview">
+            <div class="overview-container">  
+                <!--Current Salary Card-->
+                <div class="overview-card">
+                    <div class="icon">
+                        <img src="{% static 'img/icons/l2.png' %}" alt="Salary Icon">
+                    </div>
+                    <h2>{{ current_salary }}</h2>
+                    <p>Current Salary</p>
+                </div>
 
-    <!-- ================================================================
-        Internal Loan History
-    ================================================================ -->
-    <section class="loan-history">
-        <h2>Loan History</h2>
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                    <th>Date Requested</th>
-                    <th>Amount (KSh)</th>
-                    <th>Status</th>
-                    <th>Repayment Progress</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% if internal_loans %}
-                    {% for loan in internal_loans %}
+                <!-- Outstanding Loans Card -->
+                <div class="overview-card">
+                    <div class="icon">
+                        <img src="{% static 'img/icons/l2.png' %}" alt="Outstanding Loans Icon">
+                    </div>
+                    <h2>KSh {{ active_loans|floatformat:2 }}</h2>
+                    <p>Outstanding Loans</p>
+                </div>
+
+                <!--Advance Salary Eligibility Card-->
+                <div class="overview-card">
+                    <div class="icon">
+                        <img src="{% static 'img/icons/l2.png' %}" alt="Eligibility Icon">
+                    </div>
+                    <h2>{{ advance_eligibility }}</h2>
+                    <p>Advance Eligibility</p>
+                </div>
+            </div>
+        </section>
+
+        <br>
+
+        <!-- ================================================================
+            Salary Advance History
+        ================================================================ -->
+        <section class="loan-history">
+            <h2>Salary Advance History</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
                         <tr>
-                        <td data-label="Date Requested">{{ loan.created_at|date:"Y-m-d" }}</td>
-                        <td data-label="Amount (KSh)">KSh {{ loan.amount|floatformat:2 }}</td>
-                        <td data-label="Status">
-                            <span class="status {{ loan.status|lower }}">{{ loan.status }}</span>
-                        </td>
-                        <td data-label="Repayment Progress">
-                            {% if loan.status == "Approved" %}
-                            <div class="progress-bar">
-                                <div class="progress" style="width: {{ loan.repayment_progress }}%;"></div>
-                            </div>
-                            <small>{{ loan.repayment_progress }}%</small>
-                            {% else %}
-                            <span style="color: #888;">N/A</span>
-                            {% endif %}
-                        </td>
+                        <th>Date Requested</th>
+                        <th>Amount (KSh)</th>
+                        <th>Remaining Salary (KSh)</th>
+                        <th>Status</th>
                         </tr>
-                    {% endfor %}
-                    {% else %}
-                    <tr>
-                        <td colspan="4" style="text-align:center;">No loans found</td>
-                    </tr>
-                    {% endif %}
-                </tbody>
-            </table>
-        </div>
-    </section>
+                    </thead>
+                    <tbody>
+                        {% if salary_advances %}
+                        {% for advance in salary_advances %}
+                        <tr>
+                            <td data-label="Date Requested">{{ advance.date_requested|date:"Y-m-d" }}</td>
+                            <td data-label="Amount (KSh)">KSh {{ advance.amount|floatformat:2 }}</td>
+                            <td data-label="Remaining Salary (KSh)">
+                            {% if advance.remaining_salary %}
+                                KSh {{ advance.remaining_salary|floatformat:2 }}
+                            {% else %}
+                                N/A
+                            {% endif %}
+                            </td>
+                            <td data-label="Status">
+                            <span class="status {{ advance.status|lower }}">{{ advance.status }}</span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        {% else %}
+                        <tr>
+                            <td colspan="4" style="text-align:center;">No salary advances found</td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
 
-    
-  
-    <br><br><br>
-    <section class="messaging-support">
-        <div class="section-header">
-            <h2>Messaging & Support</h2>
-        </div>
+        <!-- ================================================================
+            Internal Loan History
+        ================================================================ -->
+        <section class="loan-history">
+            <h2>Loan History</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                        <th>Date Requested</th>
+                        <th>Amount (KSh)</th>
+                        <th>Status</th>
+                        <th>Repayment Progress</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if internal_loans %}
+                        {% for loan in internal_loans %}
+                            <tr>
+                            <td data-label="Date Requested">{{ loan.created_at|date:"Y-m-d" }}</td>
+                            <td data-label="Amount (KSh)">KSh {{ loan.amount|floatformat:2 }}</td>
+                            <td data-label="Status">
+                                <span class="status {{ loan.status|lower }}">{{ loan.status }}</span>
+                            </td>
+                            <td data-label="Repayment Progress">
+                                {% if loan.status == "Approved" %}
+                                <div class="progress-bar">
+                                    <div class="progress" style="width: {{ loan.repayment_progress }}%;"></div>
+                                </div>
+                                <small>{{ loan.repayment_progress }}%</small>
+                                {% else %}
+                                <span style="color: #888;">N/A</span>
+                                {% endif %}
+                            </td>
+                            </tr>
+                        {% endfor %}
+                        {% else %}
+                        <tr>
+                            <td colspan="4" style="text-align:center;">No loans found</td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
 
-        <div class="support-container">
+        <br><br><br>
+        <section class="messaging-support">
+            <div class="section-header">
+                <h2>Messaging & Support</h2>
+            </div>
 
-            <!-- Messages Inbox (Chat Style) -->
-            <div class="messages-panel">
-                <h3>Inbox</h3>
-                <div class="chat-container">
+            <div class="support-container">
 
-                    <div class="chat-message unread">
-                        <div class="chat-sender">
-                            Finance Office
-                            <span class="unread-badge"></span> <!-- Unread indicator -->
+                <!-- Messages Inbox (Chat Style) -->
+                <div class="messages-panel">
+                    <h3>Inbox</h3>
+                    <div class="chat-container">
+
+                        <div class="chat-message unread">
+                            <div class="chat-sender">
+                                Finance Office
+                                <span class="unread-badge"></span> <!-- Unread indicator -->
+                            </div>
+                            <div class="chat-content">Your recent advance request has been approved.</div>
+                            <div class="chat-time">10:15 AM | 2025-08-10</div>
+                        </div>                    
+
+                        <div class="chat-message unread">
+                            <div class="chat-sender">Finance Office</div>
+                            <div class="chat-content">Your recent advance request has been approved.</div>
+                            <div class="chat-time">10:15 AM | 2025-08-10</div>
                         </div>
-                        <div class="chat-content">Your recent advance request has been approved.</div>
-                        <div class="chat-time">10:15 AM | 2025-08-10</div>
-                    </div>                    
-
-                    <div class="chat-message unread">
-                        <div class="chat-sender">Finance Office</div>
-                        <div class="chat-content">Your recent advance request has been approved.</div>
-                        <div class="chat-time">10:15 AM | 2025-08-10</div>
+                        <div class="chat-message read">
+                            <div class="chat-sender">Finance Office</div>
+                            <div class="chat-content">Reminder: Pending loan repayment due this month.</div>
+                            <div class="chat-time">09:30 AM | 2025-08-05</div>
+                        </div>
+                        <!-- Add more chat messages -->
                     </div>
-                    <div class="chat-message read">
-                        <div class="chat-sender">Finance Office</div>
-                        <div class="chat-content">Reminder: Pending loan repayment due this month.</div>
-                        <div class="chat-time">09:30 AM | 2025-08-05</div>
+                </div>
+
+                <!-- Support Queries Panel -->
+                <div class="support-panel">
+                    <h3>Support Queries</h3>
+                    <div class="query">
+                        <span class="query-text">How do I update my Staff ID?</span>
+                        <span class="query-status pending">Pending</span>
                     </div>
-                    <!-- Add more chat messages -->
+                    <div class="query">
+                        <span class="query-text">Request for repayment schedule clarification.</span>
+                        <span class="query-status resolved">Resolved</span>
+                    </div>
+                    <button class="new-query-btn">New Query</button>
                 </div>
+
             </div>
+        </section>
 
-            <!-- Support Queries Panel -->
-            <div class="support-panel">
-                <h3>Support Queries</h3>
-                <div class="query">
-                    <span class="query-text">How do I update my Staff ID?</span>
-                    <span class="query-status pending">Pending</span>
-                </div>
-                <div class="query">
-                    <span class="query-text">Request for repayment schedule clarification.</span>
-                    <span class="query-status resolved">Resolved</span>
-                </div>
-                <button class="new-query-btn">New Query</button>
-            </div>
 
-        </div>
-    </section>
+    </main>
+</div>    
+</div>
+{% endblock content %}
 
-{% endblock  %}

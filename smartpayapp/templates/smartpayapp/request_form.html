@@ -1,50 +1,101 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 {% load static %}
-{% block title %}smartpay_advance request_form{% endblock  %}
+{% block title %}Employee Dashboard | Salary Advance Request Form{% endblock title %}
+
 {% block content %}
+<div class="dashboard-container">
+    <!-- Sidebar  -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>Employee</h2>
+        </div>
 
-    <header class="page-header">
-    <h1>Request Salary Advance</h1>
-    <p class="breadcrumb">Home &gt; Dashboard &gt; Request Salary Advance</p>
-    </header>
+        <nav class="sidebar-nav">
+            <ul>
+                <!-- Dashboard -->
+                <li><a href="{% url 'employee_dashboard' %}"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li><br><br>
+             
+             
 
-    <main class="request-container">
-    <!-- Form Section -->
-    <section class="form-section">
-      <form action="" method="POST" class="salary-form">
-        {% csrf_token %}
+                <!-- HR Department Section -->
+             
+                <li>
+                    <a href="{% url 'employee_dashboard' %}"><i class="fas fa-users-cog"></i> HR Department</a>
+                </li>
+                <li><a href="#"><i class="fas fa-user"></i> My Profile</a></li>
+                <li><a href="#"><i class="fas fa-calendar-check"></i> Attendance</a></li>
+                <li><a href="#"><i class="fas fa-plane-departure"></i> Leave Requests</a></li>
+                <li><a href="#"><i class="fas fa-clipboard-list"></i> Appraisals</a></li>
+                <li><a href="#"><i class="fas fa-comments"></i> Chat with HR</a></li>
+                <br><br>
+             
+                <!-- Finance Department Section -->
+                
+                <li>
+                    <a href="{% url 'home' %}"><i class="fas fa-coins"></i> Finance Department</a>
+                </li>
+                <li><a href="#"><i class="fas fa-wallet"></i> Payslips</a></li>
+                <li><a href="#"><i class="fas fa-briefcase"></i> My Benefits</a></li>
+                <li><a href="{% url 'request_form' %}"><i class="fas fa-money-check-alt"></i> Salary Advance</a></li>
+                <li><a href="{% url 'internal_loan' %}"><i class="fas fa-file-invoice-dollar"></i> Loan Requests</a></li>
+            </ul>
 
-        <label for="staffId">Staff ID</label>
-        <input type="text" id="staffId" value="{{ employee.staff_id }}" readonly>
-
-        <label for="fullName">Full Name</label>
-        <input type="text" id="fullName" value="{{ employee.full_name }}" readonly>
-
-        <label for="department">Department</label>
-        <input type="text" id="department" value="{{ employee.department }}" readonly>
-
-        <!-- SalaryAdvanceForm fields -->
-        {{ form.amount.label_tag }}
-        {{ form.amount }}
-
-        {{ form.reason.label_tag }}
-        {{ form.reason }}
-
-
-        <button type="submit" class="btn-primary">Submit Request</button>
-        <button type="reset" class="btn-secondary">Clear Form</button>
-      </form>
-
-    </section>
-
-    <!-- Info / Eligibility Section -->
-    <aside class="info-section">
-      <h2>Your Eligibility</h2>
-      <p><strong>Monthly Salary:</strong> KES 100,000</p>
-      <p><strong>Maximum Advance Allowed:</strong> KES 50,000</p>
-      <p><strong>Current Active Loans:</strong> KES 10,000</p>
-      <p class="tip">💡 Tip: You can request up to 50% of your monthly salary.</p>
+            <!-- Bottom Links -->
+            <div class="sidebar-bottom">
+                <ul>
+                    <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
+                    <li><a href="#" class="logout-link"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                </ul>
+            </div>
+        </nav>
     </aside>
-    </main>
-{% endblock  %}
 
+    <main class="main-content">
+
+      <header class="page-header">
+      <h1>Request Salary Advance</h1>
+      <p class="breadcrumb">Home &gt; Dashboard &gt; Request Salary Advance</p>
+      </header>
+
+      <main class="request-container">
+      <!-- Form Section -->
+      <section class="form-section">
+        <form action="" method="POST" class="salary-form">
+          {% csrf_token %}
+
+          <label for="staffId">Staff ID</label>
+          <input type="text" id="staffId" value="{{ employee.staff_id }}" readonly>
+
+          <label for="fullName">Full Name</label>
+          <input type="text" id="fullName" value="{{ employee.full_name }}" readonly>
+
+          <label for="department">Department</label>
+          <input type="text" id="department" value="{{ employee.department }}" readonly>
+
+          <!-- SalaryAdvanceForm fields -->
+          {{ form.amount.label_tag }}
+          {{ form.amount }}
+
+          {{ form.reason.label_tag }}
+          {{ form.reason }}
+
+
+          <button type="submit" class="btn-primary">Submit Request</button>
+          <button type="reset" class="btn-secondary">Clear Form</button>
+        </form>
+
+      </section>
+
+      <!-- Info / Eligibility Section -->
+      <aside class="info-section">
+        <h2>Your Eligibility</h2>
+        <p><strong>Monthly Salary:</strong> KES 100,000</p>
+        <p><strong>Maximum Advance Allowed:</strong> KES 50,000</p>
+        <p><strong>Current Active Loans:</strong> KES 10,000</p>
+        <p class="tip">💡 Tip: You can request up to 50% of your monthly salary.</p>
+      </aside>
+
+
+    </main>
+</div>    
+{% endblock content %}

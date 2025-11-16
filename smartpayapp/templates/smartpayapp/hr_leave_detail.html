@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Smart Pay | HR Leave Details{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+
+  <!-- ========================= -->
+  <!-- Sidebar -->
+  <!-- ========================= -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <h2>HR</h2>
+    </div>
+    <nav class="sidebar-nav">
+      <ul>
+        <li><a href="{% url 'hr_home' %}">Dashboard</a></li>
+        <li><a href="{% url 'employee_list' %}">Employees</a></li>
+        <li><a href="{% url 'hr_departments' %}">Departments</a></li>
+        <li><a href="{% url 'payroll_payslips' %}">Payroll</a></li>
+        <li><a href="{% url 'hr_track_performance' %}">Performance</a></li>
+        <li><a href="{% url 'hr_loan_requests' %}">Requests</a></li>
+        <li class="active"><a href="{% url 'hr_leave_management' %}">Leave Management</a></li>
+        <li><a href="{% url 'hr_reports' %}">Reports</a></li>
+        <li><a href="{% url 'hr_settings' %}">Settings</a></li>
+      </ul>
+    </nav>
+  </aside>
+
+  <!-- ========================= -->
+  <!-- Main Content -->
+  <!-- ========================= -->
+  <main class="main-content">
+
+    <!-- Header -->
+    <header class="dashboard-header">
+      <div>
+        <h1>Leave Request Details</h1>
+        <p>Professional overview of employee leave with all relevant details and actions.</p>
+      </div>
+      <div class="header-icons">
+        <div class="icon"><i class="fas fa-envelope"></i><span class="icon-badge">3</span></div>
+        <div class="icon"><i class="fas fa-bell"></i><span class="icon-badge">5</span></div>
+        <a href="{% url 'hr_profile' %}" class="profile-avatar"><i class="fas fa-user"></i></a>
+      </div>
+    </header>
+
+    <!-- ========================= -->
+    <!-- Leave Details Card -->
+    <!-- ========================= -->
+    <section class="leave-details-section">
+      <div class="leave-details-container">
+        <h2><i class="fas fa-briefcase icon-blue"></i> Leave Summary</h2>
+
+        <div class="leave-card professional-card">
+
+          <!-- Top: Employee Info -->
+          <div class="leave-card-header">
+            <div class="employee-avatar">
+              <img src="{{ leave.employee.profile.profile_picture.url|default:'/static/images/default_avatar.png' }}" alt="{{ leave.employee.full_name }}">
+            </div>
+            <div class="employee-details">
+              <h3>{{ leave.employee.full_name }}</h3>
+              <p class="employee-role">{{ leave.employee.department }} | {{ leave.employee.job_title }}</p>
+              <p class="employee-id">Staff ID: {{ leave.employee.staff_id }}</p>
+            </div>
+            <div class="leave-status-badge1 {{ leave.status|lower }}">
+              {{ leave.status }}
+            </div>
+          </div>
+
+          <!-- Middle: Leave Timeline -->
+          <div class="leave-card-body">
+            <div class="leave-section">
+              <h4>Leave Timeline</h4>
+
+              {% if leave.status == "Pending" %}
+              <!-- Editable form for pending leaves -->
+              <form method="POST" class="editable-leave-form">
+                {% csrf_token %}
+
+                <label><strong>Leave Type:</strong></label>
+                <select name="leave_type" class="form-control">
+                  {% for choice, label in leave.LEAVE_TYPE_CHOICES %}
+                    <option value="{{ choice }}" {% if leave.leave_type == choice %}selected{% endif %}>{{ label }}</option>
+                  {% endfor %}
+                </select>
+
+                <label for="start_date"><strong>Start Date:</strong></label>
+                <input type="date" id="start_date" name="start_date" value="{{ leave.start_date|date:'Y-m-d' }}" required>
+
+                <label for="end_date"><strong>End Date:</strong></label>
+                <input type="date" id="end_date" name="end_date" value="{{ leave.end_date|date:'Y-m-d' }}" required>
+
+                <label><strong>Total Days:</strong></label>
+                <p id="total_days_display">{{ leave.total_days|default:"0" }}</p>
+
+                <label><strong>Resumption Date:</strong></label>
+                <p id="resumption_date_display">
+                  {% if leave.resumption_date %}
+                    {{ leave.resumption_date|date:"d M, Y" }}
+                  {% else %}
+                    Auto-calculated after selecting End Date
+                  {% endif %}
+                </p>
+
+                <button type="submit" name="action" value="update_dates" class="btn-update">Update Dates</button>
+              </form>
+
+              {% else %}
+              <!-- Display only for approved or rejected -->
+              <p><strong>Leave Type:</strong> {{ leave.leave_type }}</p>
+              <p><strong>Start Date:</strong> {{ leave.start_date|date:"d M, Y" }}</p>
+              <p><strong>End Date:</strong> {{ leave.end_date|date:"d M, Y" }}</p>
+              <p><strong>Total Days:</strong> {{ leave.total_days|default:"0" }}</p>
+              <p><strong>Resumption Date:</strong> {{ leave.resumption_date|date:"d M, Y"|default:"-" }}</p>
+              {% endif %}
+            </div>
+
+            <div class="leave-section">
+              <h4>Leave Reason</h4>
+              <p>{{ leave.reason|default:"No reason provided." }}</p>
+            </div>
+
+            <div class="leave-section">
+              <h4>Approval Details</h4>
+              <p><strong>Approval Date:</strong> {{ leave.approved_at|date:"d M, Y H:i"|default:"Pending" }}</p>
+              <p><strong>Rejected At:</strong> {{ leave.rejected_at|date:"d M, Y H:i"|default:"-" }}</p>
+            </div>
+          </div>
+
+          <!-- Bottom: Action Buttons -->
+          <div class="leave-card-footer">
+            <form method="POST" class="leave-actions">
+              {% csrf_token %}
+              {% if leave.status == "Pending" %}
+                <button type="submit" name="action" value="approve" class="approve-btn">Approve</button>
+                <button type="submit" name="action" value="reject" class="reject-btn">Reject</button>
+              {% endif %}
+              <a href="{% url 'hr_leave_management' %}" class="back-btn">Back to Leaves</a>
+            </form>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+
+
+{% endblock %}

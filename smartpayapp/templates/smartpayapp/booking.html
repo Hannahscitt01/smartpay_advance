@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}SmartPay | Book a Meeting{% endblock %}
+{% block content %}
+
+<!---Booking form starts here-->
+<section class="booking-section">
+  <div class="booking-container">
+
+    <!-- Centered Logo -->
+    <div class="booking-logo">
+      <img src="{% static 'img/logo2.png' %}" alt="SmartPay Logo">
+    </div>
+
+    <!-- Centered Title -->
+    <h2>Book a Meeting with Our Team</h2>
+    <p>Fill out the form below and we’ll schedule a demo or consultation at your convenience.</p>
+
+    <form action="#" method="POST" class="booking-form">
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="first_name">First Name</label>
+        <input type="text" name="first_name" id="first_name" placeholder="Your First Name" required>
+      </div>
+
+      <div class="form-group">
+        <label for="last_name">Last Name</label>
+        <input type="text" name="last_name" id="last_name" placeholder="Your Last Name" required>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" name="email" id="email" placeholder="Your Email Address" required>
+      </div>
+
+      <div class="form-group">
+        <label for="phone">Phone Number</label>
+        <input type="tel" name="phone" id="phone" placeholder="Your Phone Number" pattern="[0-9+() -]{7,}" required>
+      </div>
+
+      <div class="form-group">
+        <label for="company">Company Name</label>
+        <input type="text" name="company" id="company" placeholder="Your Company Name">
+      </div>
+
+      <div class="form-group">
+        <label for="date">Preferred Meeting Date</label>
+        <input type="date" name="date" id="date" required>
+      </div>
+
+      <div class="form-group">
+        <label for="time">Preferred Meeting Time</label>
+        <input type="time" name="time" id="time" required>
+      </div>
+
+      <div class="form-group">
+        <label for="message">Additional Notes</label>
+        <textarea name="message" id="message" placeholder="Any specific requirements?" rows="4"></textarea>
+      </div>
+
+      <button type="submit" class="btn1-primary">Submit Booking</button>
+    </form>
+  </div>
+</section>
+<!---Booking form ends here-->
+{% endblock %}

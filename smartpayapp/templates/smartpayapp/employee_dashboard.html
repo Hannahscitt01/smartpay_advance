@@ -1,0 +1,607 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Employee Dashboard | Homepage{% endblock title %}
+
+{% block content %}
+<div class="dashboard-container">
+    <!-- Sidebar  -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>Employee</h2>
+        </div>
+
+        <nav class="sidebar-nav">
+            <ul>
+                <!-- Dashboard -->
+                <li><a href="{% url 'employee_dashboard' %}"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li><br><br>
+             
+             
+
+                <!-- HR Department Section -->
+             
+                <li>
+                    <a href="{% url 'employee_dashboard' %}"><i class="fas fa-users-cog"></i> HR Department</a>
+                </li>
+                <li><a href="#"><i class="fas fa-user"></i> My Profile</a></li>
+                <li><a href="{% url 'employee_atttendance' %}"><i class="fas fa-calendar-check"></i> Attendance</a></li>
+                <li><a href="{% url 'employee_leave_management' %}"><i class="fas fa-plane-departure"></i> Leave Requests</a></li>
+                <li><a href="#"><i class="fas fa-clipboard-list"></i> Appraisals</a></li>
+                <li><a href="#"><i class="fas fa-comments"></i> Chat with HR</a></li>
+                <br><br>
+             
+                <!-- Finance Department Section -->
+                
+                <li>
+                    <a href="{% url 'home' %}"><i class="fas fa-coins"></i> Finance Department</a>
+                </li>
+                <li><a href="{% url 'employee_payslip' %}"><i class="fas fa-wallet"></i> Payslips</a></li>
+                <li><a href="#"><i class="fas fa-briefcase"></i> My Benefits</a></li>
+                <li><a href="{% url 'request_form' %}"><i class="fas fa-money-check-alt"></i> Salary Advance</a></li>
+                <li><a href="{% url 'internal_loan' %}"><i class="fas fa-file-invoice-dollar"></i> Loan Requests</a></li>
+            </ul>
+
+            <!-- Bottom Links -->
+            <div class="sidebar-bottom">
+                <ul>
+                    <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
+                    <li><a href="#" class="logout-link"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                </ul>
+            </div>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+
+        <!-- Dashboard Header -->
+        <header class="dashboard-header">
+            <div class="welcome-text">
+                {% if employee %}
+                    <h1>Hi {{ employee.full_name }}</h1>
+                    <p>Welcome back to your Employee Dashboard</p>
+                    <small>
+                        Staff ID: {{ employee.staff_id }} |
+                        Date: <span id="current-date">{{ current_date }}</span> |
+                        Time: <span id="current-time">{{ current_time }}</span>
+                    </small>
+                {% else %}
+                    <h1>Hi {{ user.first_name }} {{ user.last_name }}</h1>
+                    <p>Welcome back to your Employee Dashboard</p>
+                    <small>
+                        Staff ID: <strong>{{ user.username }}</strong> |
+                        Date: <span id="current-date">{{ current_date }}</span> |
+                        Time: <span id="current-time">{{ current_time }}</span>
+                    </small>
+                {% endif %}
+            </div>
+
+            <div class="header-right">
+                <div class="header-icons">
+                    <!-- Messages -->
+                    <div class="icon" title="Messages">
+                        <i class="fas fa-envelope"></i>
+                        <span class="icon-badge">2</span>
+                    </div>
+                    <!-- Notifications -->
+                    <div class="icon" title="Notifications">
+                        <i class="fas fa-bell"></i>
+                        <span class="icon-badge">4</span>
+                    </div>
+                </div>
+
+                <!-- Profile Avatar -->
+                <a href="{% url 'update_profile' %}" class="profile-avatar" title="My Profile">
+                    <i class="fas fa-user"></i>
+                </a>
+            </div>
+        </header>
+
+        <!-- Search + Filter Bar -->
+        <div class="search-filter-container">
+            <!-- Search Bar -->
+            <div class="search-bar">
+                <input type="text" placeholder="Search leaves, payslips, or appraisals...">
+                <button><i class="fas fa-search"></i></button>
+            </div>
+
+            <!-- Filter Dropdown -->
+            <div class="filter-bar">
+                <select>
+                    <option value="">Filter by...</option>
+                    <option value="month">Month</option>
+                    <option value="status">Status</option>
+                    <option value="type">Request Type</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Quick Stats & Actions -->
+        <section class="quick-actions">
+            <h2>Quick Overview & Actions</h2>
+
+            <div class="action-grid">
+
+                <!-- Leave Balance -->
+                <a href="{% url 'employee_leave_management' %}" class="action-card">
+                    <div class="action-icon"><i class="fas fa-plane-departure"></i></div>
+                    <h3>Leave Balance</h3>
+                    <p>Annual: 14 • Sick: 5 • Comp: 2</p>
+                    <small>Request new leave</small>
+                </a>
+
+                <!-- Leave Application Center -->
+                <a href="{% url 'employee_leave_application' %}" class="action-card">
+                    <div class="action-icon"><i class="fas fa-clipboard-list"></i></div>
+                    <h3>Leave Application Center</h3>
+                    <p>Annual • Sick • Off • Compassionate</p>
+                    <small>Submit a new leave request</small>
+                </a>
+
+                <!-- Pending Requests -->
+                <a href="#" class="action-card">
+                    <div class="action-icon"><i class="fas fa-clock"></i></div>
+                    <h3>Pending Requests</h3>
+                    <p>Advances: 1 • Loans: 0</p>
+                    <small>Awaiting approval</small>
+                </a>
+
+                <!-- Timesheet -->
+                <a href="#" class="action-card">
+                    <div class="action-icon"><i class="fas fa-user-check"></i></div>
+                    <h3>Timesheet Today</h3>
+                    <p>Checked in: 8:32 AM</p>
+                    <small>4h 15m elapsed</small>
+                </a>
+
+                <!-- Payslip Summary -->
+                <a href="{% url 'employee_payslip' %}" class="action-card">
+                    <div class="action-icon"><i class="fas fa-file-invoice-dollar"></i></div>
+                    <h3>Latest Payslip</h3>
+                    <p>October 2025</p>
+                    <small>3 unread</small>
+                </a>
+
+                <!-- Send Message -->
+                <a href="#" class="action-card">
+                    <div class="action-icon"><i class="fas fa-envelope"></i></div>
+                    <h3>Send Message</h3>
+                    <p>Contact HR or your Manager</p>
+                    <small>Compose new message</small>
+                </a>
+
+                <!-- View My Employee Details -->
+                <a href="#" class="action-card">
+                    <div class="action-icon"><i class="fas fa-id-badge"></i></div>
+                    <h3>View My Employee Details</h3>
+                    <p>Personal and job information</p>
+                    <small>View or verify your records</small>
+                </a>
+
+                <!-- View Attendance -->
+                <a href="#" class="action-card">
+                    <div class="action-icon"><i class="fas fa-calendar-check"></i></div>
+                    <h3>View Attendance</h3>
+                    <p>Monthly overview</p>
+                    <small>Check your attendance logs</small>
+                </a>
+
+            </div>
+        </section>
+
+        <!-- Attendance Overview / Timesheet -->
+        <section class="attendance-overview">
+            <h2>Attendance Overview</h2>
+
+            <div class="attendance-grid">
+           
+                <!-- Left: Today's Timesheet Summary -->
+
+                <div class="attendance-card timesheet-card">
+                    <h3>Today's Timesheet</h3>
+
+                    <div class="timesheet-body">
+                        <!-- Status & Info -->
+                        <div class="timesheet-status">
+                            <p class="status-label"><strong>Status:</strong></p>
+                            {% if today_attendance %}
+                                {% if "Late" in today_attendance.status %}
+                                    <span class="status late">{{ today_attendance.status }}</span>
+                                {% elif "Early" in today_attendance.status %}
+                                    <span class="status late">{{ today_attendance.status }}</span>
+                                {% else %}
+                                    <span class="status on-time">{{ today_attendance.status|default:"On Time" }}</span>
+                                {% endif %}
+                            {% else %}
+                                <span class="status missing">No Record</span>
+                            {% endif %}
+                        </div>
+
+                        <div class="timesheet-info">
+                            <div class="info-row">
+                                <span class="label">Clock In:</span>
+                                <span class="value">
+                                    {% if today_attendance and today_attendance.clock_in %}
+                                        {{ today_attendance.clock_in|time:"h:i A" }}
+                                    {% else %}
+                                        —
+                                    {% endif %}
+                                </span>
+                            </div>
+                            <div class="info-row">
+                                <span class="label">Clock Out:</span>
+                                <span class="value">
+                                    {% if today_attendance and today_attendance.clock_out %}
+                                        {{ today_attendance.clock_out|time:"h:i A" }}
+                                    {% else %}
+                                        —
+                                    {% endif %}
+                                </span>
+                            </div>
+                            <div class="info-row">
+                                <span class="label">Hours Worked:</span>
+                                <span class="value">
+                                    {% if hours_worked_today %}
+                                        {{ hours_worked_today }}h
+                                    {% else %}
+                                        —
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Progress Circle & Button -->
+                        <div class="timesheet-footer">
+                            <div class="progress-ring">
+                                <svg width="85" height="85">
+                                    <circle class="progress-bg" cx="42.5" cy="42.5" r="35"></circle>
+                                    <circle class="progress-value" cx="42.5" cy="42.5" r="35"></circle>
+                                </svg>
+                                <p class="progress-text">
+                                    {% if today_attendance and today_attendance.hours_worked %}
+                                    {{ today_target_percent }}% of Target
+                                    {% else %}
+                                        0% of Target
+                                    {% endif %}
+                                </p>
+                            </div>
+
+                            <div class="check-btn-wrapper">
+                                <button class="check-btn {{ check_status }}">{{ check_text }}</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Right: Weekly / Monthly / Yearly Summary -->
+                <div class="attendance-card">
+                    <h3>Attendance Summary</h3>
+
+                    <!-- Tabs -->
+                    <div class="tab-header">
+                        <button class="tab active" data-target="weekly">Weekly</button>
+                        <button class="tab" data-target="monthly">Monthly</button>
+                        <button class="tab" data-target="yearly">Yearly</button>
+                    </div>
+
+                    <!-- WEEKLY TABLE (Now includes Saturday) -->
+                    <table class="attendance-table tab-content" id="weekly">
+                        <thead>
+                            <tr>
+                                <th>Day</th>
+                                <th>Check In</th>
+                                <th>Check Out</th>
+                                <th>Hours</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in weekly_data %}
+                                <tr>
+                                    <td>{{ row.day }}</td>
+                                    <td>{{ row.clock_in|default:"—" }}</td>
+                                    <td>{{ row.clock_out|default:"—" }}</td>
+                                    <td>{{ row.hours|default:"—" }}</td>
+
+                                    {% if "Late" in row.status %}
+                                        <td><span class="status late">{{ row.status }}</span></td>
+                                    {% elif "Early" in row.status %}
+                                        <td><span class="status late">{{ row.status }}</span></td>
+                                    {% elif "No Record" == row.status %}
+                                        <td><span class="status missing">No Record</span></td>
+                                    {% else %}
+                                        <td><span class="status on-time">{{ row.status|default:"No Record" }}</span></td>
+                                    {% endif %}
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="5" class="no-record">
+                                        No Record for this week
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+
+                    </table>
+
+                    <!-- MONTHLY TABLE (Analytics view by week) -->
+                    <table class="attendance-table tab-content hidden" id="monthly">
+                        <thead>
+                            <tr>
+                                <th>Week</th>
+                                <th>Total Hours</th>
+                                <th>Late Hours</th>
+                                <th>Average Attendance</th>
+                                <th>Performance</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in monthly_table %}
+                            <tr>
+                                <td>{{ row.week }}</td>
+                                <td>{{ row.total_hours }}</td>
+                                <td>{{ row.late }}</td>
+                                <td>{{ row.average }}</td>
+
+                                {% if row.performance == "No Record" %}
+                                    <td class="text-center">
+                                        <span class="status missing">{{ row.performance }}</span>
+                                    </td>
+                                {% elif row.performance in "Excellent Good" %}
+                                    <td class="text-center">
+                                        <span class="status on-time">{{ row.performance }}</span>
+                                    </td>
+                                {% else %}
+                                    <td class="text-center">
+                                        <span class="status late">{{ row.performance }}</span>
+                                    </td>
+                                {% endif %}
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center status missing">No Records for this month</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+
+
+                    <!-- Monthly Summary Messages -->
+                    <div class="tab-content hidden summary-card" id="monthly-summary">
+                        <h4 class="summary-title">Your Monthly Attendance Overview</h4>
+
+                        <div class="summary-grid">
+                            <div class="summary-item">
+                                <span class="summary-label"><i class="fas fa-clock"></i> Total Hours This Month</span>
+                                <span class="summary-value">{{ monthly_summary.total_hours }}h</span>
+                            </div>
+
+                            <div class="summary-item">
+                                <span class="summary-label"><i class="fas fa-chart-line"></i> Average Weekly Attendance</span>
+                                <span class="summary-value highlight">{{ monthly_summary.average_attendance }}%</span>
+                            </div>
+
+                            <div class="summary-item">
+                                <span class="summary-label"><i class="fas fa-hourglass-half"></i> Late Hours (Weekly Avg)</span>
+                                <span class="summary-value status late">{{ monthly_summary.total_late }}m</span>
+                            </div>
+
+                            <div class="summary-item">
+                                <span class="summary-label"><i class="fas fa-user-minus"></i> Early Leaves</span>
+                                <span class="summary-value status late">{{ monthly_summary.early_leaves }} Time{{ monthly_summary.early_leaves|pluralize }}</span>
+                            </div>
+
+                            <div class="summary-item">
+                                <span class="summary-label"><i class="fas fa-calendar-week"></i> Weeks Tracked</span>
+                                <span class="summary-value">{{ monthly_summary.weeks_tracked }} Weeks (Mon–Sat)</span>
+                            </div>
+
+                            <div class="summary-item">
+                                <span class="summary-label"><i class="fas fa-award"></i> Performance Rating</span>
+                                <span class="summary-value highlight">{{ monthly_summary.performance_rating }}</span>
+                            </div>
+                        </div>
+
+                        <div class="summary-footer">
+                            <p class="summary-message 
+                                {% if monthly_summary.performance_rating == 'Excellent' %}status on-time{% elif monthly_summary.performance_rating == 'No Record' %}status missing{% else %}status late{% endif %}">
+                                <i class="fas {% if monthly_summary.performance_rating == 'Excellent' %}fa-trophy{% else %}fa-exclamation-circle{% endif %}"></i>
+                                {{ monthly_summary.performance_message }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- YEARLY TABLE (Monthly overview analytics) -->
+                    <table class="attendance-table tab-content hidden" id="yearly">
+                        <thead>
+                            <tr>
+                                <th>Month</th>
+                                <th>Total Hours</th>
+                                <th>Late Hours</th>
+                                <th>Attendance Avg</th>
+                                <th>Performance</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in yearly_table %}
+                                <tr>
+                                    <td>{{ row.month }}</td>
+                                    <td>{{ row.total_hours }}</td>
+                                    <td>{{ row.total_late }}</td>
+                                    <td>{{ row.average }}</td>
+                                    {% if row.performance == "Excellent" %}
+                                        <td><span class="status on-time">{{ row.performance }}</span></td>
+                                    {% elif row.performance == "Good" %}
+                                        <td><span class="status on-time">{{ row.performance }}</span></td>
+                                    {% elif row.performance == "No Record" %}
+                                        <td><span class="status missing">{{ row.performance }}</span></td>
+                                    {% else %}
+                                        <td><span class="status late">{{ row.performance }}</span></td>
+                                    {% endif %}
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="5" class="no-record">No Records for this year</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+
+                    </table>
+                    <!-- Yearly Summary Messages -->
+                    <div class="tab-content hidden summary-card" id="yearly-summary">
+                        <h4 class="summary-title">Your Yearly Attendance Summary</h4>
+
+                        <div class="summary-grid">
+
+                            <!-- Total Hours This Year -->
+                            <div class="summary-item">
+                                <span class="summary-label"><i class="fas fa-clock"></i> Total Hours This Year</span>
+                                <span class="summary-value">
+                                    {% if yearly_summary.total_hours > 0 %}
+                                        {{ yearly_summary.total_hours }}h
+                                    {% else %}
+                                        0h
+                                    {% endif %}
+                                </span>
+                            </div>
+
+                            <!-- Days Present -->
+                            <div class="summary-item">
+                                <span class="summary-label"><i class="fas fa-chart-line"></i> Days Present</span>
+                                <span class="summary-value highlight">
+                                    {% if yearly_summary.days_present > 0 %}
+                                        {{ yearly_summary.days_present }} Days Present
+                                    {% else %}
+                                        No Days Present Yet
+                                    {% endif %}
+                                </span>
+                            </div>
+
+                            <!-- Total Late Minutes -->
+                            <div class="summary-item">
+                                <span class="summary-label"><i class="fas fa-hourglass-half"></i> Total Late Minutes</span>
+                                <span class="summary-value status late">
+                                    {% if yearly_summary.total_late > 0 %}
+                                        {{ yearly_summary.total_late }} Minutes Late
+                                    {% else %}
+                                        0 Minutes
+                                    {% endif %}
+                                </span>
+                            </div>
+
+                            <!-- Days Absent -->
+                            <div class="summary-item">
+                                <span class="summary-label"><i class="fas fa-user-minus"></i> Days Absent</span>
+                                <span class="summary-value status late">
+                                    {% if yearly_summary.days_absent > 0 %}
+                                        {{ yearly_summary.days_absent }} Days Absent
+                                    {% else %}
+                                        0 Days
+                                    {% endif %}
+                                </span>
+                            </div>
+
+                            <!-- Weeks Tracked -->
+                            <div class="summary-item">
+                                <span class="summary-label"><i class="fas fa-calendar-week"></i> Weeks Tracked</span>
+                                <span class="summary-value">
+                                    {% if monthly_table|length > 0 %}
+                                        {{ monthly_table|length }} Weeks Tracked
+                                    {% else %}
+                                        0 Weeks
+                                    {% endif %}
+                                </span>
+                            </div>
+
+                            <!-- Performance Rating -->
+                            <div class="summary-item">
+                                <span class="summary-label"><i class="fas fa-award"></i> Performance Rating</span>
+                                <span class="summary-value highlight">
+                                    {% if yearly_summary.total_hours == 0 %}
+                                        No Record
+                                    {% elif yearly_summary.total_late <= 200 %}
+                                        Excellent
+                                    {% elif yearly_summary.total_late <= 500 %}
+                                        Good
+                                    {% else %}
+                                        Average
+                                    {% endif %}
+                                </span>
+                        </div>
+
+                    </div>
+
+                =>
+                    <div class="summary-footer">
+                        {% if yearly_summary.total_hours == 0 %}
+                            <p class="summary-message status missing">
+                                <i class="fas fa-exclamation-circle"></i> No attendance records yet.
+                            </p>
+                        {% elif yearly_summary.total_late <= 200 %}
+                            <p class="summary-message status on-time">
+                                <i class="fas fa-trophy"></i> Great job! Your punctuality and attendance are excellent.
+                            </p>
+                        {% elif yearly_summary.total_late <= 500 %}
+                            <p class="summary-message status on-time">
+                                <i class="fas fa-exclamation-circle"></i> Good job! Keep improving punctuality.
+                            </p>
+                        {% else %}
+                            <p class="summary-message status late">
+                                <i class="fas fa-exclamation-circle"></i> Frequent late check-ins detected. Please improve attendance.
+                            </p>
+                        {% endif %}
+                    </div>
+
+                    </div>
+
+            </div>
+        </section>
+
+        <!-- Employee Leave Management -->
+        <section class="quick-actions">
+            <h2><i class="fas fa-briefcase-medical icon-blue"></i> Leave Management</h2>
+
+            <div class="action-grid">
+
+                <!-- Leave Management Overview -->
+                <a href="{% url 'employee_leave_application' %}" class="action-card">
+                <div class="action-icon"><i class="fas fa-calendar-check"></i></div>
+                <h3>Leave Management</h3>
+                <p>View your leave summary, history, and balances</p>
+                <small>Track all your leave details in one place</small>
+                </a>
+
+                <!-- Leave Application -->
+                <a href="{% url 'employee_leave_application' %}" class="action-card">
+                <div class="action-icon"><i class="fas fa-file-signature"></i></div>
+                <h3>Leave Application</h3>
+                <p>Submit a new leave request for HR approval</p>
+                <small>Annual • Compassionate • Study Leave</small>
+                </a>
+
+                <!-- Off Day Application -->
+                <a href="{% url 'employee_leave_application' %}" class="action-card">
+                <div class="action-icon"><i class="fas fa-bed"></i></div>
+                <h3>Off Day Application</h3>
+                <p>Apply for personal or short off days</p>
+                <small>Request a day or half-day off</small>
+                </a>
+
+                <!-- Sick Leave Application -->
+                <a href="{% url 'employee_leave_application' %}" class="action-card">
+                <div class="action-icon"><i class="fas fa-notes-medical"></i></div>
+                <h3>Sick Leave Application</h3>
+                <p>Apply for medical or recovery leave</p>
+                <small>Attach medical documents if applicable</small>
+                </a>
+
+            </div>
+        </section>
+
+
+    </main>
+</div>    
+{% endblock content %}
+

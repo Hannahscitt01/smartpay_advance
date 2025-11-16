@@ -17,24 +17,36 @@
 
 </head>
 <body>
-    <!--NAV SECTION-->
+    <input type="hidden" id="csrfToken" value="{{ csrf_token }}">
+
+    <!-- NAV SECTION -->
     <nav class="navbar">
         <div class="nav-left">
             <img src="{% static 'img/logo2.png' %}" alt="Company Logo" class="nav-logo">
             <span class="nav-app-name">Advance Salary System</span>
         </div>
- 
-        <div class="nav-center">
+
+        <!-- Nav Links -->
+        <div class="nav-center" id="nav-links">
             <a href="{% url 'home' %}">Home</a>
             <a href="#">About</a> 
             <a href="#">How It Works</a>
             <a href="#">Contact</a>
+
+            <!-- Mobile buttons container -->
+            <div class="nav-buttons-mobile">
+                <a href="{% url 'login' %}" class="login-link">Login</a>
+            </div>
         </div>
 
+        <!-- Desktop button (visible only on desktop) -->
         <div class="nav-right">
-            <a href="{% url 'login' %}" class="login-link">Login</a>
+            <a href="{% url 'login' %}" class="login-link desktop-only">Login</a>
         </div>
-    </nav>  
+
+        <!-- Hamburger -->
+        <div class="nav-breadcrumb" id="nav-toggle">&#9776;</div>
+    </nav>
 
     {% block content %}
     {% endblock  %}

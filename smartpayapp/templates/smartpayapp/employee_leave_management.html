@@ -1,0 +1,431 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Employee Dashboard | Employee Leave Management{% endblock title %}
+
+{% block content %}
+<div class="dashboard-container">
+    <!-- Sidebar  -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>Employee</h2>
+        </div>
+
+        <nav class="sidebar-nav">
+            <ul>
+                <!-- Dashboard -->
+                <li><a href="{% url 'employee_dashboard' %}"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li><br><br>
+             
+             
+
+                <!-- HR Department Section -->
+             
+                <li>
+                    <a href="{% url 'employee_dashboard' %}"><i class="fas fa-users-cog"></i> HR Department</a>
+                </li>
+                <li><a href="#"><i class="fas fa-user"></i> My Profile</a></li>
+                <li><a href="#"><i class="fas fa-calendar-check"></i> Attendance</a></li>
+                <li><a href="#"><i class="fas fa-plane-departure"></i> Leave Requests</a></li>
+                <li><a href="#"><i class="fas fa-clipboard-list"></i> Appraisals</a></li>
+                <li><a href="#"><i class="fas fa-comments"></i> Chat with HR</a></li>
+                <br><br>
+             
+                <!-- Finance Department Section -->
+                
+                <li>
+                    <a href="{% url 'home' %}"><i class="fas fa-coins"></i> Finance Department</a>
+                </li>
+                <li><a href="#"><i class="fas fa-wallet"></i> Payslips</a></li>
+                <li><a href="#"><i class="fas fa-briefcase"></i> My Benefits</a></li>
+                <li><a href="{% url 'request_form' %}"><i class="fas fa-money-check-alt"></i> Salary Advance</a></li>
+                <li><a href="{% url 'internal_loan' %}"><i class="fas fa-file-invoice-dollar"></i> Loan Requests</a></li>
+            </ul>
+
+            <!-- Bottom Links -->
+            <div class="sidebar-bottom">
+                <ul>
+                    <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
+                    <li><a href="#" class="logout-link"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                </ul>
+            </div>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+
+        <!-- Header for Leave Management Page -->
+        <header class="dashboard-header">
+            <div class="welcome-text">
+                {% if employee %}
+                    <h1>Hi {{ employee.full_name }}</h1>
+                    <p>Here is your Leave Balance Overview</p>
+                    <small>
+                        Staff ID: {{ employee.staff_id }} |
+                        Date: <span id="current-date">{{ current_date }}</span> |
+                        Time: <span id="current-time">{{ current_time }}</span>
+                    </small>
+                {% else %}
+                    <h1>Hi {{ user.first_name }} {{ user.last_name }}</h1>
+                    <p>Here is your Leave Balance Overview</p>
+                    <small>
+                        Staff ID: <strong>{{ user.username }}</strong> |
+                        Date: <span id="current-date">{{ current_date }}</span> |
+                        Time: <span id="current-time">{{ current_time }}</span>
+                    </small>
+                {% endif %}
+            </div>
+
+            <div class="header-right">
+                <div class="header-icons">
+                    <!-- Messages -->
+                    <div class="icon" title="Messages">
+                        <i class="fas fa-envelope"></i>
+                        <span class="icon-badge">2</span>
+                    </div>
+                    <!-- Notifications -->
+                    <div class="icon" title="Notifications">
+                        <i class="fas fa-bell"></i>
+                        <span class="icon-badge">4</span>
+                    </div>
+                </div>
+
+                <!-- Profile Avatar -->
+                <a href="{% url 'update_profile' %}" class="profile-avatar" title="My Profile">
+                    <i class="fas fa-user"></i>
+                </a>
+            </div>
+        </header>
+
+        <!-- Leave Balance Summary Cards -->
+        <section class="quick-actions">
+            <h2>Leave Balance Summary</h2>
+
+            <div class="action-grid">
+
+                <!-- Annual Leave -->
+                <div class="action-card {{ annual_status_class }}">
+                    <div class="action-icon">
+                        <i class="fas fa-plane-departure"></i>
+                    </div>
+                    <h3>Annual Leave</h3>
+                    <p><strong>{{ annual_remaining }} days</strong> remaining</p>
+                    <small>Used: {{ annual_used }} days • Entitled: {{ annual_entitled }} days</small>
+                </div>
+
+                <!-- Sick Leave -->
+                <div class="action-card">
+                    <div class="action-icon">
+                        <i class="fas fa-notes-medical"></i>
+                    </div>
+                    <h3>Sick Leave</h3>
+                    <p><strong>5 days</strong> remaining</p>
+                    <small>Used: 2 days • Entitled: 7 days</small>
+                </div>
+
+                <!-- Off Days -->
+                <div class="action-card">
+                    <div class="action-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <h3>Off Days</h3>
+                    <p><strong>3 days</strong> remaining</p>
+                    <small>Used: 1 day • Earned: 4 days</small>
+                </div>
+
+                <!-- Compassionate Leave -->
+                <div class="action-card">
+                    <div class="action-icon">
+                        <i class="fas fa-hand-holding-heart"></i>
+                    </div>
+                    <h3>Compassionate Leave</h3>
+                    <p><strong>2 days</strong> remaining</p>
+                    <small>Used: 0 days • Entitled: 2 days</small>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Leave History Section -->
+        <div class="sp-leave-history-section">
+            <div class="summary-title">Your Leave Overview</div>
+
+            <!-- Filters -->
+            <div class="sp-leave-filters">
+                <div class="sp-filter-item">
+                    <label>Leave Type</label>
+                    <select>
+                        <option value="">All</option>
+                        <option>Sick Leave</option>
+                        <option>Annual Leave</option>
+                        <option>Maternity Leave</option>
+                    </select>
+                </div>
+
+                <div class="sp-filter-item">
+                    <label>Status</label>
+                    <select>
+                        <option value="">All</option>
+                        <option>Pending</option>
+                        <option>Approved</option>
+                        <option>Rejected</option>
+                    </select>
+                </div>
+
+                <div class="sp-filter-item">
+                    <label>Date Range</label>
+                    <input type="date">
+                </div>
+
+                <div class="sp-filter-item">
+                    <label style="visibility:hidden;">.</label>
+                    <input type="date">
+                </div>
+
+                <button class="sp-filter-btn">Filter</button>
+            </div>
+
+            <section class="leave-requests annual-leave">
+                <div class="summary-title">Your Annual Leave History</div>
+                <div class="sp-table-wrapper">
+                    <table class="sp-table">
+                        <thead>
+                            <tr>
+                                <th>Date Applied</th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                                <th>Days</th>
+                                <th>Status</th>
+                                <th>Approval Notes</th>
+                                <th>Job Resumption Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for leave in annual_page.object_list %}
+                                <tr>
+                                    <td>{{ leave.created_at|date:"d/m/Y" }}</td>
+                                    <td>{{ leave.start_date|date:"d/m/Y" }}</td>
+                                    <td>{{ leave.end_date|date:"d/m/Y" }}</td>
+                                    <td>{{ leave.total_days }}</td>
+                                    <td>
+                                        {% if leave.status == "Approved" %}
+                                            <span class="sp-status approved">Approved</span>
+                                        {% elif leave.status == "Rejected" %}
+                                            <span class="sp-status rejected">Rejected</span>
+                                        {% else %}
+                                            <span class="sp-status pending">Pending</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ leave.approval_notes }}</td>
+                                    <td>{{ leave.resumption_date|date:"d/m/Y" }}</td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="7" style="text-align:center;">No Annual Leave requests found.</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                {% if annual_page.has_other_pages %}
+                <div class="sp-pagination">
+                    {% if annual_page.has_previous %}
+                        <a href="?annual_page={{ annual_page.previous_page_number }}" class="sp-page-btn">Prev</a>
+                    {% else %}
+                        <span class="sp-page-btn disabled">Prev</span>
+                    {% endif %}
+
+                    {% for num in annual_page.paginator.page_range %}
+                        {% if annual_page.number == num %}
+                            <span class="sp-page-number active">{{ num }}</span>
+                        {% else %}
+                            <a href="?annual_page={{ num }}" class="sp-page-number">{{ num }}</a>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if annual_page.has_next %}
+                        <a href="?annual_page={{ annual_page.next_page_number }}" class="sp-page-btn">Next</a>
+                    {% else %}
+                        <span class="sp-page-btn disabled">Next</span>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </section>
+
+            <!-- Sick Leave Section -->
+            <section class="leave-requests sick-leave">
+                <div class="summary-title">Your Sick Off History</div>
+                <div class="sp-table-wrapper">
+                    <table class="sp-table">
+                        <thead>
+                            <tr>
+                            <th>Date Applied</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
+                            <th>Days</th>
+                            <th>Status</th>
+                            <th>Approval Notes</th>
+                            <th>Job Resumption Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for leave in leave_requests %}
+                            {% if leave.leave_type == "Sick Leave" %}
+                            <tr>
+                                <td>{{ leave.date_applied|date:"d/m/Y" }}</td>
+                                <td>{{ leave.start_date|date:"d/m/Y" }}</td>
+                                <td>{{ leave.end_date|date:"d/m/Y" }}</td>
+                                <td>{{ leave.total_days }}</td>
+                                <td>
+                                {% if leave.status == "Approved" %}
+                                    <span class="sp-status approved">Approved</span>
+                                {% elif leave.status == "Rejected" %}
+                                    <span class="sp-status rejected">Rejected</span>
+                                {% else %}
+                                    <span class="sp-status pending">Pending</span>
+                                {% endif %}
+                                </td>
+                                <td>{{ leave.approval_notes }}</td>
+                                <td>{{ leave.resumption_date|date:"d/m/Y" }}</td>
+                            </tr>
+                            {% endif %}
+                            {% empty %}
+                            <tr>
+                                <td colspan="7" style="text-align:center;">No Sick Leave requests found.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="sp-pagination">
+                    <button class="sp-page-btn disabled">Prev</button>
+                    <span class="sp-page-number active">1</span>
+                    <span class="sp-page-number">2</span>
+                    <span class="sp-page-number">3</span>
+                    <button class="sp-page-btn">Next</button>
+                </div>
+            </section>
+
+            <!-- Off Days Section -->
+            <section class="leave-requests off-days">
+                <div class="summary-title">Your Leave Overview</div>
+                <div class="sp-table-wrapper">
+                    <table class="sp-table">
+                        <thead>
+                            <tr>
+                            <th>Date Applied</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
+                            <th>Days</th>
+                            <th>Status</th>
+                            <th>Approval Notes</th>
+                            <th>Job Resumption Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for leave in leave_requests %}
+                            {% if leave.leave_type == "Off Day" %}
+                            <tr>
+                                <td>{{ leave.date_applied|date:"d/m/Y" }}</td>
+                                <td>{{ leave.start_date|date:"d/m/Y" }}</td>
+                                <td>{{ leave.end_date|date:"d/m/Y" }}</td>
+                                <td>{{ leave.total_days }}</td>
+                                <td>
+                                {% if leave.status == "Approved" %}
+                                    <span class="sp-status approved">Approved</span>
+                                {% elif leave.status == "Rejected" %}
+                                    <span class="sp-status rejected">Rejected</span>
+                                {% else %}
+                                    <span class="sp-status pending">Pending</span>
+                                {% endif %}
+                                </td>
+                                <td>{{ leave.approval_notes }}</td>
+                                <td>{{ leave.resumption_date|date:"d/m/Y" }}</td>
+                            </tr>
+                            {% endif %}
+                            {% empty %}
+                            <tr>
+                                <td colspan="7" style="text-align:center;">No Off Day requests found.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="sp-pagination">
+                    <button class="sp-page-btn disabled">Prev</button>
+                    <span class="sp-page-number active">1</span>
+                    <span class="sp-page-number">2</span>
+                    <span class="sp-page-number">3</span>
+                    <button class="sp-page-btn">Next</button>
+                </div>
+            </section>
+
+            <!-- Compassionate Leave Section -->
+            <section class="leave-requests compassionate-leave">
+            <div class="summary-title">Your Leave Overview</div>
+            <div class="sp-table-wrapper">
+                <table class="sp-table">
+                <thead>
+                    <tr>
+                    <th>Date Applied</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Days</th>
+                    <th>Status</th>
+                    <th>Approval Notes</th>
+                    <th>Job Resumption Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for leave in leave_requests %}
+                    {% if leave.leave_type == "Compassionate Leave" %}
+                    <tr>
+                        <td>{{ leave.date_applied|date:"d/m/Y" }}</td>
+                        <td>{{ leave.start_date|date:"d/m/Y" }}</td>
+                        <td>{{ leave.end_date|date:"d/m/Y" }}</td>
+                        <td>{{ leave.total_days }}</td>
+                        <td>
+                        {% if leave.status == "Approved" %}
+                            <span class="sp-status approved">Approved</span>
+                        {% elif leave.status == "Rejected" %}
+                            <span class="sp-status rejected">Rejected</span>
+                        {% else %}
+                            <span class="sp-status pending">Pending</span>
+                        {% endif %}
+                        </td>
+                        <td>{{ leave.approval_notes }}</td>
+                        <td>{{ leave.resumption_date|date:"d/m/Y" }}</td>
+                    </tr>
+                    {% endif %}
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" style="text-align:center;">No Compassionate Leave requests found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div class="sp-pagination">
+                <button class="sp-page-btn disabled">Prev</button>
+                <span class="sp-page-number active">1</span>
+                <span class="sp-page-number">2</span>
+                <span class="sp-page-number">3</span>
+                <button class="sp-page-btn">Next</button>
+            </div>
+            </section>
+
+        </div>
+
+        <!-- Tips / Info Section -->
+        <section class="summary-card summary-footer">
+            <p class="summary-message">💡 Tip: Plan your leaves in advance to ensure smooth workflow and approvals.</p>
+        </section>
+
+    </main>
+</div>    
+{% endblock content %}

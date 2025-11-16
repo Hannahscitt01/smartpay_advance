@@ -1,4 +1,5 @@
 from django.urls import path
+from django.contrib.auth import views as auth_views
 from .views import (
     index,
     application,
@@ -42,8 +43,26 @@ from .views import (
     hr_profile,
     checkin_checkout,
     attendance_action,
-    attendance_history
-          
+    attendance_history,
+    reject_leave,
+    approve_leave, 
+    update_attendance,
+    hr_leave_details,
+    update_annual_leave,
+    hr_leave_management,
+    hr_sick_leaves,
+    hr_annual_leaves,
+    hr_off_days, 
+    pr, 
+    booking,
+    personal_profile,
+    product_overview,
+    buy_product,
+    employee_dashboard,
+    employee_leave_management,
+    employee_leave_application,
+    employee_payslip,
+    employee_atttendance
 )
 
 urlpatterns = [
@@ -88,6 +107,12 @@ urlpatterns = [
     path('hr/settings/', hr_settings, name='hr_settings'),
     path('hr/appraissals/', hr_appraissals, name='hr_appraissals'),
     path('hr/profile/', hr_profile, name='hr_profile'),
+    path("hr/annual-leaves/<int:leave_id>/update/", update_annual_leave, name="update_annual_leave"),
+    path("hr/leave-management/", hr_leave_management, name="hr_leave_management"),
+    path('hr/sick-leaves/', hr_sick_leaves, name='hr_sick_leaves'),
+    path("annual-leaves/", hr_annual_leaves, name="hr_annual_leaves"),
+    path("hr/off_days/", hr_off_days, name="hr_off_days"),
+
 
     path('finance/requests/', finance_salary_request, name='finance_salary_request'),
     path('finance/requests/<int:pk>/approve/', approve_salary_request, name='approve_salary_request'),
@@ -97,9 +122,25 @@ urlpatterns = [
     path('checkin_checkout/', checkin_checkout, name='checkin_checkout'),
     path('attendance_action/', attendance_action, name='attendance_action'),
     path('attendance_history/', attendance_history, name='attendance_history'),
+    path('leave/approve/<int:leave_id>/', approve_leave, name='approve_leave'),
+    path('leave/reject/<int:leave_id>/', reject_leave, name='reject_leave'),
+    path("leave/<int:leave_id>/", hr_leave_details, name="hr_leave_details"),
+    
 
 
+    path("update_attendance/", update_attendance, name="update_attendance"),
+    path('pr/', pr, name='pr'),
+    path('booking/', booking, name='booking'),
+    path('personal_profile/', personal_profile, name='personal_profile'),
+    path('product_overview/', product_overview, name='product_overview'),
+    path('buy_product', buy_product, name='buy_product'),
 
+    path('employee_dashboard/', employee_dashboard, name='employee_dashboard'),
+    path('logout/', auth_views.LogoutView.as_view(next_page='login'), name='logout'),
+    path('employee_leave_management/', employee_leave_management, name='employee_leave_management'),
+    path('employee_leave_application/', employee_leave_application, name='employee_leave_application'),
+    path('employee_payslip', employee_payslip, name='employee_payslip'),
+    path('employee_atttendance', employee_atttendance, name='employee_atttendance')
 
 ]
 
