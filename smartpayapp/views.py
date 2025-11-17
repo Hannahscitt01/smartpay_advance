@@ -121,10 +121,56 @@ def employee_payslip(request):
     """payroll page"""
     return render(request, 'smartpayapp/employee_payslip.html')
 
+
 @login_required
-def employee_atttendance(request):
+def employee_profile(request):
+    """Display employee profile"""
+
+    try:
+        employee = request.user.profile.employee  # existing relationship
+    except AttributeError:
+        employee = None
+
+    # Current date & time for the header
+    current_date = timezone.localdate()
+    current_time = timezone.localtime().strftime("%I:%M %p")
+
+    # Prepare dynamic profile info (optional safety if employee is None)
+    profile_data = {}
+    if employee:
+        profile_data = {
+            "full_name": employee.full_name,
+            "staff_id": employee.staff_id,
+            "job_title": employee.job_title,
+            "department": employee.department,
+            "employment_type": employee.employment_type,
+            "email": employee.email,
+            "phone": employee.phone,
+            "dob": employee.dob,
+            "age": employee.age,
+            "national_id": employee.national_id,
+            "date_joined": employee.date_joined,
+            "role": employee.role,
+            "address": employee.address,
+            "salary": employee.salary,
+        }
+
+    context = {
+        "employee": employee,
+        "profile_data": profile_data,  # dynamic data for template
+        "user": request.user,
+        "current_date": current_date,
+        "current_time": current_time,
+    }
+
+    return render(request, 'smartpayapp/employee_profile.html', context)
+
+
+
+@login_required
+def employee_attendance(request):
     """employee_atttendance page"""
-    return render(request, 'smartpayapp/employee_atttendance.html')
+    return render(request, 'smartpayapp/employee_attendance.html')
 
 
 @login_required
@@ -297,6 +343,18 @@ def employee_dashboard(request):
     stroke_dashoffset = circumference * (1 - today_target_percent / 100)
 
 
+    # ------------------ Pending Finance Requests ------------------
+    pending_advances_count = SalaryAdvanceRequest.objects.filter(
+        user=request.user,
+        status="Pending"
+    ).count()
+
+
+    pending_loans_count = LoanRequest.objects.filter(
+        employee=employee, status="Pending"
+    ).count()
+
+
     return render(request, "smartpayapp/employee_dashboard.html", {
         "employee": employee,
         "weekly_data": weekly_data,
@@ -310,7 +368,9 @@ def employee_dashboard(request):
         "check_status": check_status,     
         "check_text": check_text,
         "progress_circumference": circumference,
-        "progress_offset": stroke_dashoffset
+        "progress_offset": stroke_dashoffset,
+        "pending_advances_count": pending_advances_count,
+        "pending_loans_count": pending_loans_count,
 
     })
 

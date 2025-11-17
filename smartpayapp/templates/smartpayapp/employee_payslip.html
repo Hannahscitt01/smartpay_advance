@@ -22,9 +22,9 @@
                 <li>
                     <a href="{% url 'employee_dashboard' %}"><i class="fas fa-users-cog"></i> HR Department</a>
                 </li>
-                <li><a href="#"><i class="fas fa-user"></i> My Profile</a></li>
-                <li><a href="#"><i class="fas fa-calendar-check"></i> Attendance</a></li>
-                <li><a href="#"><i class="fas fa-plane-departure"></i> Leave Requests</a></li>
+                <li><a href="{% url 'employee_profile' %}"><i class="fas fa-user"></i> My Profile</a></li>
+                <li><a href="{% url 'employee_atttendance' %}"><i class="fas fa-calendar-check"></i> Attendance</a></li>
+                <li><a href="{% url 'employee_leave_management' %}"><i class="fas fa-plane-departure"></i> Leave Requests</a></li>
                 <li><a href="#"><i class="fas fa-clipboard-list"></i> Appraisals</a></li>
                 <li><a href="#"><i class="fas fa-comments"></i> Chat with HR</a></li>
                 <br><br>
@@ -34,7 +34,7 @@
                 <li>
                     <a href="{% url 'home' %}"><i class="fas fa-coins"></i> Finance Department</a>
                 </li>
-                <li><a href="#"><i class="fas fa-wallet"></i> Payslips</a></li>
+                <li><a href="{% url 'employee_payslip' %}"><i class="fas fa-wallet"></i> Payslips</a></li>
                 <li><a href="#"><i class="fas fa-briefcase"></i> My Benefits</a></li>
                 <li><a href="{% url 'request_form' %}"><i class="fas fa-money-check-alt"></i> Salary Advance</a></li>
                 <li><a href="{% url 'internal_loan' %}"><i class="fas fa-file-invoice-dollar"></i> Loan Requests</a></li>

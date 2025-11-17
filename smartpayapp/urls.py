@@ -62,7 +62,8 @@ from .views import (
     employee_leave_management,
     employee_leave_application,
     employee_payslip,
-    employee_atttendance
+    employee_attendance,
+    employee_profile
 )
 
 urlpatterns = [
@@ -140,7 +141,8 @@ urlpatterns = [
     path('employee_leave_management/', employee_leave_management, name='employee_leave_management'),
     path('employee_leave_application/', employee_leave_application, name='employee_leave_application'),
     path('employee_payslip', employee_payslip, name='employee_payslip'),
-    path('employee_atttendance', employee_atttendance, name='employee_atttendance')
+    path('employee_atttendance', employee_attendance, name='employee_atttendance'),
+    path('employee_profile', employee_profile, name='employee_profile')
 
 ]
 

@@ -13793,3 +13793,235 @@ textarea.styled-textarea {
 }
 
 /**** ---------------------------------------------------------------------- Payslip  Page ends here -------------------------------------------------------------------------------------------------------------------------- ****/  
+
+/**** ---------------------------------------------------------------------- Employee Profile Page starts here -------------------------------------------------------------------------------------------------------------------------- ****/  
+
+
+/* ------------------ Verified Badge ------------------ */
+.verified-badge {
+    margin-left: auto;
+    background-color: #E6F0FA;
+    color: #4A90E2;
+    font-size: 0.85rem;
+    font-weight: 500;
+    padding: 6px 12px;
+    border-radius: 8px;
+    align-self: flex-start;
+}
+
+/* ------------------ Responsive ------------------ */
+@media (max-width: 768px) {
+    .overview-card.ctm-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+
+    .verified-badge {
+        align-self: flex-start;
+        margin-left: 0;
+    }
+}
+
+/* ===== Page Header ===== */
+.empd-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fff;
+  padding: 20px 24px;
+  border-radius: 12px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+  margin-bottom: 24px;
+}
+
+.empd-header-left h1 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #003366;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.empd-header-left .empd-subtitle {
+  font-size: 14px;
+  color: #64748b;
+  margin-top: 4px;
+}
+
+.empd-header-right .empd-badge {
+  background: #e6f0ff;
+  color: #003366;
+  padding: 6px 12px;
+  font-size: 12px;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+.empd-profile-overview {
+  display: flex;
+  background: #fff;
+  padding: 20px 24px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  gap: 24px;
+  align-items: center;
+}
+
+.empd-profile-left {
+  flex: 0 0 120px;
+}
+
+.empd-profile-photo {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #003366;
+}
+
+.empd-profile-right {
+  flex: 1;
+}
+
+.empd-fullname {
+  font-size: 22px;
+  font-weight: 700;
+  color: #003366;
+  margin-bottom: 16px;
+}
+
+/* Grid layout for fields */
+.empd-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.empd-info-item {
+    background: #fff;
+    padding: 12px 16px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    font-size: 14px;
+    color: #333;
+}
+
+.empd-info-item strong {
+    display: block;
+    margin-bottom: 4px;
+    color: #003366;
+}
+
+
+@media (max-width: 768px) {
+  .empd-profile-overview {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .empd-info-grid {
+    grid-template-columns: 1fr; /* stack on mobile */
+    width: 100%;
+  }
+
+  .empd-profile-left {
+    margin-bottom: 16px;
+  }
+}
+
+
+/* ===== Tabs ===== */
+.empd-tabs-container {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  padding: 20px;
+}
+
+.empd-tabs-header {
+  display: flex;
+  border-bottom: 1px solid #e2e8f0;
+  margin-bottom: 20px;
+}
+
+.empd-tab-content {
+  display: none;
+  padding: 16px 0;
+}
+
+.empd-tab-content.active {
+  display: block;
+}
+
+.empd-tab-button {
+  background: #f5f7fa;
+  border: 1px solid #d6dce5;
+  padding: 10px 16px;
+  margin-right: 6px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s, color 0.2s;
+}
+
+.empd-tab-button.active {
+  background: #003366;
+  color: #fff;
+}
+
+
+/* Two-column layout */
+.empd-two-column {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 12px 24px;
+  font-size: 14px;
+  color: #333;
+}
+
+.empd-two-column strong {
+  color: #64748b;
+}
+
+.empd-tag {
+  background: #f1f5f9;
+  color: #64748b;
+  padding: 2px 6px;
+  font-size: 11px;
+  border-radius: 6px;
+  margin-left: 6px;
+}
+
+/* Footer Note */
+.empd-footer-note {
+  margin-top: 16px;
+  font-size: 12px;
+  color: #64748b;
+  text-align: center;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .empd-profile-overview {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .empd-profile-right {
+    align-items: center;
+  }
+  .empd-two-column {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+
+
+
+
+
+/**** ---------------------------------------------------------------------- Employee Profile Page ends here -------------------------------------------------------------------------------------------------------------------------- ****/ 

@@ -342,3 +342,26 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
+// empd-tabs.js
+document.addEventListener("DOMContentLoaded", function () {
+    const buttons = document.querySelectorAll(".empd-tab-button");
+    const contents = document.querySelectorAll(".empd-tab-content");
+
+    buttons.forEach(btn => {
+        btn.addEventListener("click", () => {
+            const tabID = btn.dataset.tab;
+
+            // Remove active from all
+            buttons.forEach(b => b.classList.remove("active"));
+            contents.forEach(c => c.classList.remove("active"));
+
+            // Activate clicked
+            btn.classList.add("active");
+
+            // Show correct tab
+            document.getElementById(tabID).classList.add("active");
+        });
+    });
+});
+
+

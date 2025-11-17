@@ -1,0 +1,216 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Employee Dashboard | Employee Leave Management{% endblock title %}
+
+{% block content %}
+<div class="dashboard-container">
+    <!-- Sidebar  -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>Employee</h2>
+        </div>
+
+        <nav class="sidebar-nav">
+            <ul>
+                <!-- Dashboard -->
+                <li><a href="{% url 'employee_dashboard' %}"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li><br><br>
+             
+             
+
+                <!-- HR Department Section -->
+             
+                <li>
+                    <a href="{% url 'employee_dashboard' %}"><i class="fas fa-users-cog"></i> HR Department</a>
+                </li>
+                <li><a href="#"><i class="fas fa-user"></i> My Profile</a></li>
+                <li><a href="#"><i class="fas fa-calendar-check"></i> Attendance</a></li>
+                <li><a href="#"><i class="fas fa-plane-departure"></i> Leave Requests</a></li>
+                <li><a href="#"><i class="fas fa-clipboard-list"></i> Appraisals</a></li>
+                <li><a href="#"><i class="fas fa-comments"></i> Chat with HR</a></li>
+                <br><br>
+             
+                <!-- Finance Department Section -->
+                
+                <li>
+                    <a href="{% url 'home' %}"><i class="fas fa-coins"></i> Finance Department</a>
+                </li>
+                <li><a href="{% url 'employee_payslip' %}"><i class="fas fa-wallet"></i> Payslips</a></li>
+                <li><a href="#"><i class="fas fa-briefcase"></i> My Benefits</a></li>
+                <li><a href="{% url 'request_form' %}"><i class="fas fa-money-check-alt"></i> Salary Advance</a></li>
+                <li><a href="{% url 'internal_loan' %}"><i class="fas fa-file-invoice-dollar"></i> Loan Requests</a></li>
+            </ul>
+
+            <!-- Bottom Links -->
+            <div class="sidebar-bottom">
+                <ul>
+                    <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
+                    <li><a href="#" class="logout-link"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                </ul>
+            </div>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+
+        <!-- Dashboard Header -->
+        <header class="dashboard-header">
+            <div class="welcome-text">
+
+                {% if employee %}
+                    <h1>My Profile | {{ employee.full_name }}</h1>
+                    <p>Official employee information from HR records</p>
+                    <small class="verified-record">
+                        <span class="verified-badge">
+                            <i class="fas fa-check-circle"></i> Verified HR Record
+                        </span>
+                        |
+                        Staff ID: {{ employee.staff_id }}
+                        |
+                        Last Updated: {{ employee.last_updated|date:"M d, Y" }}
+                    </small>
+                {% else %}
+                    <h1>My Profile</h1>
+                    <p>Official employee information from HR records</p>
+                    <small class="verified-record">
+                        <span class="verified-badge">
+                            <i class="fas fa-check-circle"></i> Verified HR Record
+                        </span>
+                        |
+                        Staff ID: {{ user.username }}
+                        |
+                        Last Updated: {{ current_date }}
+                    </small>
+                {% endif %}
+
+            </div>
+
+            <div class="header-right">
+                <div class="header-icons">
+
+                    <!-- Messages -->
+                    <div class="icon" title="Messages">
+                        <i class="fas fa-envelope"></i>
+                        <span class="icon-badge">2</span>
+                    </div>
+
+                    <!-- Notifications -->
+                    <div class="icon" title="Notifications">
+                        <i class="fas fa-bell"></i>
+                        <span class="icon-badge">4</span>
+                    </div>
+
+                </div>
+            </div>
+        </header>
+        <br><br>
+
+        <!-- ===== Profile Overview Card ===== -->
+        <section class="empd-profile-overview">
+            <div class="empd-profile-left">
+                <img src="{{ employee.profile_photo.url|default:'https://via.placeholder.com/120' }}" alt="Profile Photo" class="empd-profile-photo">
+            </div>
+            <div class="empd-profile-right">
+                <h2 class="empd-fullname">{{ employee.full_name }}</h2>
+                
+                <div class="empd-info-grid">
+                    <div class="empd-info-item"><strong>Staff ID:</strong> {{ employee.staff_id }}</div>
+                    <div class="empd-info-item"><strong>Job Title:</strong> {{ employee.job_title }}</div>
+                    <div class="empd-info-item"><strong>Department:</strong> {{ employee.department }}</div>
+                    <div class="empd-info-item"><strong>Employment Type:</strong> {{ employee.employment_type }}</div>
+                    <div class="empd-info-item"><strong>Email:</strong> {{ employee.email }}</div>
+                    <div class="empd-info-item"><strong>Phone:</strong> {{ employee.phone }}</div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ===== Detailed Information Tabs ===== -->
+        <div class="empd-tabs-container">
+
+            <!-- Tab Buttons -->
+            <div class="empd-tabs-header">
+                <button class="empd-tab-button active" data-tab="tab-personal">Personal Information</button>
+                <button class="empd-tab-button" data-tab="tab-employment">Employment Information</button>
+                <button class="empd-tab-button" data-tab="tab-system">System Links</button>
+            </div>
+
+    
+
+            <!-- TAB CONTENTS -->
+            <div class="empd-tabs-content">
+
+                <!-- PERSONAL INFO TAB -->
+                <div class="empd-tab-content active" id="tab-personal">
+                    <div class="empd-info-grid">
+                        <div class="empd-info-item"><strong>Full Name:</strong> {{ profile_data.full_name }}</div>
+                        <div class="empd-info-item"><strong>National ID:</strong> {{ profile_data.national_id }}</div>
+                        <div class="empd-info-item"><strong>Date of Birth:</strong>
+                            {% if profile_data.dob %}{{ profile_data.dob|date:"d-M-Y" }}{% else %}-{% endif %}
+                        </div>
+                        <div class="empd-info-item"><strong>Age:</strong> {{ profile_data.age }}</div>
+                        <div class="empd-info-item"><strong>Email:</strong> {{ profile_data.email }}</div>
+                        <div class="empd-info-item"><strong>Phone:</strong> {{ profile_data.phone }}</div>
+                        <div class="empd-info-item"><strong>Address:</strong> {{ profile_data.address }}</div>
+                    </div>
+                </div>
+
+                <!-- EMPLOYMENT INFO TAB -->
+                <div class="empd-tab-content" id="tab-employment">
+                    <div class="empd-info-grid">
+                        <div class="empd-info-item"><strong>Staff ID:</strong> {{ employee.staff_id }}</div>
+                        <div class="empd-info-item"><strong>Job Title:</strong> {{ employee.job_title }}</div>
+                        <div class="empd-info-item"><strong>Department:</strong> {{ employee.department }}</div>
+                        <div class="empd-info-item"><strong>Employment Type:</strong> {{ employee.employment_type }}</div>
+                        <div class="empd-info-item"><strong>Date Joined:</strong> {{ employee.date_joined|date:"d-M-Y" }}</div>
+
+                        {% if user.role == "hr" or user.is_superuser %}
+                        <div class="empd-info-item">
+                            <strong>Salary:</strong> 
+                            KES {{ employee.salary|floatformat:2 }}
+                            <span class="empd-tag">Managed by HR • Not Editable</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- SYSTEM LINKS TAB -->
+                <div class="empd-tab-content" id="tab-system">
+                    <div class="empd-info-grid">
+                        <div class="empd-info-item"><strong>Username:</strong> {{ user.username }}</div>
+                        <div class="empd-info-item"><strong>Account Created:</strong> {{ user.date_joined|date:"d-M-Y" }}</div>
+                        <div class="empd-info-item"><strong>Role:</strong> {{ employee.get_role_display }}</div>
+                        <div class="empd-info-item"><strong>Permissions:</strong>
+                            {% if user.is_superuser %}
+                                Full Access
+                            {% elif user.role == "hr" %}
+                                HR Access
+                            {% elif user.role == "finance" %}
+                                Finance Access
+                            {% else %}
+                                View Only
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+
+
+        <!-- ===== Footer Note ===== -->
+        <p class="empd-footer-note">For corrections, contact the HR department.</p>
+
+
+
+
+
+
+       
+
+      
+    </main>
+
+</div>    
+{% endblock content %}
+

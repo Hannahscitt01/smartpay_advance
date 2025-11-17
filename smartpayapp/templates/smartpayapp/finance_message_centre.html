@@ -3,66 +3,118 @@
 {% block title %}SmartPay Advance | Finance Message Centre{% endblock %}
 
 {% block content %}
-<div class="finmsg-centre">
 
-  <!-- Page Header -->
-  <div class="finmsg-centre-header">
-    <div class="finmsg-centre-title">
-      <img src="{% static 'img/icons/l3.png' %}" alt="Finance" class="finmsg-header-icon">
-      <h2>Finance Message Centre</h2>
-    </div>
-    <p class="finmsg-subtitle">View, manage, and respond to staff messages seamlessly.</p>
-  </div>
+<div class="dashboard-container">
+    <!-- Sidebar  -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>Employee</h2>
+        </div>
 
-  <!-- Message Threads -->
-  <div class="finmsg-thread-section">
-    {% if threads %}
-      <div class="finmsg-thread-list">
-        {% for thread in threads %}
-          <a href="{% url 'finance_chat_detail' thread.sender.id %}" class="finmsg-thread-card">
-            
-            <!-- Thread Header -->
-            <div class="finmsg-thread-header">
-              <div class="finmsg-thread-user">
-                <!-- Avatar with initials -->
-                <div class="finmsg-avatar">
-                  {{ thread.sender.first_name|default:thread.sender.username|slice:":1"|upper }}
-                </div>
-                <div class="finmsg-thread-user-info">
-                  <h4>{{ thread.sender.get_full_name|default:thread.sender.username }}</h4>
-                  <p class="finmsg-thread-meta">
-                    {{ thread.sender.profile.employee.department }} | ID: {{ thread.sender.profile.employee.staff_id }}
-                  </p>
-                </div>
-              </div>
+        <nav class="sidebar-nav">
+            <ul>
+                <!-- Dashboard -->
+                <li><a href="{% url 'employee_dashboard' %}"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li><br><br>
+             
+             
 
-              <span class="finmsg-thread-timestamp">
-                {{ thread.timestamp|date:"M d, H:i" }}
-              </span>
+                <!-- HR Department Section -->
+             
+                <li>
+                    <a href="{% url 'employee_dashboard' %}"><i class="fas fa-users-cog"></i> HR Department</a>
+                </li>
+                <li><a href="#"><i class="fas fa-user"></i> My Profile</a></li>
+                <li><a href="#"><i class="fas fa-calendar-check"></i> Attendance</a></li>
+                <li><a href="#"><i class="fas fa-plane-departure"></i> Leave Requests</a></li>
+                <li><a href="#"><i class="fas fa-clipboard-list"></i> Appraisals</a></li>
+                <li><a href="#"><i class="fas fa-comments"></i> Chat with HR</a></li>
+                <br><br>
+             
+                <!-- Finance Department Section -->
+                
+                <li>
+                    <a href="{% url 'home' %}"><i class="fas fa-coins"></i> Finance Department</a>
+                </li>
+                <li><a href="{% url 'employee_payslip' %}"><i class="fas fa-wallet"></i> Payslips</a></li>
+                <li><a href="#"><i class="fas fa-briefcase"></i> My Benefits</a></li>
+                <li><a href="{% url 'request_form' %}"><i class="fas fa-money-check-alt"></i> Salary Advance</a></li>
+                <li><a href="{% url 'internal_loan' %}"><i class="fas fa-file-invoice-dollar"></i> Loan Requests</a></li>
+            </ul>
+
+            <!-- Bottom Links -->
+            <div class="sidebar-bottom">
+                <ul>
+                    <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
+                    <li><a href="#" class="logout-link"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                </ul>
             </div>
+        </nav>
+    </aside>
 
-            <!-- Thread Content -->
-            <p class="finmsg-thread-snippet">{{ thread.latest_message|truncatechars:80 }}</p>
+    <main class="main-content">
 
-            <!-- Status -->
-            <div class="finmsg-thread-footer">
-              {% if not thread.is_read %}
-                <span class="finmsg-thread-status new">New</span>
-              {% else %}
-                <span class="finmsg-thread-status replied">Replied</span>
-              {% endif %}
+      <div class="finmsg-centre">
+
+        <!-- Page Header -->
+        <div class="finmsg-centre-header">
+          <div class="finmsg-centre-title">
+            <img src="{% static 'img/icons/l3.png' %}" alt="Finance" class="finmsg-header-icon">
+            <h2>Finance Message Centre</h2>
+          </div>
+          <p class="finmsg-subtitle">View, manage, and respond to staff messages seamlessly.</p>
+        </div>
+
+        <!-- Message Threads -->
+        <div class="finmsg-thread-section">
+          {% if threads %}
+            <div class="finmsg-thread-list">
+              {% for thread in threads %}
+                <a href="{% url 'finance_chat_detail' thread.sender.id %}" class="finmsg-thread-card">
+                  
+                  <!-- Thread Header -->
+                  <div class="finmsg-thread-header">
+                    <div class="finmsg-thread-user">
+                      <!-- Avatar with initials -->
+                      <div class="finmsg-avatar">
+                        {{ thread.sender.first_name|default:thread.sender.username|slice:":1"|upper }}
+                      </div>
+                      <div class="finmsg-thread-user-info">
+                        <h4>{{ thread.sender.get_full_name|default:thread.sender.username }}</h4>
+                        <p class="finmsg-thread-meta">
+                          {{ thread.sender.profile.employee.department }} | ID: {{ thread.sender.profile.employee.staff_id }}
+                        </p>
+                      </div>
+                    </div>
+
+                    <span class="finmsg-thread-timestamp">
+                      {{ thread.timestamp|date:"M d, H:i" }}
+                    </span>
+                  </div>
+
+                  <!-- Thread Content -->
+                  <p class="finmsg-thread-snippet">{{ thread.latest_message|truncatechars:80 }}</p>
+
+                  <!-- Status -->
+                  <div class="finmsg-thread-footer">
+                    {% if not thread.is_read %}
+                      <span class="finmsg-thread-status new">New</span>
+                    {% else %}
+                      <span class="finmsg-thread-status replied">Replied</span>
+                    {% endif %}
+                  </div>
+                </a>
+              {% endfor %}
             </div>
-          </a>
-        {% endfor %}
+          {% else %}
+            <!-- Empty State -->
+            <div class="finmsg-empty">
+              <img src="{% static 'img/empty_state/mailbox.png' %}" alt="No Messages" class="finmsg-empty-img">
+              <h3>No messages yet</h3>
+              <p>Staff messages will appear here once received. Stay tuned.</p>
+            </div>
+          {% endif %}
+        </div>
       </div>
-    {% else %}
-      <!-- Empty State -->
-      <div class="finmsg-empty">
-        <img src="{% static 'img/empty_state/mailbox.png' %}" alt="No Messages" class="finmsg-empty-img">
-        <h3>No messages yet</h3>
-        <p>Staff messages will appear here once received. Stay tuned.</p>
-      </div>
-    {% endif %}
-  </div>
-</div>
+
+    </main>  
 {% endblock %}
