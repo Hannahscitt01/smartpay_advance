@@ -1,0 +1,30 @@
+{% extends "base2.html" %}
+{% load static %}
+{% block title %}SmartPay | Finance & HR Management Platform{% endblock %}
+{% block content %}
+
+<section class="contact-section">
+  <div class="contact-inner">
+    <h2>Get in Touch</h2>
+    <p>Have questions or want a custom solution? Fill out the form below and we’ll get back to you promptly.</p>
+
+    <form class="contact-form" action="#" method="POST">
+      {% csrf_token %}
+      <div class="form-group">
+        <input type="text" name="name" placeholder="Your Name" required>
+      </div>
+      <div class="form-group">
+        <input type="email" name="email" placeholder="Your Email" required>
+      </div>
+      <div class="form-group">
+        <input type="text" name="subject" placeholder="Subject" required>
+      </div>
+      <div class="form-group">
+        <textarea name="message" rows="5" placeholder="Your Message" required></textarea>
+      </div>
+      <button type="submit" class="btn-primary">Send Message</button>
+    </form>
+  </div>
+</section>
+
+{% endblock %}

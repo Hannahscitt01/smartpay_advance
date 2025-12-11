@@ -364,4 +364,12 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
+document.getElementById('uploadDocBtn').addEventListener('click', function() {
+    const form = document.getElementById('uploadDocForm');
+    form.style.display = form.style.display === 'none' ? 'block' : 'none';
+});
 
+document.getElementById('uploadPlanBtn').addEventListener('click', function() {
+    const form = document.getElementById('uploadPlanForm');
+    form.style.display = form.style.display === 'none' ? 'block' : 'none';
+});

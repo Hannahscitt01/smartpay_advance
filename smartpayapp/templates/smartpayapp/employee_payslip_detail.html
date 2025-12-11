@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Smart Pay | Payroll{% endblock %}
+{% block content %}
+
+<div class="dashboard-container">
+
+  <!-- Sidebar (same as HR page for consistency) -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <h2>HR</h2>
+    </div>
+    <nav class="sidebar-nav">
+      <ul>
+        <li><a href="{% url 'hr_home' %}">Dashboard</a></li>
+        <li><a href="{% url 'employee_list' %}">Employees</a></li>
+        <li><a href="{% url 'hr_departments' %}">Departments</a></li>
+        <li><a class="active" href="{% url 'payroll_payslips' %}">Payroll</a></li>
+        <li><a href="{% url 'hr_track_performance' %}">Performance</a></li>
+        <li><a href="{% url 'hr_loan_requests' %}">Requests</a></li>
+        <li><a href="{% url 'hr_message_centre' %}">Messages</a></li>
+        <li><a href="{% url 'hr_reports' %}">Reports</a></li>
+        <li><a href="{% url 'hr_settings' %}">Settings</a></li>
+      </ul>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+
+        <!-- Header / Employee Detailed Payslip -->
+        <header class="dashboard-header payroll-header">
+            <div class="header-left">
+                <h1>Employee Payslip</h1>
+                <p class="subtitle">Detailed payslip view for <strong>{{ employee.full_name }}</strong></p>
+
+                <!-- Inline KPIs (Badges) -->
+                <div class="header-stats">
+                    <span class="stat-badge contracts">Employee ID: {{ employee.employee_id }}</span>
+                    <span class="stat-badge approvals">Department: {{ employee.department.name }}</span>
+                    <span class="stat-badge leaves">Month: {{ payslip.month|date:"F Y" }}</span>
+                </div>
+            </div>
+
+            <div class="header-right">
+                <!-- Action Buttons -->
+                <div class="header-actions">
+                    <button class="btn-primary"><i class="fas fa-download"></i> Download PDF</button>
+                    <button class="btn-export"><i class="fas fa-print"></i> Print Payslip</button>
+                </div>
+
+                <!-- Icons + Profile -->
+                <div class="header-icons">
+                    <div class="icon" title="Messages">
+                        <i class="fas fa-envelope"></i>
+                        <span class="icon-badge">2</span>
+                    </div>
+                    <div class="icon" title="Notifications">
+                        <i class="fas fa-bell"></i>
+                        <span class="icon-badge">4</span>
+                    </div>
+                </div>
+                <div class="profile-avatar" title="Profile">
+                    <i class="fas fa-user"></i>
+                </div>
+            </div>
+        </header>
+
+        <!-- ====== 4) Employee Payslip Cards ====== -->
+        <section class="section payslip-cards-section">
+            <h2><i class="fas fa-receipt icon-blue"></i> Employee Payslips</h2>
+            
+            <div class="payroll-filters">
+                <!-- Month Selector -->
+                <select name="month">
+                    <option value="all">All Months</option>
+                    <option value="dec-2025">December 2025</option>
+                    <option value="jan-2026">January 2026</option>
+                </select>
+
+                <!-- Approval Status -->
+                <select name="status">
+                    <option value="all">All Status</option>
+                    <option value="draft">Draft</option>
+                    <option value="pending">Pending Approval</option>
+                    <option value="approved">Approved</option>
+                    <option value="rejected">Rejected</option>
+                </select>
+
+                <!-- Filter Button -->
+                <button class="btn-primary"><i class="fas fa-filter"></i> Filter</button>
+            </div>
+            <br><br>
+
+            <div class="current-month-banner">
+                <strong>Current Month Payslip — December 2025</strong>
+            </div><br>
+
+            <div class="payslip-cards-grid">
+                
+                <!-- ===== Payslip Card ===== -->
+                <div class="payslip-card">
+                
+                <!-- Header -->
+                <div class="payslip-header">
+                    <h3>John Doe <span class="status-badge approved">Approved</span></h3>
+                    <p>Employee ID: EMP12345</p>
+                    <p>Department: Finance</p>
+                    <p><strong>Month:</strong> December 2025</p>
+                </div>
+                
+                <!-- Salary Breakdown -->
+                <div class="salary-breakdown">
+                    <h4>Salary Breakdown</h4>
+                    <div class="breakdown-row"><span>Base Gross Salary:</span><span>KSh 120,000</span></div>
+                    <div class="breakdown-row"><span>House Allowance (13%):</span><span>KSh 15,600</span></div>
+
+                    <!-- NEW: Overtime Section -->
+                    <h4>Overtime</h4>
+                    <div class="breakdown-row">
+                        <span>Overtime Hours:</span>
+                        <span>12 hrs</span>
+                    </div>
+                    <div class="breakdown-row">
+                        <span>Overtime Rate (250 KSh/hr):</span>
+                        <span>KSh 250</span>
+                    </div>
+                    <div class="breakdown-row total">
+                        <span>Total Overtime Pay:</span>
+                        <span>KSh 3,000</span> <!-- 250 x 12 -->
+                    </div>
+
+                    <div class="breakdown-row total"><span>Total Gross:</span><span>KSh 138,600</span></div>
+                    <!-- (120,000 + 15,600 + 3,000) -->
+
+                    <h4>Deductions</h4>
+                    <div class="breakdown-row"><span>PAYE (30%):</span><span>KSh 41,580</span></div>
+                    <div class="breakdown-row"><span>NHIF (2.75%):</span><span>KSh 3,807</span></div>
+                    <div class="breakdown-row"><span>NSSF (6%):</span><span>KSh 8,316</span></div>
+                    <div class="breakdown-row"><span>HSE Levy:</span><span>KSh 300</span></div>
+                    <div class="breakdown-row"><span>Loan / Salary Advance:</span><span>KSh 10,000</span></div>
+
+                    <div class="breakdown-row total"><span>Total Deductions:</span><span>KSh 63,?03</span></div>
+
+                    <div class="breakdown-row net-pay"><span>Net Payable:</span><span>KSh 75,597</span></div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="payslip-actions">
+                    <button class="btn-view-payslip">View PDF</button>
+                    <button class="btn-breakdown">View Breakdown</button>
+                </div>
+
+                <!-- Notes -->
+                <div class="payslip-notes">
+                    <p><strong>Notes:</strong> Loan repayment: KSh 10,000/month | Bonus: KSh 5,000</p>
+                    <p><strong>HR Comments:</strong> Adjusted for 12 overtime hrs</p>
+                </div>
+
+                </div>
+                <!-- ===== End Card ===== -->
+
+            </div>
+        </section>
+
+
+  </main>
+</div>
+
+{% endblock %}

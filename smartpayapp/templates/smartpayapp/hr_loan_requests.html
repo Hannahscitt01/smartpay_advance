@@ -42,21 +42,22 @@
     <section class="metrics-section">
       <div class="metric-card">
         <h4>Pending Requests</h4>
-        <p>12</p>
+        <p>{{ pending_requests }}</p>
       </div>
       <div class="metric-card">
         <h4>On Hold</h4>
-        <p>3</p>
+        <p>{{ on_hold }}</p>
       </div>
       <div class="metric-card">
         <h4>Approved (Finance)</h4>
-        <p>7</p>
+        <p>{{ approved_finance }}</p>
       </div>
       <div class="metric-card">
         <h4>Rejected (Finance)</h4>
-        <p>5</p>
+        <p>{{ rejected_finance }}</p>
       </div>
     </section>
+
 
     <!-- Loan Requests Table -->
     <section class="loan-requests">
@@ -74,43 +75,37 @@
             </tr>
             </thead>
             <tbody>
-            <tr>
-                <td>Jane Doe</td>
-                <td>HR</td>
-                <td>Emergency</td>
-                <td>$2,500</td>
-                <td>Sep 28, 2025</td>
-                <td><span class="status pending">Pending</span></td>
-                <td>
-                <button class="btn-hold">Hold</button>
-                <button class="btn-warning">Warning</button>
-                </td>
-            </tr>
-            <tr>
-                <td>John Smith</td>
-                <td>IT</td>
-                <td>Education</td>
-                <td>$5,000</td>
-                <td>Sep 25, 2025</td>
-                <td><span class="status approved">Approved</span></td>
-                <td>
-                <button class="btn-hold">Hold</button>
-                <button class="btn-warning">Warning</button>
-                </td>
-            </tr>
-            <tr>
-                <td>Alice Brown</td>
-                <td>Finance</td>
-                <td>Personal</td>
-                <td>$3,200</td>
-                <td>Sep 20, 2025</td>
-                <td><span class="status declined">Declined</span></td>
-                <td>
-                <button class="btn-hold">Hold</button>
-                <button class="btn-warning">Warning</button>
-                </td>
-            </tr>
+                {% for loan in loan_requests %}
+                <tr>
+                    <td>{{ loan.employee.full_name }}</td>
+                    <td>{{ loan.employee.department.name }}</td>
+                    <td>{{ loan.loan_type }}</td>
+                    <td>${{ loan.amount|floatformat:2 }}</td>
+                    <td>{{ loan.date_requested|date:"M d, Y" }}</td>
+                    <td>
+                        <span class="status 
+                            {% if loan.status == 'Pending' %}pending
+                            {% elif loan.status == 'Approved' or loan.status == 'Approved (Finance)' %}approved
+                            {% elif loan.status == 'Rejected' or loan.status == 'Declined' %}declined
+                            {% elif loan.status == 'On Hold' %}on-hold
+                            {% endif %}">
+                            {{ loan.status }}
+                        </span>
+                    </td>
+
+                    <!-- HR Action Buttons -->
+                    <td>
+                        <button class="btn-hold">Hold</button>
+                        <button class="btn-warning">Warning</button>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" style="text-align: center;">No loan requests found</td>
+                </tr>
+                {% endfor %}
             </tbody>
+
         </table>
     </section>
 

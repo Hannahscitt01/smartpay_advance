@@ -120,13 +120,22 @@
 
             <div class="action-grid">
 
-                <!-- Leave Balance -->
+                <!-- Leave Balance Card -->
                 <a href="{% url 'employee_leave_management' %}" class="action-card">
                     <div class="action-icon"><i class="fas fa-plane-departure"></i></div>
                     <h3>Leave Balance</h3>
-                    <p>Annual: 14 • Sick: 5 • Comp: 2</p>
-                    <small>Request new leave</small>
+                    <p>
+                        Annual: {{ annual_remaining }} • 
+                        Off: {{ off_remaining }} • 
+                        Sick: {{ sick_taken }}
+                    </p>
+                    {% if pending_leave_requests_count %}
+                        <small>You have {{ pending_leave_requests_count }} pending leave request(s)</small>
+                    {% else %}
+                        <small>Request new leave</small>
+                    {% endif %}
                 </a>
+
 
                 <!-- Leave Application Center -->
                 <a href="{% url 'employee_leave_application' %}" class="action-card">

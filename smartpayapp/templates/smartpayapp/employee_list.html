@@ -60,6 +60,11 @@
                         <p><strong>Date Joined:</strong> {{ employee.date_joined|date:"Y-m-d" }}</p>
                         <p><strong>Salary:</strong> KSh {{ employee.salary|floatformat:2 }}</p>
                         <p><strong>Age:</strong> {{ employee.age }}</p>
+
+                        <!-- View Profile Button -->
+                        <a href="{% url 'hr_employee_detail' employee.id %}" class="empd-view-btn">
+                            View Profile
+                        </a>
                     </div>
                 </div>
                 {% empty %}
@@ -87,6 +92,7 @@
                             <th>Date Joined</th>
                             <th>Salary (KSh)</th>
                             <th>Age</th>
+                            <th>Action</th> <!-- New column for button -->
                         </tr>
                     </thead>
                     <tbody>
@@ -100,10 +106,15 @@
                             <td>{{ employee.date_joined|date:"Y-m-d" }}</td>
                             <td>KSh {{ employee.salary|floatformat:2 }}</td>
                             <td>{{ employee.age }}</td>
+                            <td>
+                             <a href="{% url 'hr_employee_detail' employee.id %}" class="empd-view-btn">
+                                    View Profile
+                                </a>
+                            </td>
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="8" style="text-align:center;">No staff found in this department.</td>
+                            <td colspan="9" style="text-align:center;">No staff found in this department.</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -112,6 +123,7 @@
         </div>
         {% endfor %}
     </div>
+
   </main>
 </div>
 

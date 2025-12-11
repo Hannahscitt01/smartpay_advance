@@ -30,28 +30,25 @@
   <!-- Main Content -->
   <main class="main-content">
 
-    <!-- Header / Departments Control Panel -->
+    <!-- Header -->
     <header class="dashboard-header departments-header">
         <div class="header-left">
             <h1>Departments Management</h1>
             <p class="subtitle">Manage departments, staff, and operations</p>
 
-            <!-- Inline KPIs (Badges) -->
             <div class="header-stats">
-                <span class="stat-badge contracts">3 Expiring Contracts</span>
-                <span class="stat-badge approvals">2 Pending Approvals</span>
-                <span class="stat-badge leaves">5 New Leave Requests</span>
+                <span class="stat-badge contracts">{{ expiring_contracts_count }} Expiring Contracts</span>
+                <span class="stat-badge approvals">{{ pending_approvals_count }} Pending Approvals</span>
+                <span class="stat-badge leaves">{{ new_leave_count }} New Leave Requests</span>
             </div>
+
         </div>
 
         <div class="header-right">
-            <!-- Action Buttons -->
             <div class="header-actions">
-                <button class="btn-primary">+ Add Department</button>
+                <button class="btn-primary" id="add-department-btn">+ Add Department</button>
                 <button class="btn-export">Export Report</button>
             </div>
-
-            <!-- Icons + Profile -->
             <div class="header-icons">
                 <div class="icon" title="Messages">
                     <i class="fas fa-envelope"></i>
@@ -68,43 +65,63 @@
         </div>
     </header>
 
+    <!-- Add Department Modal -->
+    <div id="add-department-modal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3>Add New Department</h3>
+            <form id="department-form" method="POST">
+                {% csrf_token %}
+                {{ form.name }}
+                <button type="submit" class="btn-primary">Add Department</button>
+            </form>
+            <div id="form-errors" style="color:red;"></div>
+        </div>
+    </div>
+
+
     <!-- ====== 1) Departments Overview (stat cards) ====== -->
     <section class="stats-overview">
+
+
+      <!-- Total Departments -->
       <div class="stat-card">
         <a href="#">
           <div style="display:flex; align-items:center; gap:12px;">
             <div class="stat-icon"><i class="fas fa-sitemap"></i></div>
             <div>
               <h3>Total Departments</h3>
-              <p>12</p>
+              <p>{{ total_departments }}</p>
             </div>
           </div>
         </a>
       </div>
 
+      <!-- Total Staff -->
       <div class="stat-card">
         <a href="#">
           <div style="display:flex; align-items:center; gap:12px;">
             <div class="stat-icon"><i class="fas fa-users"></i></div>
             <div>
               <h3>Total Staff</h3>
-              <p>324</p>
+              <p>{{ total_staff }}</p>
             </div>
           </div>
         </a>
       </div>
 
       <div class="stat-card">
-        <a href="#">
-          <div style="display:flex; align-items:center; gap:12px;">
-            <div class="stat-icon"><i class="fas fa-briefcase"></i></div>
-            <div>
-              <h3>Open Positions</h3>
-              <p>18</p>
-            </div>
-          </div>
-        </a>
+          <a href="#">
+              <div style="display:flex; align-items:center; gap:12px;">
+                  <div class="stat-icon"><i class="fas fa-briefcase"></i></div>
+                  <div>
+                      <h3>Open Positions</h3>
+                      <p>{{ open_positions_count|default:"0" }}</p>
+                  </div>
+              </div>
+          </a>
       </div>
+
 
       <div class="stat-card">
         <a href="#">
@@ -143,7 +160,7 @@
 
         <div style="display:flex; gap:12px; align-items:center;">
           <button id="addDeptBtn" class="btn-primary"> <i class="fas fa-plus"></i> Add New Department</button>
-          <button id="deptToggleBtn" class="btn-secondary"> <i class="fas fa-th-large"></i> Switch to Table View</button>
+          <button id="deptToggleBtn" class="btn-secondary1"> <i class="fas fa-th-large"></i> Switch to Table View</button>
           <button id="toggleAnalyticsBtn" class="btn-analytics"><i class="fas fa-chart-bar"></i> Toggle Analytics</button>
         </div>
       </div>
@@ -154,32 +171,35 @@
     <!-- ====== 2) Department List (Card view default) ====== -->
     <section class="section">
       <div id="cardView" class="department-cards">
-        <!-- Example dept card -->
-        <article class="dept-card" data-dept="Finance">
-          <h3>Finance</h3>
-          <p><strong>Head:</strong> Jane Mwangi</p>
-          <p><strong>Staff:</strong> 32</p>
-          <p><strong>Projects:</strong> Budget 2025, Payroll Automation</p>
+        {% for dept in departments %}
+        <article class="dept-card" data-dept="{{ dept.name }}">
+          <h3>{{ dept.name }}</h3>
+          <p><strong>Head:</strong>
+            {% if dept.head %}
+              {{ dept.head.full_name }}
+            {% else %}
+              N/A
+            {% endif %}
+          </p>
+          <p><strong>Staff:</strong> {{ dept.employee_set.count }}</p>
+          <p><strong>Projects:</strong>
+            {% with dept.projects.all as dept_projects %}
+              {% if dept_projects %}
+                {% for project in dept_projects %}
+                  {{ project.name }}{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+              {% else %}
+                None
+              {% endif %}
+            {% endwith %}
+          </p>
           <div class="card-actions">
             <button class="btn-small btn-view">View</button>
             <button class="btn-small btn-edit">Edit</button>
             <button class="btn-small btn-delete">Delete</button>
           </div>
         </article>
-
-        <article class="dept-card" data-dept="Human Resources">
-          <h3>Human Resources</h3>
-          <p><strong>Head:</strong> Peter Otieno</p>
-          <p><strong>Staff:</strong> 15</p>
-          <p><strong>Projects:</strong> Recruitment Drive, Onboarding</p>
-          <div class="card-actions">
-            <button class="btn-small btn-view">View</button>
-            <button class="btn-small btn-edit">Edit</button>
-            <button class="btn-small btn-delete">Delete</button>
-          </div>
-        </article>
-
-        <!-- Add more department cards as needed -->
+        {% endfor %}
       </div>
 
       <!-- Table view (hidden initially) -->
@@ -195,33 +215,40 @@
             </tr>
           </thead>
           <tbody>
-            <tr data-dept="Finance">
-              <td>Finance</td>
-              <td>Jane Mwangi</td>
-              <td>32</td>
-              <td>Budget 2025, Payroll Automation</td>
+            {% for dept in departments %}
+            <tr data-dept="{{ dept.name }}">
+              <td>{{ dept.name }}</td>
+              <td>
+                {% if dept.head %}
+                  {{ dept.head.full_name }}
+                {% else %}
+                  N/A
+                {% endif %}
+              </td>
+              <td>{{ dept.employee_set.count }}</td>
+              <td>
+                {% with dept.projects.all as dept_projects %}
+                  {% if dept_projects %}
+                    {% for project in dept_projects %}
+                      {{ project.name }}{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                  {% else %}
+                    None
+                  {% endif %}
+                {% endwith %}
+              </td>
               <td class="table-actions">
                 <button class="btn-small btn-view">View</button>
                 <button class="btn-small btn-edit">Edit</button>
                 <button class="btn-small btn-delete">Delete</button>
               </td>
             </tr>
-
-            <tr data-dept="Human Resources">
-              <td>Human Resources</td>
-              <td>Peter Otieno</td>
-              <td>15</td>
-              <td>Recruitment Drive</td>
-              <td class="table-actions">
-                <button class="btn-small btn-view">View</button>
-                <button class="btn-small btn-edit">Edit</button>
-                <button class="btn-small btn-delete">Delete</button>
-              </td>
-            </tr>
+            {% endfor %}
           </tbody>
         </table>
       </div>
     </section>
+
 
     <!-- ====== 3) Department Operations (expandable when clicking View) ====== -->
     <section id="deptOperations" class="dept-operations">
@@ -300,30 +327,56 @@
     <section class="dept-policies">
         <h3><i class="fas fa-file-alt"></i> Department Policies & Documents</h3>
         <ul>
+            {% for doc in dept_docs %}
             <li>
-            IT Security Policy <button class="policy-action">Download</button>
+                {{ doc.title }} 
+                <a href="{{ doc.file.url }}" class="policy-action" download>Download</a>
             </li>
-            <li>
-            HR Leave Policy <button class="policy-action">Download</button>
-            </li>
+            {% empty %}
+            <li>No documents uploaded yet</li>
+            {% endfor %}
         </ul>
-        <button class="btn-primary"><i class="fas fa-upload"></i> Upload New Document</button>
+        <button id="uploadDocBtn" class="btn-primary"><i class="fas fa-upload"></i> Upload New Document</button>
+
+        <!-- Department Documents Upload -->
+        <div id="uploadDocForm" style="display:none; margin-top:10px;">
+          <div class="upload-form-container">
+            <form method="post" enctype="multipart/form-data">
+              {% csrf_token %}
+              {{ doc_form.as_p }}
+              <button type="submit" name="doc-submit" class="btn-primary"><i class="fas fa-upload"></i> Upload</button>
+            </form>
+          </div>
+        </div>
+
     </section>
 
     <!-- ====== Succession & Training Plans ====== -->
     <section class="succession-plans">
         <h3><i class="fas fa-chalkboard-teacher"></i> Succession & Training Plans</h3>
         <ul>
+            {% for plan in succession_plans %}
             <li>
-            Finance Leadership Training <button class="training-action">View Plan</button>
+                {{ plan.title }} 
+                <a href="{{ plan.file.url }}" class="training-action" target="_blank">View Plan</a>
             </li>
-            <li>
-            Junior Dev → Senior Dev Roadmap <button class="training-action">View Plan</button>
-            </li>
+            {% empty %}
+            <li>No plans uploaded yet</li>
+            {% endfor %}
         </ul>
-        <button class="btn-primary"><i class="fas fa-upload"></i> Upload New Document</button>
-    </section>
+        <button id="uploadPlanBtn" class="btn-primary"><i class="fas fa-upload"></i> Upload New Document</button>
 
+        <!-- Succession Plans Upload -->
+        <div id="uploadPlanForm" style="display:none; margin-top:10px;">
+          <div class="upload-form-container">
+            <form method="post" enctype="multipart/form-data">
+              {% csrf_token %}
+              {{ plan_form.as_p }}
+              <button type="submit" name="plan-submit" class="btn-primary"><i class="fas fa-upload"></i> Upload</button>
+            </form>
+          </div>
+        </div>
+    </section>
 
     <!-- ====== 9) HR Actions History (Audit Trail) ====== -->
     <section id="deptAudit" class="dept-audit section">

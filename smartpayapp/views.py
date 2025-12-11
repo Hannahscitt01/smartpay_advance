@@ -4,8 +4,8 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 
-from .forms import SignUpForm, SalaryAdvanceForm, EmployeeForm, ProfileUpdateForm, LoanRequestForm, LeaveRequestForm
-from .models import Profile, SalaryAdvanceRequest, Employee, LoanRequest, ChatMessage, SupportChatMessage, Attendance, LeaveRequest, EmployeeLeaveBalance
+from .forms import SignUpForm, SalaryAdvanceForm, EmployeeForm, ProfileUpdateForm, LoanRequestForm, LeaveRequestForm, DepartmentDocumentForm, SuccessionPlanForm
+from .models import Profile, SalaryAdvanceRequest, Employee, LoanRequest, ChatMessage, EmployeeContract, SupportChatMessage, Attendance, LeaveRequest, EmployeeLeaveBalance, Department, OpenPosition, DepartmentDocument, SuccessionPlan, Role,  EmployeePayslip
 from .decorators import admin_required
 from decimal import Decimal
 from django.db.models import Sum, Q, Max, Count, Case, When, Value, IntegerField
@@ -20,6 +20,7 @@ from django.views.decorators.http import require_POST
 
 from django.core.paginator import Paginator
 import json
+
 
 # ================================================================
 # 1. Landing & Static Pages
@@ -99,7 +100,7 @@ def redirect_after_login(request):
         # If no employee is linked, send them to a safe fallback
         return redirect("home")
 
-    role = employee.role.lower()  # assuming Employee has a 'role' field
+    role = employee.role.name.lower() if employee.role else "employee" # assuming Employee has a 'role' field
 
     if role == "admin":
         return redirect("admin")
@@ -122,6 +123,8 @@ def employee_payslip(request):
     return render(request, 'smartpayapp/employee_payslip.html')
 
 
+
+
 @login_required
 def employee_profile(request):
     """Display employee profile"""
@@ -131,12 +134,12 @@ def employee_profile(request):
     except AttributeError:
         employee = None
 
-    # Current date & time for the header
     current_date = timezone.localdate()
     current_time = timezone.localtime().strftime("%I:%M %p")
 
-    # Prepare dynamic profile info (optional safety if employee is None)
     profile_data = {}
+    contract_data = {}
+
     if employee:
         profile_data = {
             "full_name": employee.full_name,
@@ -155,9 +158,29 @@ def employee_profile(request):
             "salary": employee.salary,
         }
 
+        # Fetch contract
+        try:
+            contract = employee.contract  # OneToOneField
+            remaining_days = None
+            if contract.contract_expiry_date:
+                remaining_days = (contract.contract_expiry_date - date.today()).days
+
+            contract_data = {
+                "contract_file": contract.contract_file,
+                "contract_expiry_date": contract.contract_expiry_date,
+                "remaining_days": remaining_days,
+            }
+        except EmployeeContract.DoesNotExist:
+            contract_data = {
+                "contract_file": None,
+                "contract_expiry_date": None,
+                "remaining_days": None,
+            }
+
     context = {
         "employee": employee,
-        "profile_data": profile_data,  # dynamic data for template
+        "profile_data": profile_data,
+        "contract": contract_data,
         "user": request.user,
         "current_date": current_date,
         "current_time": current_time,
@@ -355,6 +378,29 @@ def employee_dashboard(request):
     ).count()
 
 
+    # ------------------ Leave Balance ------------------
+    leave_balance = getattr(employee, 'leave_balance', None)
+
+    if leave_balance:
+        # Remaining annual leave
+        annual_remaining = leave_balance.regular_leave
+
+        # Remaining off days
+        off_remaining = leave_balance.off_days
+
+        # Sick leave taken (or optionally calculate from approved sick leave requests)
+        sick_taken = leave_balance.sick_leave_taken
+
+        # Optional: count of pending leave requests
+        pending_leave_requests_count = LeaveRequest.objects.filter(
+            employee=employee,
+            status="Pending"
+        ).count()
+    else:
+        annual_remaining = off_remaining = sick_taken = 0
+        pending_leave_requests_count = 0
+
+
     return render(request, "smartpayapp/employee_dashboard.html", {
         "employee": employee,
         "weekly_data": weekly_data,
@@ -371,8 +417,12 @@ def employee_dashboard(request):
         "progress_offset": stroke_dashoffset,
         "pending_advances_count": pending_advances_count,
         "pending_loans_count": pending_loans_count,
+        "annual_remaining": annual_remaining,
+        "off_remaining": off_remaining,
+        "sick_taken": sick_taken,
+        "pending_leave_requests_count": pending_leave_requests_count,
 
-    })
+        })
 
 
 @login_required
@@ -639,13 +689,23 @@ def employee_creation_success(request):
     return render(request, 'smartpayapp/employee_creation_success.html')
 
 
+@login_required
 def employee_list(request):
-    """Display list of employees grouped by department."""
-    departments = [dept[0] for dept in Employee.DEPARTMENTS]
-    grouped_employees = {dept: Employee.objects.filter(department=dept).order_by("full_name") for dept in departments}
+    """Display list of employees grouped by department (dynamic departments)."""
+    # Fetch all department objects
+    departments = Department.objects.all().order_by("name")
+
+    # Group employees by department
+    grouped_employees = {
+        dept.name: Employee.objects.filter(department=dept).order_by("full_name")
+        for dept in departments
+    }
 
     context = {"grouped_employees": grouped_employees}
     return render(request, "smartpayapp/employee_list.html", context)
+
+
+
 
 
 @login_required
@@ -952,12 +1012,16 @@ def hr_home(request):
     today = now.date()
 
     total_employees = Employee.objects.count()
-    total_departments = Employee.objects.values("department").distinct().count()
+    total_departments = Department.objects.count()
 
     employees_checked_in_today = Attendance.objects.filter(
         date=today,
         clock_in__isnull=False
     ).count()
+
+    attendance_data = Attendance.objects.select_related("employee__department").filter(
+        date=today
+    ).order_by("employee__full_name")
 
     recent_employees = Employee.objects.filter(
         date_joined__year=current_year,
@@ -993,30 +1057,181 @@ def hr_home(request):
         "pending_loans_count": pending_loans_count,
         "approved_loans_count": approved_loans_count,
         "leave_requests": leave_requests,  
+        "attendance_data": attendance_data
     }
 
     return render(request, "smartpayapp/hr_dashboard.html", context)
 
 
+
+
+from datetime import timedelta, date
+
 @login_required
 def hr_departments(request):
-    """HR Departments page: display all departments and their details."""
-    return render(request, 'smartpayapp/hr_departments.html')
+    """
+    HR Departments page: display all departments, counts, documents, and succession plans.
+    """
+
+    # -----------------------------
+    # All departments (alphabetical) with prefetch for related data
+    # -----------------------------
+    departments = Department.objects.prefetch_related(
+        'projects', 'employee_set', 'documents', 'succession_plans'
+    ).all().order_by("name")
+
+    # -----------------------------
+    # Counts
+    # -----------------------------
+    total_departments = departments.count()                     
+    total_staff = Employee.objects.count()                     
+    staff_with_dept = Employee.objects.filter(department__isnull=False).count()
+    open_positions_count = OpenPosition.objects.exclude(status="Closed").count()
+    
+    # -----------------------------
+    # Expiring Contracts (≤ 1 month)
+    # -----------------------------
+    today = date.today()
+    one_month_later = today + timedelta(days=30)
+    expiring_contracts_count = EmployeeContract.objects.filter(
+        contract_expiry_date__isnull=False,
+        contract_expiry_date__lte=one_month_later
+    ).count()
+
+    # -----------------------------
+    # Pending Approvals (excluding salary advances)
+    # -----------------------------
+    pending_leave_count = LeaveRequest.objects.filter(status="Pending").count()
+    pending_loans_count = LoanRequest.objects.filter(status="Pending").count()
+    # total pending approvals
+    pending_approvals_count = pending_leave_count + pending_loans_count
+
+    # -----------------------------
+    # New Leave Requests (past working days, skip Sundays)
+    # -----------------------------
+    # Compute last 5 working days (skip Sundays)
+    days_to_check = 5
+    new_leave_count = 0
+    check_date = today
+    checked_days = 0
+
+    while checked_days < days_to_check:
+        if check_date.weekday() != 6:  # skip Sunday
+            new_leave_count += LeaveRequest.objects.filter(
+                created_at__date=check_date
+            ).count()
+            checked_days += 1
+        check_date -= timedelta(days=1)
+
+    # -----------------------------
+    # Handle department document upload
+    # -----------------------------
+    doc_form = DepartmentDocumentForm(prefix='doc')
+    if request.method == "POST" and 'doc-submit' in request.POST:
+        doc_form = DepartmentDocumentForm(request.POST, request.FILES, prefix='doc')
+        if doc_form.is_valid():
+            doc_form.save()
+            return redirect('hr_departments')
+
+    # Handle succession plan upload
+    plan_form = SuccessionPlanForm(prefix='plan')
+    if request.method == "POST" and 'plan-submit' in request.POST:
+        plan_form = SuccessionPlanForm(request.POST, request.FILES, prefix='plan')
+        if plan_form.is_valid():
+            plan_form.save()
+            return redirect('hr_departments')
+
+    # Fetch uploaded documents
+    dept_docs = DepartmentDocument.objects.all()
+    succession_plans = SuccessionPlan.objects.all()
+
+    # -----------------------------
+    # Context for template
+    # -----------------------------
+    context = {
+        "departments": departments,
+        "total_departments": total_departments,
+        "total_staff": total_staff,
+        "staff_with_dept": staff_with_dept,
+        "open_positions_count": open_positions_count,
+        "doc_form": doc_form,
+        "plan_form": plan_form,
+        "dept_docs": dept_docs,
+        "succession_plans": succession_plans,
+        # --- new dynamic stats ---
+        "expiring_contracts_count": expiring_contracts_count,
+        "pending_approvals_count": pending_approvals_count,
+        "new_leave_count": new_leave_count,
+    }
+
+    return render(request, "smartpayapp/hr_departments.html", context)
+
+
 
 @login_required
 def payroll_payslips(request):
+    """Payroll & Payslips view with dynamic KPI badges."""
+    
+    # Current month/year
+    today = date.today()
+    month = today.month
+    year = today.year
+
+    # --- Total Monthly Payroll ---
+    total_payroll = EmployeePayslip.objects.filter(
+        period__month=month,
+        period__year=year
+    ).aggregate(total=Sum('gross_salary'))['total'] or 0
+
+    # --- Pending Approvals (Salary Advances as example) ---
+    pending_approvals = SalaryAdvanceRequest.objects.filter(status='Pending').count()
+
+    # --- Unprocessed Overtime ---
+    unprocessed_overtime = OvertimeAssignment.objects.filter(status='Pending').count()
+
+    context = {
+        'total_payroll': total_payroll,
+        'pending_approvals': pending_approvals,
+        'unprocessed_overtime': unprocessed_overtime,
+    }
+
+    return render(request, 'smartpayapp/payroll_payslips.html', context)
+
+
+@login_required
+def generated_payslips(request):
     """Placeholder view for Payroll & Payslips (UI stub)."""
-    return render(request, 'smartpayapp/payroll_payslips.html')
+    return render(request, 'smartpayapp/generated_payslips.html')
+
+@login_required
+def employee_payslip_detail(request):
+    """Placeholder view for Payroll & Payslips (UI stub)."""
+    return render(request, 'smartpayapp/employee_payslip_detail.html')
+
+@login_required
+def employee_payslip_list1(request):
+    """Display list of employee payslips grouped by department."""
+    # Fetch all departments
+    departments = Department.objects.all().order_by("name")
+
+    # Group employees by department
+    grouped_employees = {
+        dept.name: Employee.objects.filter(department=dept).order_by("full_name")
+        for dept in departments
+    }
+
+    context = {
+        "grouped_employees": grouped_employees
+    }
+    return render(request, 'smartpayapp/employee_payslip_list1.html', context)
+
+
 
 @login_required
 def hr_track_performance(request):
     """Placeholder view for Track Performance (UI stub)."""
     return render(request, 'smartpayapp/hr_track_performance.html')
 
-@login_required
-def hr_departments(request):
-    """Placeholder view for HR Departments (UI stub)."""
-    return render(request, 'smartpayapp/hr_departments.html')
 
 @login_required
 def attendance_tracking(request):
@@ -1030,8 +1245,21 @@ def hr_message_centre(request):
 
 @login_required
 def hr_loan_requests(request):
-    """Placeholder view for HR Loan Requests (UI stub)."""
-    return render(request, 'smartpayapp/hr_loan_requests.html')
+    # Count different types of requests
+    pending_requests = LoanRequest.objects.filter(status="Pending").count()
+    on_hold = LoanRequest.objects.filter(status="On Hold").count()
+    approved_finance = LoanRequest.objects.filter(status="Approved (Finance)").count()
+    rejected_finance = LoanRequest.objects.filter(status="Rejected (Finance)").count()
+
+    context = {
+        "pending_requests": pending_requests,
+        "on_hold": on_hold,
+        "approved_finance": approved_finance,
+        "rejected_finance": rejected_finance,
+    }
+
+    return render(request, 'smartpayapp/hr_loan_requests.html', context)
+
 
 @login_required
 def hr_reports(request):
@@ -1069,6 +1297,46 @@ def hr_appraissals(request):
 def hr_profile(request):
     """Placeholder view for hr profile (UI stub)."""
     return render(request, 'smartpayapp/hr_profile.html')
+
+
+@login_required
+def hr_employee_detail(request, pk):
+    employee = get_object_or_404(Employee, pk=pk)
+    contract = getattr(employee, 'contract', None)
+    departments = Department.objects.all()
+
+    current_date = timezone.localdate()
+    current_time = timezone.localtime().strftime("%I:%M %p")
+
+    if request.method == "POST":
+        # Update fields
+        employee.job_title = request.POST.get("job_title", employee.job_title)
+        employee.department_id = request.POST.get("department", employee.department_id)
+        employee.employment_type = request.POST.get("employment_type", employee.employment_type)
+        employee.email = request.POST.get("email", employee.email)
+        employee.phone = request.POST.get("phone", employee.phone)
+
+        # Save employee
+        employee.save()
+
+        # Update digital footprint
+        employee.last_updated_by = request.user
+        employee.last_updated_at = timezone.now()
+        employee.save(update_fields=["last_updated_by", "last_updated_at"])
+
+        messages.success(request, "Employee details updated successfully.")
+
+        # Redirect to refresh the context
+        return redirect("hr_employee_detail", pk=employee.pk)
+
+    context = {
+        "employee": employee,
+        "contract": contract,
+        "departments": departments,
+        "current_date": current_date,
+        "current_time": current_time,
+    }
+    return render(request, "smartpayapp/hr_employee_detail.html", context)
 
 
 @login_required
@@ -1783,6 +2051,30 @@ def update_attendance(request):
     return JsonResponse({"success": False, "error": "Invalid method"}, status=400)
 
 
+
+@login_required
+def upload_department_document(request):
+    if request.method == "POST":
+        form = DepartmentDocumentForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('hr_departments')  # Redirect back to the dashboard
+    else:
+        form = DepartmentDocumentForm()
+    return render(request, "smartpayapp/upload_document.html", {"form": form, "type": "Department Document"})
+
+@login_required
+def upload_succession_plan(request):
+    if request.method == "POST":
+        form = SuccessionPlanForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('hr_departments')  # Redirect back to the dashboard
+    else:
+        form = SuccessionPlanForm()
+    return render(request, "smartpayapp/upload_document.html", {"form": form, "type": "Succession Plan"})
+
+
 # ================================================================
 # 12. PR Views
 # ================================================================
@@ -1800,3 +2092,6 @@ def product_overview(request):
 
 def buy_product(request):
     return render(request, 'smartpayapp/buy_product.html')
+
+def pr_contact_page(request):
+    return render(request, 'smartpayapp/pr_contact_page.html')

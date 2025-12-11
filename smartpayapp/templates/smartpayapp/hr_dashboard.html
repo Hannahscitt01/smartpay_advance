@@ -266,9 +266,9 @@
         </thead>
         <tbody>
           {% for emp in attendance_data %}
-            <tr data-emp-id="{{ emp.id }}" data-dept="{{ emp.department }}" data-emp-name="{{ emp.full_name }}">
-              <td>{{ emp.full_name }}</td>
-              <td><span class="badge status-{{ emp.status|lower|slugify }}">{{ emp.status }}</span></td>
+              <tr data-emp-id="{{ emp.employee.id }}" data-dept="{{ emp.employee.department.name }}">
+              <td>{{ emp.employee.full_name }}</td>
+              <td><span class="badge status1-{{ emp.status|lower|slugify }}">{{ emp.status }}</span></td>
               <td>{{ emp.clock_in }}</td>
               <td>{{ emp.clock_out }}</td>
             </tr>

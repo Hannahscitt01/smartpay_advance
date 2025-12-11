@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
-from .models import SalaryAdvanceRequest, Employee, Profile, LoanRequest, LeaveRequest
+from .models import SalaryAdvanceRequest, Employee, Profile, LoanRequest, LeaveRequest,Department, DepartmentDocument,SuccessionPlan
 from django.core.exceptions import ValidationError
 from django.db import transaction
 
@@ -218,3 +218,36 @@ class LeaveRequestForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.employee = kwargs.pop('employee', None)
         super().__init__(*args, **kwargs)
+
+
+class DepartmentForm(forms.ModelForm):
+    class Meta:
+        model = Department
+        fields = ['name']
+        widgets = {
+            'name': forms.TextInput(attrs={'placeholder': 'Enter department name', 'class': 'form-control'}),
+        }
+
+
+
+class DepartmentDocumentForm(forms.ModelForm):
+    class Meta:
+        model = DepartmentDocument
+        fields = ['department', 'title', 'file']
+        widgets = {
+            'department': forms.Select(attrs={'class': 'form-select'}),
+            'title': forms.TextInput(attrs={'class': 'form-input'}),
+            'file': forms.ClearableFileInput(attrs={'class': 'form-input'}),
+        }
+
+class SuccessionPlanForm(forms.ModelForm):
+    class Meta:
+        model = SuccessionPlan
+        fields = ['department', 'title', 'file']
+        widgets = {
+            'department': forms.Select(attrs={'class': 'form-select'}),
+            'title': forms.TextInput(attrs={'class': 'form-input'}),
+            'file': forms.ClearableFileInput(attrs={'class': 'form-input'}),}
+        
+
+        

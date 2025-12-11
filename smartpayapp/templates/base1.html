@@ -1,0 +1,142 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}smartpay_advance{% endblock %} </title>
+    <link rel="stylesheet"href="{% static 'css/style2.css' %}">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <!-- Font Awesome CDN -->
+    <link 
+    rel="stylesheet" 
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" 
+    integrity="sha512-papz6+7n2n2GvKc+oTr5T5DmZc2R7+r9ZJ6Q3E6Zqg3Zc4oS6g6JzUOx+2R1m6H8U6G0+1F6Z0J0T5hT4T0zHQ==" 
+    crossorigin="anonymous" 
+    referrerpolicy="no-referrer" 
+    />
+
+
+
+
+</head>
+<body>
+    <input type="hidden" id="csrfToken" value="{{ csrf_token }}">
+
+    <!-- NAV SECTION -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <img src="{% static 'img/logo7.png' %}" alt="Company Logo" class="nav-logo1">
+            <span class="nav-app-name1">CHANDILLIANA PORTFOLIO</span>
+        </div>
+
+        <!-- Nav Links -->
+        <div class="nav-center" id="nav-links">
+            <a href="{% url 'personal_profile' %}">Home  |</a>
+            <a href="{% url 'pr' %}">Meet Eng.Chandi  |</a> 
+            <a href="#">Software Dev Portfolio  |</a>
+            <a href="#">Electrical Portfolio  |</a>
+            <a href="{% url 'pr_contact_page' %}">Contact </a>
+
+            <!-- Mobile buttons container -->
+            <div class="nav-buttons-mobile">
+                <a href="{% url 'login' %}" class="login-link">Login</a>
+            </div>
+        </div>
+
+        <!-- Desktop button (visible only on desktop) -->
+        <div class="nav-right">
+            <a href="{% url 'personal_profile' %}" class="login-link desktop-only">Hire me</a>
+        </div>
+
+        <!-- Hamburger -->
+        <div class="nav-breadcrumb" id="nav-toggle">&#9776;</div>
+    </nav>
+
+    {% block content %}
+    {% endblock  %}
+
+    <!--Footer starts here-->
+    <footer class="footer">
+        <div class="footer-container">
+                    
+            <!-- Portfolio Info -->
+            <div class="footer-col">
+                <div class="footer-brand">
+                    <img src="{% static 'img/logo6.png' %}" alt="Portfolio Logo" class="footer-logo-img">
+                    <h3 class="footer-logo">Eng.Chandi</h3>
+                </div>
+                <p class="footer-motto">"Building solutions that connect software with electrical innovation."</p>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="footer-col">
+                <h4>Quick Links</h4>
+                <ul class="footer-links">
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">About</a></li>
+                    <li><a href="#">Projects</a></li>
+                </ul>
+            </div>
+
+            <!-- Contact Info -->
+            <div class="footer-col">
+                <h4>Contact</h4>
+                <p>Email: chandillianna.com</p>
+                <p>Phone: +254 (721) 123-4567</p>
+                <p>Available: Mon–Fri, 9am–5pm</p>
+            </div>
+
+            <!-- Extra Column (Example: Resources) -->
+            <div class="footer-col">
+                <h4>Resources</h4>
+                <ul class="footer-links">
+                    <li><a href="#">GitHub</a></li>
+                    <li><a href="#">LinkedIn</a></li>
+                    <li><a href="#">Download CV</a></li>
+                </ul>
+            </div>
+
+        </div>
+
+
+        <!-- Footer Bottom -->
+        <div class="footer-bottom">
+            <p>&copy; 2025 SmartPay. Designed and Developed by <b>Hannah Wambui</b> | All rights reserved.</p>
+        </div>
+    </footer>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const gridBtn = document.getElementById("gridViewBtn");
+        const tableBtn = document.getElementById("tableViewBtn");
+        const cards = document.getElementById("employeeCards");
+        const table = document.getElementById("employeeTable");
+
+        gridBtn.addEventListener("click", function() {
+            cards.style.display = "block";
+            table.style.display = "none";
+            gridBtn.classList.add("active");
+            tableBtn.classList.remove("active");
+        });
+
+        tableBtn.addEventListener("click", function() {
+            cards.style.display = "none";
+            table.style.display = "block";
+            tableBtn.classList.add("active");
+            gridBtn.classList.remove("active");
+        });
+    });
+</script>
+<Script src="{% static 'js/main.js' %}"></script>
+<Script src="{% static 'js/main1.js' %}"></script>
+<Script src="{% static 'js/main2.js' %}"></script>
+<Script src="{% static 'js/main4.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</body>
+</html>

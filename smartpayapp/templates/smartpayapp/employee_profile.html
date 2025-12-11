@@ -156,6 +156,10 @@
 
                 <!-- EMPLOYMENT INFO TAB -->
                 <div class="empd-tab-content" id="tab-employment">
+
+                    <!-- ================================ -->
+                    <!-- FIRST ROW (Existing Info)       -->
+                    <!-- ================================ -->
                     <div class="empd-info-grid">
                         <div class="empd-info-item"><strong>Staff ID:</strong> {{ employee.staff_id }}</div>
                         <div class="empd-info-item"><strong>Job Title:</strong> {{ employee.job_title }}</div>
@@ -171,7 +175,72 @@
                         </div>
                         {% endif %}
                     </div>
+
+                    <div class="empd-info-grid">
+
+                        <!-- Salary (Visible to the employee themselves) -->
+                        <div class="empd-info-item">
+                            <strong>Salary:</strong> KES {{ employee.salary|floatformat:2 }}
+                        </div>
+
+                        <!-- Role -->
+                        <div class="empd-info-item">
+                            <strong>Role:</strong> {{ employee.role.name|default:"Not Assigned" }}
+                        </div>
+
+                        <!-- Contract Document -->
+                        <div class="empd-info-item">
+                            <strong>Contract Document:</strong>
+                            {% if contract.contract_file %}
+                                <a 
+                                    href="{{ contract.contract_file.url }}" 
+                                    class="empd-download-btn" 
+                                    download="{{ contract.contract_file.name|slice:'9:' }}"
+                                    target="_blank"
+                                >
+                                    <i class="fas fa-file-pdf"></i> Download Contract
+                                </a>
+                            {% else %}
+                                <span class="empd-tag">Not Uploaded</span>
+                            {% endif %}
+                        </div>
+
+                        <!-- Contract Expiry / Permanent -->
+                        <div class="empd-info-item">
+                            <strong>Contract Expiry:</strong>
+                            {% if contract.contract_expiry_date %}
+                                {{ contract.contract_expiry_date|date:"d-M-Y" }}
+
+                                {% if contract.remaining_days is not None %}
+                                    {% if contract.remaining_days < 0 %}
+                                        <!-- Expired -->
+                                        <i class="contract-flag contract-flag-expired fas fa-times-circle" title="Contract Expired"></i>
+                                        <small class="contract-flag-text contract-flag-expired-text">(Expired)</small>
+                                    {% elif contract.remaining_days <= 7 %}
+                                        <!-- Less than a week -->
+                                        <i class="contract-flag contract-flag-critical fas fa-exclamation-triangle" title="Contract Expiring Soon"></i>
+                                        <small class="contract-flag-text contract-flag-critical-text">({{ contract.remaining_days }} day{% if contract.remaining_days != 1 %}s{% endif %} remaining)</small>
+                                    {% elif contract.remaining_days <= 30 %}
+                                        <!-- Less than a month -->
+                                        <i class="contract-flag contract-flag-warning fas fa-exclamation-triangle" title="Contract Expiring Within a Month"></i>
+                                        <small class="contract-flag-text contract-flag-warning-text">({{ contract.remaining_days }} day{% if contract.remaining_days != 1 %}s{% endif %} remaining)</small>
+                                    {% endif %}
+                                {% endif %}
+
+                            {% else %}
+                                <span class="empd-tag">
+                                    {% if employee.employment_type == "Permanent" %} Permanent Employee {% else %} Not Set {% endif %}
+                                </span>
+                            {% endif %}
+                        </div>
+
+
+
+                    </div>
+
                 </div>
+
+
 
                 <!-- SYSTEM LINKS TAB -->
                 <div class="empd-tab-content" id="tab-system">
@@ -200,13 +269,6 @@
 
         <!-- ===== Footer Note ===== -->
         <p class="empd-footer-note">For corrections, contact the HR department.</p>
-
-
-
-
-
-
-       
 
       
     </main>

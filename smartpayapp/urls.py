@@ -63,7 +63,12 @@ from .views import (
     employee_leave_application,
     employee_payslip,
     employee_attendance,
-    employee_profile
+    employee_profile,
+    hr_employee_detail, 
+    pr_contact_page,
+    generated_payslips,
+    employee_payslip_list1,
+    employee_payslip_detail
 )
 
 urlpatterns = [
@@ -142,7 +147,13 @@ urlpatterns = [
     path('employee_leave_application/', employee_leave_application, name='employee_leave_application'),
     path('employee_payslip', employee_payslip, name='employee_payslip'),
     path('employee_atttendance', employee_attendance, name='employee_atttendance'),
-    path('employee_profile', employee_profile, name='employee_profile')
+    path('employee_profile', employee_profile, name='employee_profile'),
+    path('employee/<int:pk>/hr_detail/', hr_employee_detail, name='hr_employee_detail'),
+    path('pr_contact_page', pr_contact_page, name='pr_contact_page'),
+    path('generated_payslips', generated_payslips, name='generated_payslips'),
+    path('employee_payslip_detail', employee_payslip_detail, name='employee_payslip_detail'),
+    path('employee_payslip_list1', employee_payslip_list1, name='employee_payslip_list1')
+
 
 ]
 

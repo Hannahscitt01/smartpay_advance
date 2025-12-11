@@ -1,0 +1,521 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Smart Pay | Payroll{% endblock %}
+{% block content %}
+<div class="dashboard-container">
+
+  <!-- Sidebar (same as HR page for consistency) -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <h2>HR</h2>
+    </div>
+    <nav class="sidebar-nav">
+      <ul>
+        <li><a href="{% url 'hr_home' %}">Dashboard</a></li>
+        <li><a href="{% url 'employee_list' %}">Employees</a></li>
+        <li><a href="{% url 'hr_departments' %}">Departments</a></li>
+        <li><a class="active" href="{% url 'payroll_payslips' %}">Payroll</a></li>
+        <li><a href="{% url 'hr_track_performance' %}">Performance</a></li>
+        <li><a href="{% url 'hr_loan_requests' %}">Requests</a></li>
+        <li><a href="{% url 'hr_message_centre' %}">Messages</a></li>
+        <li><a href="{% url 'hr_reports' %}">Reports</a></li>
+        <li><a href="{% url 'hr_settings' %}">Settings</a></li>
+      </ul>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+
+        <!-- Header / Monthly Payslips Control Panel -->
+        <header class="dashboard-header payroll-header">
+            <div class="header-left">
+                <h1>Monthly Payslips</h1>
+                <p class="subtitle">View and manage all employee payslips by category</p>
+
+                <!-- Inline KPIs (Badges) -->
+                <div class="header-stats">
+                    <span class="stat-badge contracts">Total Employees: 45</span>
+                    <span class="stat-badge approvals">Payslips Generated: 45</span>
+                    <span class="stat-badge leaves">Pending Approvals: 3</span>
+                </div>
+            </div>
+
+            <div class="header-right">
+                <!-- Action Buttons -->
+                <div class="header-actions">
+                    <button class="btn-primary">+ Generate New Payslips</button>
+                    <button class="btn-export">Export Payslips Report</button>
+                </div>
+
+                <!-- Icons + Profile -->
+                <div class="header-icons">
+                    <div class="icon" title="Messages">
+                        <i class="fas fa-envelope"></i>
+                        <span class="icon-badge">2</span>
+                    </div>
+                    <div class="icon" title="Notifications">
+                        <i class="fas fa-bell"></i>
+                        <span class="icon-badge">4</span>
+                    </div>
+                </div>
+                <div class="profile-avatar" title="Profile">
+                    <i class="fas fa-user"></i>
+                </div>
+            </div>
+        </header>
+
+        <!-- ====== 2) Search & Filter Payslips ====== -->
+        <div class="search-filter-container">
+        
+        <!-- Search Bar -->
+        <div class="search-bar">
+            <input type="text" placeholder="Search by employee name, ID, or department..." aria-label="Search payslips">
+            <button><i class="fas fa-search"></i></button>
+        </div>
+        
+        <!-- Filter Controls -->
+        <div class="filter-bar">
+            
+            <!-- Department Filter -->
+            <select aria-label="Filter by department">
+            <option value="">All Departments</option>
+            <option value="Finance">Finance</option>
+            <option value="HR">HR</option>
+            <option value="IT">IT</option>
+            <option value="Operations">Operations</option>
+            </select>
+
+            <!-- Approval Status Filter -->
+            <select aria-label="Filter by approval status">
+            <option value="">All Status</option>
+            <option value="Pending">Pending</option>
+            <option value="Approved">Approved</option>
+            <option value="Rejected">Rejected</option>
+            </select>
+
+            <!-- Month Selector -->
+            <select aria-label="Filter by month">
+            <option value="2025-12">December 2025</option>
+            <option value="2025-11">November 2025</option>
+            <option value="2025-10">October 2025</option>
+            <option value="2025-09">September 2025</option>
+            </select>
+
+        </div>
+        </div>
+
+
+        <!-- ====== HR Employee Payslips ====== -->
+        <section class="section payroll-payslips">
+        <h2><i class="fas fa-receipt icon-blue"></i> Employee Payslips</h2>
+
+        <!-- Payroll Filters (Month, Department, Status) -->
+        <div class="payroll-filters">
+            <select>
+            <option value="all">All Months</option>
+            <option value="dec-2025">December 2025</option>
+            <option value="jan-2026">January 2026</option>
+            <!-- add more months dynamically -->
+            </select>
+            <select>
+            <option value="all">All Departments</option>
+            <option value="finance">Finance</option>
+            <option value="hr">HR</option>
+            <!-- add more dynamically -->
+            </select>
+            <select>
+            <option value="all">All Status</option>
+            <option value="draft">Draft</option>
+            <option value="pending">Pending</option>
+            <option value="approved">Approved</option>
+            </select>
+            <button>Filter</button>
+        </div>
+
+        <!-- Payslip Cards Grid -->
+        <div class="payslip-cards-grid">
+            <!-- Single Payslip Card -->
+            <div class="payslip-card">
+            <div class="payslip-header">
+                <h3>John Doe <span class="status-badge approved">Approved</span></h3>
+                <p>Employee ID: EMP12345</p>
+                <p>Department: Finance</p>
+                <p>Month: December 2025</p>
+            </div>
+
+            <table class="styled-table">
+                <tbody>
+                <tr>
+                    <td>Gross Salary</td>
+                    <td>KES 100,000</td>
+                </tr>
+                <tr>
+                    <td>House Allowance (13%)</td>
+                    <td>KES 13,000</td>
+                </tr>
+                <tr>
+                    <td>KRA Tax (30%)</td>
+                    <td>KES 30,000</td>
+                </tr>
+                <tr>
+                    <td>SHIF (2.75%)</td>
+                    <td>KES 2,750</td>
+                </tr>
+                <tr>
+                    <td>NSSF (6%)</td>
+                    <td>KES 6,000</td>
+                </tr>
+                <tr>
+                    <td>HSE Levy</td>
+                    <td>KES 300</td>
+                </tr>
+                <tr>
+                    <td>Internal Loan Deduction</td>
+                    <td>KES 5,000</td>
+                </tr>
+                <tr>
+                    <th>Net Payable</th>
+                    <th>KES 69,950</th>
+                </tr>
+                </tbody>
+            </table>
+
+            <div class="payslip-actions">
+                <button class="btn-view-payslip">View PDF</button>
+                <button class="btn-breakdown">View Breakdown</button>
+            </div>
+            </div>
+
+            <!-- Repeat .payslip-card for other employees dynamically -->
+        </div>
+        </section>
+
+        <!-- ====== Payslip Summary Cards (Top Quick Stats) ====== -->
+        <section class="stats-overview payslip-summary">
+            <div class="stat-card">
+                <div style="display:flex; align-items:center; gap:12px;">
+                <div class="stat-icon"><i class="fas fa-money-bill-wave"></i></div>
+                <div>
+                    <h3>Total Gross Payroll</h3>
+                    <p id="totalGrossPayroll">KSh 2,450,000</p>
+                </div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div style="display:flex; align-items:center; gap:12px;">
+                <div class="stat-icon"><i class="fas fa-file-invoice-dollar"></i></div>
+                <div>
+                    <h3>Total Deductions</h3>
+                    <p id="totalDeductions">KSh 620,000</p>
+                </div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div style="display:flex; align-items:center; gap:12px;">
+                <div class="stat-icon"><i class="fas fa-wallet"></i></div>
+                <div>
+                    <h3>Total Net Payroll</h3>
+                    <p id="totalNetPayroll">KSh 1,830,000</p>
+                </div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div style="display:flex; align-items:center; gap:12px;">
+                <div class="stat-icon"><i class="fas fa-users"></i></div>
+                <div>
+                    <h3>Total Employees Paid</h3>
+                    <p id="totalEmployeesPaid">45</p>
+                </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ====== 4) Employee Payslip Cards ====== -->
+        <section class="section payslip-cards-section">
+            <h2><i class="fas fa-file-invoice-dollar icon-blue"></i> Employee Payslips</h2>
+
+            <div class="payslip-cards-grid">
+                
+                <!-- ===== Example Payslip Card ===== -->
+                <div class="payslip-card">
+                
+                <!-- Card Header -->
+                <div class="payslip-header">
+                    <img src="{% static 'img/logo2.png' %}" alt="Company Logo" class="company-logo1">
+                    <div class="employee-info">
+                    <h3>Mary Njeri</h3>
+                    <p>ID: EMP-001 | Finance Department</p>
+                    <p>Month: December 2025</p>
+                    </div>
+                </div>
+                
+                <!-- Salary Breakdown -->
+                <div class="salary-breakdown">
+                    <h4>Salary Breakdown</h4>
+                    <div class="breakdown-row"><span>Base Gross Salary:</span><span>KSh 120,000</span></div>
+                    <div class="breakdown-row"><span>House Allowance (13%):</span><span>KSh 15,600</span></div>
+                    <div class="breakdown-row total"><span>Total Gross:</span><span>KSh 135,600</span></div>
+
+                    <h4>Deductions</h4>
+                    <div class="breakdown-row"><span>PAYE (30%):</span><span>KSh 40,680</span></div>
+                    <div class="breakdown-row"><span>NHIF (2.75%):</span><span>KSh 3,729</span></div>
+                    <div class="breakdown-row"><span>NSSF (6%):</span><span>KSh 8,136</span></div>
+                    <div class="breakdown-row"><span>HSE Levy:</span><span>KSh 300</span></div>
+                    <div class="breakdown-row"><span>Loan / Salary Advance:</span><span>KSh 10,000</span></div>
+                    <div class="breakdown-row total"><span>Total Deductions:</span><span>KSh 62,845</span></div>
+
+                    <div class="breakdown-row net-pay"><span>Net Payable:</span><span>KSh 72,755</span></div>
+                </div>
+
+                <!-- Approval Status -->
+                <div class="payslip-status">
+                    <span class="status-badge pending">Pending Approval</span>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="payslip-actions">
+                    <button class="btn-primary btn-approve">Approve</button>
+                    <button class="btn-warning btn-reject">Reject</button>
+                    <button class="btn-secondary btn-download"><i class="fas fa-download"></i> Download PDF</button>
+                </div>
+
+                <!-- Extra Notes -->
+                <div class="payslip-notes">
+                    <p><strong>Notes:</strong> Loan repayment: KSh 10,000/month | Bonus: KSh 5,000</p>
+                    <p><strong>HR Comments:</strong> Adjusted for overtime hours</p>
+                </div>
+
+                </div>
+                <!-- ===== End Example Card ===== -->
+
+                <!-- Repeat other cards dynamically per employee -->
+                
+            </div>
+        </section>
+
+        <!-- ====== 6) Bulk Payslip Actions ====== -->
+        <section class="section payslip-bulk-actions">
+            <h2><i class="fas fa-layer-group icon-blue"></i> Bulk Payslip Actions</h2>
+
+            <div class="bulk-actions-row">
+                <button class="btn-primary"><i class="fas fa-check"></i> Approve Selected</button>
+                <button class="btn-warning"><i class="fas fa-times"></i> Reject Selected</button>
+                <button class="btn-primary"><i class="fas fa-file-export"></i> Export Selected</button>
+                <button class="btn-secondary"><i class="fas fa-download"></i> Generate PDF</button>
+            </div>
+        </section>
+
+        <!-- ====== 8) Payslip Modal / Detailed Payslip Viewer ====== -->
+        <section id="payslipDetailSection" class="section payslip-detail-section hidden">
+            <div class="modal-content payslip-modal">
+                <span class="close">&times;</span>
+
+                <!-- Header: Employee & Company Info -->
+                <div class="modal-header">
+                <div class="modal-logo">
+                    <img src="{% static 'img/logo2.png' %}" alt="Company Logo">
+                </div>
+                <div class="modal-employee-info">
+                    <h3 id="detailEmployeeName">Employee Name</h3>
+                    <p><strong>ID:</strong> <span id="detailEmployeeID">12345</span></p>
+                    <p><strong>Department:</strong> <span id="detailEmployeeDept">Finance</span></p>
+                    <p><strong>Month:</strong> <span id="detailPayslipMonth">December 2025</span></p>
+                </div>
+                <div class="modal-status">
+                    <span id="detailApprovalStatus" class="status pending">Pending Approval</span>
+                </div>
+                </div>
+
+                <!-- Body: Salary Breakdown -->
+                <div class="modal-body">
+                <h4>Salary Breakdown</h4>
+                <table class="payslip-table">
+                    <tbody>
+                    <tr>
+                        <td>Base Gross Salary</td>
+                        <td>KSh <span id="detailGrossSalary">100,000</span></td>
+                    </tr>
+                    <tr>
+                        <td>House Allowance (13%)</td>
+                        <td>KSh <span id="detailHouseAllowance">13,000</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Gross Total</strong></td>
+                        <td><strong>KSh <span id="detailGrossTotal">113,000</span></strong></td>
+                    </tr>
+                    <tr>
+                        <td>PAYE (30%)</td>
+                        <td>KSh <span id="detailPAYE">33,900</span></td>
+                    </tr>
+                    <tr>
+                        <td>NHIF (2.75%)</td>
+                        <td>KSh <span id="detailNHIF">3,108</span></td>
+                    </tr>
+                    <tr>
+                        <td>NSSF (6%)</td>
+                        <td>KSh <span id="detailNSSF">6,780</span></td>
+                    </tr>
+                    <tr>
+                        <td>HSE Levy</td>
+                        <td>KSh 300</td>
+                    </tr>
+                    <tr>
+                        <td>Internal Loan / Salary Advance</td>
+                        <td>KSh <span id="detailInternalLoan">5,000</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Total Deductions</strong></td>
+                        <td><strong>KSh <span id="detailTotalDeductions">49,088</span></strong></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Net Payable</strong></td>
+                        <td><strong>KSh <span id="detailNetPay">63,912</span></strong></td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <!-- Optional Notes -->
+                <div class="modal-notes">
+                    <h5>Additional Info / Notes:</h5>
+                    <ul>
+                    <li>Loan Repayment: KSh 5,000/month</li>
+                    <li>Bonus: KSh 2,500</li>
+                    <li>HR Comments: Pending review of overtime adjustments</li>
+                    </ul>
+                </div>
+                </div>
+
+                <!-- Footer: Actions -->
+                <div class="modal-footer">
+                <button class="btn-primary"><i class="fas fa-download"></i> Download PDF</button>
+                <button class="btn-secondary close-modal">Close</button>
+                </div>
+            </div>
+        </section>
+
+
+<!-- ====== 8) Payslip Modal / Detailed Payslip Viewer ====== -->
+<section id="payslipDetailSection" class="section payslip-detail-section hidden">
+  <div class="modal-content payslip-modal">
+    <span class="close">&times;</span>
+
+    <!-- Header: Employee & Company Info -->
+    <div class="modal-header">
+      <div class="modal-logo">
+        <img src="{% static 'img/logo2.png' %}" alt="Company Logo">
+      </div>
+      <div class="modal-employee-info">
+        <h3 id="detailEmployeeName">Employee Name</h3>
+        <p><strong>ID:</strong> <span id="detailEmployeeID">12345</span></p>
+        <p><strong>Department:</strong> <span id="detailEmployeeDept">Finance</span></p>
+        <p><strong>Month:</strong> <span id="detailPayslipMonth">December 2025</span></p>
+      </div>
+      <div class="modal-status">
+        <span id="detailApprovalStatus" class="status pending">Pending Approval</span>
+      </div>
+    </div>
+
+    <!-- Body: Salary Breakdown -->
+    <div class="modal-body">
+      <h4>Salary Breakdown</h4>
+      <table class="payslip-table">
+        <tbody>
+          <tr>
+            <td>Base Gross Salary</td>
+            <td>KSh <span id="detailGrossSalary">100,000</span></td>
+          </tr>
+          <tr>
+            <td>House Allowance (13%)</td>
+            <td>KSh <span id="detailHouseAllowance">13,000</span></td>
+          </tr>
+          <tr>
+            <td><strong>Gross Total</strong></td>
+            <td><strong>KSh <span id="detailGrossTotal">113,000</span></strong></td>
+          </tr>
+          <tr>
+            <td>PAYE (30%)</td>
+            <td>KSh <span id="detailPAYE">33,900</span></td>
+          </tr>
+          <tr>
+            <td>NHIF (2.75%)</td>
+            <td>KSh <span id="detailNHIF">3,108</span></td>
+          </tr>
+          <tr>
+            <td>NSSF (6%)</td>
+            <td>KSh <span id="detailNSSF">6,780</span></td>
+          </tr>
+          <tr>
+            <td>HSE Levy</td>
+            <td>KSh 300</td>
+          </tr>
+          <tr>
+            <td>Internal Loan / Salary Advance</td>
+            <td>KSh <span id="detailInternalLoan">5,000</span></td>
+          </tr>
+          <tr>
+            <td><strong>Total Deductions</strong></td>
+            <td><strong>KSh <span id="detailTotalDeductions">49,088</span></strong></td>
+          </tr>
+          <tr>
+            <td><strong>Net Payable</strong></td>
+            <td><strong>KSh <span id="detailNetPay">63,912</span></strong></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Optional Notes -->
+      <div class="modal-notes">
+        <h5>Additional Info / Notes:</h5>
+        <ul>
+          <li>Loan Repayment: KSh 5,000/month</li>
+          <li>Bonus: KSh 2,500</li>
+          <li>HR Comments: Pending review of overtime adjustments</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Footer: Actions -->
+    <div class="modal-footer">
+      <button class="btn-primary"><i class="fas fa-download"></i> Download PDF</button>
+      <button class="btn-secondary close-modal">Close</button>
+    </div>
+  </div>
+</section>
+
+
+<!-- ====== 9) Payroll Cycle / Progress Tracker ====== -->
+<section class="section payslip-cycle-tracker">
+  <h2><i class="fas fa-tasks icon-blue"></i> Payroll Cycle Progress - December 2025</h2>
+
+  <div class="progress-tracker">
+    <div class="tracker-step completed">
+      <span class="step-number">1</span>
+      <span class="step-title">Draft</span>
+    </div>
+    <div class="tracker-step in-progress">
+      <span class="step-number">2</span>
+      <span class="step-title">Pending HR Approval</span>
+    </div>
+    <div class="tracker-step upcoming">
+      <span class="step-number">3</span>
+      <span class="step-title">Pending Finance Approval</span>
+    </div>
+    <div class="tracker-step upcoming">
+      <span class="step-number">4</span>
+      <span class="step-title">Approved</span>
+    </div>
+    <div class="tracker-step upcoming">
+      <span class="step-number">5</span>
+      <span class="step-title">Paid</span>
+    </div>
+  </div>
+</section>
+
+
+  </main>
+
+{% endblock %}

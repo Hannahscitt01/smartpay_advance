@@ -36,10 +36,17 @@
 
             <!-- Inline KPIs (Badges) -->
             <div class="header-stats">
-                <span class="stat-badge contracts">KSh 1.2M Monthly Payroll</span>
-                <span class="stat-badge approvals">12 Pending Approvals</span>
-                <span class="stat-badge leaves">5 Unprocessed Overtime</span>
+                <span class="stat-badge contracts">
+                    KSh {{ total_payroll|floatformat:2 }} Monthly Payroll
+                </span>
+                <span class="stat-badge approvals">
+                    {{ pending_approvals }} Pending Approvals
+                </span>
+                <span class="stat-badge leaves">
+                    {{ unprocessed_overtime }} Unprocessed Overtime
+                </span>
             </div>
+
         </div>
 
         <div class="header-right">
@@ -68,37 +75,45 @@
 
     <!-- ====== 1) Payroll Overview (stat cards) ====== -->
     <section class="stats-overview">
-      <div class="stat-card">
-        <div class="stat-icon"><i class="fas fa-wallet"></i></div>
-        <div>
-          <h3>Total Payroll (This Month)</h3>
-          <p>KSh 1,200,000</p>
+      <a href="{% url 'employee_payslip_list1' %}" class="stat-card-link">
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fas fa-wallet"></i></div>
+          <div>
+            <h3>Total Payroll (This Month)</h3>
+            <p>KSh 1,200,000</p>
+          </div>
         </div>
-      </div>
+      </a>
 
-      <div class="stat-card">
-        <div class="stat-icon"><i class="fas fa-user-check"></i></div>
-        <div>
-          <h3>Employees Paid</h3>
-          <p>312</p>
+      <a href="{% url 'generated_payslips' %}" class="stat-card-link">
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fas fa-user-check"></i></div>
+          <div>
+            <h3>Employees Paid</h3>
+            <p>312</p>
+          </div>
         </div>
-      </div>
+      </a>
 
-      <div class="stat-card">
-        <div class="stat-icon"><i class="fas fa-exclamation-circle"></i></div>
-        <div>
-          <h3>Pending Approvals</h3>
-          <p>12</p>
+      <a href="{% url 'generated_payslips' %}" class="stat-card-link">
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fas fa-exclamation-circle"></i></div>
+          <div>
+            <h3>Pending Approvals</h3>
+            <p>12</p>
+          </div>
         </div>
-      </div>
+      </a>
 
-      <div class="stat-card">
-        <div class="stat-icon"><i class="fas fa-file-invoice-dollar"></i></div>
-        <div>
-          <h3>Generated Payslips</h3>
-          <p>298</p>
+      <a href="{% url 'generated_payslips' %}" class="stat-card-link">
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fas fa-file-invoice-dollar"></i></div>
+          <div>
+            <h3>Generated Payslips</h3>
+            <p>298</p>
+          </div>
         </div>
-      </div>
+      </a>
     </section>
 
     <!-- ====== 2) Search & Filter Payroll ====== -->
@@ -254,215 +269,360 @@
       </table>
     </section>
 
-<!-- ====== Payroll Header Actions ====== -->
-<section class="section payroll-header">
-  <div class="header-flex">
-    <h2><i class="fas fa-money-check-alt icon-blue"></i> Payroll Management</h2>
-    <div class="header-actions">
-      <button class="btn-primary"><i class="fas fa-plus"></i> Run New Payroll</button>
-      <button class="btn-secondary" id="togglePayrollBtn"><i class="fas fa-table"></i> Toggle Payroll Preview</button>
-      <button class="btn-export"><i class="fas fa-file-export"></i> Export Report</button>
+<!-- ====== 6) Payroll Cycle Progress Tracker (Enhanced) ====== -->
+<section class="section payroll-cycle-tracker">
+  <h2><i class="fas fa-tasks icon-blue"></i> Payroll Cycle Progress</h2>
+
+  <!-- Tracker Container -->
+  <div class="progress-tracker" style="display:flex; align-items:center; gap:24px; flex-wrap:wrap; margin-top:12px;">
+
+    <!-- Step 1 -->
+    <div class="tracker-step completed" style="flex:1; min-width:120px; text-align:center;">
+      <span class="step-number" style="background:#1e40af; color:#fff;">1</span>
+      <span class="step-title">Draft</span>
+      <p style="font-size:12px; color:#475569; margin-top:4px;">Payroll created but not yet submitted.</p>
     </div>
+
+    <!-- Step 2 -->
+    <div class="tracker-step completed" style="flex:1; min-width:120px; text-align:center;">
+      <span class="step-number" style="background:#1e40af; color:#fff;">2</span>
+      <span class="step-title">Pending Approval</span>
+      <p style="font-size:12px; color:#475569; margin-top:4px;">Awaiting manager review and approvals.</p>
+    </div>
+
+    <!-- Step 3 -->
+    <div class="tracker-step in-progress" style="flex:1; min-width:120px; text-align:center;">
+      <span class="step-number" style="background:#0ea5e9; color:#fff;">3</span>
+      <span class="step-title">Approved</span>
+      <p style="font-size:12px; color:#475569; margin-top:4px;">Payroll approved and ready for processing.</p>
+    </div>
+
+    <!-- Step 4 -->
+    <div class="tracker-step upcoming" style="flex:1; min-width:120px; text-align:center;">
+      <span class="step-number" style="background:#fbbf24; color:#fff;">4</span>
+      <span class="step-title">Processed</span>
+      <p style="font-size:12px; color:#475569; margin-top:4px;">Salaries processed but not yet disbursed.</p>
+    </div>
+
+    <!-- Step 5 -->
+    <div class="tracker-step upcoming" style="flex:1; min-width:120px; text-align:center;">
+      <span class="step-number" style="background:#f97316; color:#fff;">5</span>
+      <span class="step-title">Paid</span>
+      <p style="font-size:12px; color:#475569; margin-top:4px;">Payments completed and confirmed.</p>
+    </div>
+  </div>
+
+  <!-- Progress Bar Connector -->
+  <div style="display:flex; justify-content:space-between; margin-top:8px;">
+    <div style="flex:1; height:4px; background:#1e40af; border-radius:2px;"></div>
+    <div style="flex:1; height:4px; background:#1e40af; border-radius:2px;"></div>
+    <div style="flex:1; height:4px; background:#0ea5e9; border-radius:2px;"></div>
+    <div style="flex:1; height:4px; background:#fbbf24; border-radius:2px;"></div>
   </div>
 </section>
 
-<!-- ====== Payroll Preview (hidden by default) ====== -->
-<section id="payrollPreview" class="payroll-preview hidden">
-  <h3><i class="fas fa-list-alt icon-blue"></i> Payroll Preview (Ksh)</h3>
-  <table class="styled-table">
-    <thead>
-      <tr>
-        <th>Employee</th>
-        <th>Gross Pay (Ksh)</th>
-        <th>Deductions (Ksh)</th>
-        <th>Net Pay (Ksh)</th>
-        <th>Status</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>Mary Njeri</td>
-        <td>120,000</td>
-        <td>15,000</td>
-        <td>105,000</td>
-        <td><span class="status success">Ready</span></td>
-      </tr>
-      <tr>
-        <td>Paul Kim</td>
-        <td>95,000</td>
-        <td>12,000</td>
-        <td>83,000</td>
-        <td><span class="status warning">Review</span></td>
-      </tr>
-    </tbody>
-  </table>
-</section>
+<!-- ====== 7) Bulk Payroll Actions (Enhanced) ====== -->
+<section class="section payroll-bulk-actions">
+  <h2><i class="fas fa-layer-group icon-blue"></i> Bulk Payroll Actions</h2>
 
-<!-- ====== Payroll Analytics ====== -->
-<section id="payrollAnalytics" class="payroll-analytics">
-  <h3><i class="fas fa-chart-line icon-blue"></i> Payroll Analytics</h3>
-  <div class="analytics-grid">
-    <div class="analytics-card">
-      <h4>Monthly Payroll Trend</h4>
-      <canvas id="payrollTrendChart" height="120"></canvas>
-    </div>
-    <div class="analytics-card">
-      <h4>Payroll by Department</h4>
-      <canvas id="payrollDeptChart" height="120"></canvas>
-    </div>
-    <div class="analytics-card">
-      <h4>Deductions Breakdown</h4>
-      <canvas id="deductionsChart" height="120"></canvas>
-    </div>
-    <div class="analytics-card">
-      <h4>Overtime Costs</h4>
-      <canvas id="overtimeChart" height="120"></canvas>
-    </div>
-  </div>
-</section>
+  <p style="font-size:14px; color:#475569; margin-top:8px;">
+    Select multiple payroll records from the table above to apply actions at once. Hover over each button for details.
+  </p>
 
-
-<!-- ====== Payroll Page: Summary Cards ====== -->
-<section class="stats-overview payroll-summary">
-  <div class="stat-card">
-    <div style="display:flex; align-items:center; gap:12px;">
-      <div class="stat-icon"><i class="fas fa-money-bill-wave"></i></div>
-      <div>
-        <h3>Total Gross</h3>
-        <p id="totalGross">Ksh 2,450,000</p>
-      </div>
-    </div>
+  <div class="bulk-actions-row" style="display:flex; flex-wrap:wrap; gap:12px; margin-top:12px;">
+    <button class="btn-primary" title="Approve all selected payroll records"><i class="fas fa-check"></i> Approve Selected</button>
+    <button class="btn-warning" title="Reject all selected payroll records"><i class="fas fa-times"></i> Reject Selected</button>
+    <button class="btn-primary" title="Export selected payroll records as CSV/PDF"><i class="fas fa-file-export"></i> Export Selected</button>
+    <button class="btn-primary" title="Upload a new payroll batch"><i class="fas fa-upload"></i> Upload Batch</button>
   </div>
 
-  <div class="stat-card">
-    <div style="display:flex; align-items:center; gap:12px;">
-      <div class="stat-icon"><i class="fas fa-file-invoice-dollar"></i></div>
-      <div>
-        <h3>Total Deductions</h3>
-        <p id="totalDeductions">Ksh 620,000</p>
-      </div>
-    </div>
-  </div>
-
-  <div class="stat-card">
-    <div style="display:flex; align-items:center; gap:12px;">
-      <div class="stat-icon"><i class="fas fa-wallet"></i></div>
-      <div>
-        <h3>Total Net</h3>
-        <p id="totalNet">Ksh 1,830,000</p>
-      </div>
-    </div>
-  </div>
-
-  <div class="stat-card">
-    <div style="display:flex; align-items:center; gap:12px;">
-      <div class="stat-icon"><i class="fas fa-users"></i></div>
-      <div>
-        <h3>Employee Count</h3>
-        <p id="employeeCount">45</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ====== Payroll Filters & Cycle Selector ====== -->
-<section class="section payroll-filters">
-  <div class="filter-search">
-    <input type="text" id="searchPayroll" placeholder="Search employee..." aria-label="Search employee">
-    <button><i class="fas fa-search"></i></button>
-  </div>
-
-  <div class="filter-department">
-    <select id="departmentFilter" aria-label="Filter by department">
-      <option value="">All Departments</option>
-      <option value="Finance">Finance</option>
-      <option value="HR">HR</option>
-      <option value="IT">IT</option>
-    </select>
-  </div>
-
-  <div class="filter-status">
-    <select id="statusFilter" aria-label="Filter by status">
-      <option value="">All Status</option>
-      <option value="Draft">Draft</option>
-      <option value="Pending Approval">Pending Approval</option>
-      <option value="Approved">Approved</option>
-      <option value="Processed">Processed</option>
-    </select>
-  </div>
-
-  <div class="payroll-cycle">
-    <label for="payrollCycle">Payroll Cycle:</label>
-    <select id="payrollCycle">
-      <option value="2025-09">September 2025</option>
-      <option value="2025-08">August 2025</option>
-      <option value="2025-07">July 2025</option>
-    </select>
-  </div>
-</section>
-
-<!-- ====== Payroll Table with Payslip Viewer & Allowances Breakdown ====== -->
-<section class="section payroll-table-section">
-  <table class="payroll-table">
-    <thead>
-      <tr>
-        <th>Employee</th>
-        <th>Department</th>
-        <th>Gross (Ksh)</th>
-        <th>Deductions (Ksh)</th>
-        <th>Net (Ksh)</th>
-        <th>Status</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody id="payrollBody">
-      <tr>
-        <td>Mary Njeri</td>
-        <td>Finance</td>
-        <td>80,000</td>
-        <td>20,000</td>
-        <td>60,000</td>
-        <td><span class="status-badge approved">Approved</span></td>
-        <td>
-          <button class="btn-small btn-view-payslip" data-employee="Mary Njeri">View Payslip</button>
-          <button class="btn-small btn-breakdown" data-employee="Mary Njeri">Breakdown</button>
-        </td>
-      </tr>
-      <tr>
-        <td>Paul Kim</td>
-        <td>HR</td>
-        <td>75,000</td>
-        <td>18,500</td>
-        <td>56,500</td> 
-        <td><span class="status-badge pending">Pending Approval</span></td>
-        <td>
-          <button class="btn-small btn-view-payslip" data-employee="Paul Kim">View Payslip</button>
-          <button class="btn-small btn-breakdown" data-employee="Paul Kim">Breakdown</button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-</section>
-
-<!-- ====== Modal: Payslip Viewer ====== -->
-<div id="payslipModal" class="modal hidden">
-  <div class="modal-content">
-    <span class="close">&times;</span>
-    <h3>Payslip - <span id="modalEmployeeName"></span></h3>
-    <p><strong>Gross:</strong> Ksh <span id="modalGross"></span></p>
-    <p><strong>Deductions:</strong> Ksh <span id="modalDeductions"></span></p>
-    <p><strong>Net:</strong> Ksh <span id="modalNet"></span></p>
-    <h4>Breakdown:</h4>
-    <ul id="modalBreakdown">
-      <li>NHIF: Ksh 1,500</li>
-      <li>NSSF: Ksh 2,000</li>
-      <li>PAYE: Ksh 5,000</li>
-      <li>Overtime: Ksh 3,000</li>
-      <li>Other Allowances: Ksh 1,000</li>
+  <!-- Optional Detailed Info -->
+  <div style="margin-top:16px; font-size:13px; color:#475569;">
+    <ul>
+      <li><strong>Approve Selected:</strong> Marks all chosen records as approved and moves them to the 'Approved' step.</li>
+      <li><strong>Reject Selected:</strong> Rejects records and flags them for review by HR or Finance.</li>
+      <li><strong>Export Selected:</strong> Downloads payroll data in preferred format for offline review.</li>
+      <li><strong>Upload Batch:</strong> Allows importing bulk payroll data with validation checks.</li>
     </ul>
-    <button class="btn-primary">Download PDF</button>
   </div>
-</div>
+</section>
+
+
+    <!-- ====== 8) Payroll Versioning / History Tabs ====== -->
+    <section class="section payroll-versioning">
+      <h2><i class="fas fa-calendar-alt icon-blue"></i> Payroll Versions</h2>
+      <div class="version-tabs" style="display:flex; gap:12px; flex-wrap:wrap;">
+        <button class="btn-primary">September 2025 (Completed)</button>
+        <button class="btn-primary">August 2025 (Completed)</button>
+        <button class="btn-primary">July 2025 (Completed)</button>
+        <button class="btn-primary">October 2025 (Draft)</button>
+        <button class="btn-primary">November 2025 (Draft)</button>
+      </div>
+    </section>
+
+    <!-- ====== 9) Payroll Validation / Errors ====== -->
+    <section class="section payroll-validation-errors">
+      <h2><i class="fas fa-exclamation-triangle icon-blue"></i> Payroll Validation Alerts</h2>
+      
+      <!-- Individual Error Cards -->
+      <div class="validation-error-cards" style="display:flex; flex-wrap:wrap; gap:16px; margin-top:12px;">
+
+        <!-- Example Error 1 -->
+        <div class="error-card" style="flex:1; min-width:280px; background:#fdecea; border-left:4px solid #a8071a; border-radius:12px; padding:16px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);">
+          <h4 style="margin:0 0 8px 0; color:#a8071a; font-weight:700;">Missing Bank Details</h4>
+          <p style="margin:0 0 6px 0; font-size:14px; color:#475569;">The following employees have missing bank details:</p>
+          <ul style="margin:0; padding-left:20px; font-size:14px; color:#475569;">
+            <li>Mary Njeri - Finance</li>
+            <li>Paul Kim - HR</li>
+            <li>John Mwangi - IT</li>
+          </ul>
+          <p style="margin-top:8px; font-size:13px; color:#003366;">Action: Update bank details before processing payroll.</p>
+        </div>
+
+        <!-- Example Error 2 -->
+        <div class="error-card" style="flex:1; min-width:280px; background:#fff7e6; border-left:4px solid #b36b00; border-radius:12px; padding:16px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);">
+          <h4 style="margin:0 0 8px 0; color:#b36b00; font-weight:700;">Overtime Discrepancies</h4>
+          <p style="margin:0 0 6px 0; font-size:14px; color:#475569;">The following employees have unprocessed overtime claims:</p>
+          <ul style="margin:0; padding-left:20px; font-size:14px; color:#475569;">
+            <li>Jane Wambui - HR - 10 hrs pending</li>
+            <li>Samuel Otieno - Finance - 6 hrs pending</li>
+          </ul>
+          <p style="margin-top:8px; font-size:13px; color:#003366;">Action: Review and approve overtime claims.</p>
+        </div>
+
+        <!-- Example Error 3 -->
+        <div class="error-card" style="flex:1; min-width:280px; background:#fdecea; border-left:4px solid #a8071a; border-radius:12px; padding:16px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);">
+          <h4 style="margin:0 0 8px 0; color:#a8071a; font-weight:700;">Incorrect Salary Entries</h4>
+          <p style="margin:0 0 6px 0; font-size:14px; color:#475569;">Detected salary discrepancies:</p>
+          <ul style="margin:0; padding-left:20px; font-size:14px; color:#475569;">
+            <li>Peter Njoroge - IT: Entered 90,000, should be 95,000</li>
+            <li>Lucy Wanjiku - HR: Entered 75,000, should be 78,000</li>
+          </ul>
+          <p style="margin-top:8px; font-size:13px; color:#003366;">Action: Verify and correct salary amounts before approval.</p>
+        </div>
+
+        <!-- Example Error 4 -->
+        <div class="error-card" style="flex:1; min-width:280px; background:#fff7e6; border-left:4px solid #b36b00; border-radius:12px; padding:16px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);">
+          <h4 style="margin:0 0 8px 0; color:#b36b00; font-weight:700;">Duplicate Payroll Entries</h4>
+          <p style="margin:0 0 6px 0; font-size:14px; color:#475569;">Duplicate payroll detected for the following employees:</p>
+          <ul style="margin:0; padding-left:20px; font-size:14px; color:#475569;">
+            <li>Michael Ochieng - Finance</li>
+            <li>Faith Akinyi - Sales</li>
+          </ul>
+          <p style="margin-top:8px; font-size:13px; color:#003366;">Action: Remove duplicates to avoid overpayment.</p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ====== Payroll Header Actions ====== -->
+    <section class="section payroll-header">
+      <div class="header-flex">
+        <h2><i class="fas fa-money-check-alt icon-blue"></i> Payroll Management</h2>
+        <div class="header-actions">
+          <button class="btn-primary"><i class="fas fa-plus"></i> Run New Payroll</button>
+          <button class="btn-secondary" id="togglePayrollBtn"><i class="fas fa-table"></i> Toggle Payroll Preview</button>
+          <button class="btn-export"><i class="fas fa-file-export"></i> Export Report</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== Payroll Preview (hidden by default) ====== -->
+    <section id="payrollPreview" class="payroll-preview hidden">
+      <h3><i class="fas fa-list-alt icon-blue"></i> Payroll Preview (Ksh)</h3>
+      <table class="styled-table">
+        <thead>
+          <tr>
+            <th>Employee</th>
+            <th>Gross Pay (Ksh)</th>
+            <th>Deductions (Ksh)</th>
+            <th>Net Pay (Ksh)</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Mary Njeri</td>
+            <td>120,000</td>
+            <td>15,000</td>
+            <td>105,000</td>
+            <td><span class="status success">Ready</span></td>
+          </tr>
+          <tr>
+            <td>Paul Kim</td>
+            <td>95,000</td>
+            <td>12,000</td>
+            <td>83,000</td>
+            <td><span class="status warning">Review</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ====== Payroll Analytics ====== -->
+    <section id="payrollAnalytics" class="payroll-analytics">
+      <h3><i class="fas fa-chart-line icon-blue"></i> Payroll Analytics</h3>
+      <div class="analytics-grid">
+        <div class="analytics-card">
+          <h4>Monthly Payroll Trend</h4>
+          <canvas id="payrollTrendChart" height="120"></canvas>
+        </div>
+        <div class="analytics-card">
+          <h4>Payroll by Department</h4>
+          <canvas id="payrollDeptChart" height="120"></canvas>
+        </div>
+        <div class="analytics-card">
+          <h4>Deductions Breakdown</h4>
+          <canvas id="deductionsChart" height="120"></canvas>
+        </div>
+        <div class="analytics-card">
+          <h4>Overtime Costs</h4>
+          <canvas id="overtimeChart" height="120"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== Payroll Page: Summary Cards ====== -->
+    <section class="stats-overview payroll-summary">
+      <div class="stat-card">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div class="stat-icon"><i class="fas fa-money-bill-wave"></i></div>
+          <div>
+            <h3>Total Gross</h3>
+            <p id="totalGross">Ksh 2,450,000</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div class="stat-icon"><i class="fas fa-file-invoice-dollar"></i></div>
+          <div>
+            <h3>Total Deductions</h3>
+            <p id="totalDeductions">Ksh 620,000</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div class="stat-icon"><i class="fas fa-wallet"></i></div>
+          <div>
+            <h3>Total Net</h3>
+            <p id="totalNet">Ksh 1,830,000</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div class="stat-icon"><i class="fas fa-users"></i></div>
+          <div>
+            <h3>Employee Count</h3>
+            <p id="employeeCount">45</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== Payroll Filters & Cycle Selector ====== -->
+    <section class="section payroll-filters">
+      <div class="filter-search">
+        <input type="text" id="searchPayroll" placeholder="Search employee..." aria-label="Search employee">
+        <button><i class="fas fa-search"></i></button>
+      </div>
+
+      <div class="filter-department">
+        <select id="departmentFilter" aria-label="Filter by department">
+          <option value="">All Departments</option>
+          <option value="Finance">Finance</option>
+          <option value="HR">HR</option>
+          <option value="IT">IT</option>
+        </select>
+      </div>
+
+      <div class="filter-status">
+        <select id="statusFilter" aria-label="Filter by status">
+          <option value="">All Status</option>
+          <option value="Draft">Draft</option>
+          <option value="Pending Approval">Pending Approval</option>
+          <option value="Approved">Approved</option>
+          <option value="Processed">Processed</option>
+        </select>
+      </div>
+
+      <div class="payroll-cycle">
+        <label for="payrollCycle">Payroll Cycle:</label>
+        <select id="payrollCycle">
+          <option value="2025-09">September 2025</option>
+          <option value="2025-08">August 2025</option>
+          <option value="2025-07">July 2025</option>
+        </select>
+      </div>
+    </section>
+
+    <!-- ====== Payroll Table with Payslip Viewer & Allowances Breakdown ====== -->
+    <section class="section payroll-table-section">
+      <table class="payroll-table">
+        <thead>
+          <tr>
+            <th>Employee</th>
+            <th>Department</th>
+            <th>Gross (Ksh)</th>
+            <th>Deductions (Ksh)</th>
+            <th>Net (Ksh)</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="payrollBody">
+          <tr>
+            <td>Mary Njeri</td>
+            <td>Finance</td>
+            <td>80,000</td>
+            <td>20,000</td>
+            <td>60,000</td>
+            <td><span class="status-badge approved">Approved</span></td>
+            <td>
+              <button class="btn-small btn-view-payslip" data-employee="Mary Njeri">View Payslip</button>
+              <button class="btn-small btn-breakdown" data-employee="Mary Njeri">Breakdown</button>
+            </td>
+          </tr>
+          <tr>
+            <td>Paul Kim</td>
+            <td>HR</td>
+            <td>75,000</td>
+            <td>18,500</td>
+            <td>56,500</td> 
+            <td><span class="status-badge pending">Pending Approval</span></td>
+            <td>
+              <button class="btn-small btn-view-payslip" data-employee="Paul Kim">View Payslip</button>
+              <button class="btn-small btn-breakdown" data-employee="Paul Kim">Breakdown</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ====== Modal: Payslip Viewer ====== -->
+    <div id="payslipModal" class="modal hidden">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h3>Payslip - <span id="modalEmployeeName"></span></h3>
+        <p><strong>Gross:</strong> Ksh <span id="modalGross"></span></p>
+        <p><strong>Deductions:</strong> Ksh <span id="modalDeductions"></span></p>
+        <p><strong>Net:</strong> Ksh <span id="modalNet"></span></p>
+        <h4>Breakdown:</h4>
+        <ul id="modalBreakdown">
+          <li>NHIF: Ksh 1,500</li>
+          <li>NSSF: Ksh 2,000</li>
+          <li>PAYE: Ksh 5,000</li>
+          <li>Overtime: Ksh 3,000</li>
+          <li>Other Allowances: Ksh 1,000</li>
+        </ul>
+        <button class="btn-primary">Download PDF</button>
+      </div>
+    </div>
 
 
   </main>
